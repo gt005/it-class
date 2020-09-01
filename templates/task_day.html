@@ -1,0 +1,61 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container h-100">
+        <h2 class="text-left font-weight-light pt-3">Задача дня</h2>
+        {% if count_of_answer < 0 and user.id not in list_answ %}
+            <h2 class="text-center font-weight-light">{{ name_task }}</h2>
+            <hr>
+            <p class="font-weight-light text-right">{{ date_task }}</p>
+            {% autoescape off %}
+                {{ discription_task }}
+            {% endautoescape %}
+            <hr>
+            <h4 class="font-weight-light">Ответ:</h4>
+            <form method="post">{% csrf_token %}
+                <input type="text"
+                       class="form-control text-left"
+                       name="result" placeholder="Внесите ответ на задачу">
+                <button class="btn btn-success mt-3" type="submit">Отправить решение</button>
+            </form>
+            <p class="font-weight-light text-right">Данную задачу могут решить еще (количество
+                учеников): {{ count_of_puples }} </p>
+        {% elif user.id in list_answ %}
+            <hr>
+            <h5 class="font-weight-light text-center">Молодец! Задача решена верно.</h5>
+            <p class="font-weight-light text-center">В твой профиль автоматически добавлено мероприятие с данной
+                задачей. Твой рейтинг пересчитался автоматически</p>
+            <p class="font-weight-light text-center"> Количество верных решений: {{ score }}</p>
+            <br>
+            <p class="font-weight-light text-center"> На данную задачу правильно дали ответ:</p>
+            <p class="font-weight-light text-center"><strong>{% for i in list_wins %}
+                {% for j in i %}
+                    {{ j }}
+                {% endfor %}
+                <br>
+            {% endfor %}
+            </strong></p>
+            <br>
+            <p class="font-weight-light text-center">Очень скоро появится новая задача</p>
+            <a href="/account/">
+                <button type="button" class="btn btn-dark">Перейти в свой профиль</button>
+            </a>
+        {% else %}
+            <hr>
+            <p class="font-weight-light text-center">Задача решена максимальным количеством человек.</p>
+            <p class="font-weight-light text-center"> Количество верных решений: {{ score }}</p>
+             <br>
+            <p class="font-weight-light text-center"> На данную задачу правильно дали ответ:</p>
+            <p class="font-weight-light text-center"><strong>{% for i in list_wins %}
+                {% for j in i %}
+                    {{ j }}
+                {% endfor %}
+                <br>
+            {% endfor %}
+            </strong></p>
+            <br>
+            <p class="font-weight-light text-center">Очень скоро появится новая задача</p>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block detail_active_task %} active{% endblock %}

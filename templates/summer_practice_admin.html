@@ -1,0 +1,148 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container">
+        <p>Текущее время: {{ time }}</p>
+        <h3 class="font-weight-light mt-3">Список учеников на летнюю практику</h3>
+        <table class="table mt-3">
+            <thead class="thead table-primary">
+            <tr>
+                <th scope="col">Практика: {{ summerpractice_list.0.name }}</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-right">Количество учеников: {{ l0 }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in list0 %}
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td class="text-left">{{ i.surname }}</td>
+                    <td class="text-right">{{ i.get_status_display }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <thead class="thead table-success">
+            <tr>
+                <th scope="col">Практика: {{ summerpractice_list.1.name }}</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-right">Количество учеников: {{ l1 }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in list1 %}
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td class="text-left">{{ i.surname }}</td>
+                    <td class="text-right">{{ i.get_status_display }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <thead class="thead table-danger">
+            <tr>
+                <th scope="col">Практика: {{ summerpractice_list.2.name }}</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-right">Количество учеников: {{ l2 }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in list2 %}
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td class="text-left">{{ i.surname }}</td>
+                    <td class="text-right">{{ i.get_status_display }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <thead class="thead table-info">
+            <tr>
+                <th scope="col">Практика: {{ summerpractice_list.3.name }}</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-right">Количество учеников: {{ l3 }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in list3 %}
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td class="text-left">{{ i.surname }}</td>
+                    <td class="text-right">{{ i.get_status_display }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <thead class="thead table-warning">
+            <tr>
+                <th scope="col">Практика: {{ summerpractice_list.4.name }}</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-right">Количество учеников: {{ l4 }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in list4 %}
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td class="text-left">{{ i.surname }}</td>
+                    <td class="text-right">{{ i.get_status_display }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <thead class="thead table-secondary">
+            <tr>
+                <th scope="col">Практика: {{ summerpractice_list.5.name }}</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-right">Количество учеников: {{ l5 }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in list5 %}
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td class="text-left">{{ i.surname }}</td>
+                    <td class="text-right">{{ i.get_status_display }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <h5 class="font-weight-light text-uppercase pt-5">Не зарегистрированые ученики на летнюю практику</h5>
+        <hr>
+        <table class="table mt-3 table-danger">
+            <thead class="thead table-dark">
+            <tr>
+                <th scope="col">10 ИТ-КЛАСС</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-right"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in not_reg_puples %}
+                {% if i.status == "ST10" %}
+                    <tr>
+                        <td>{{ i.surname }}</td>
+                        <td class="text-left">{{ i.name }}</td>
+                        <td class="text-right">{{ i.get_status_display }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+            <thead class="thead table-dark">
+            <tr>
+                <th scope="col">11 ИТ-КЛАСС</th>
+                <th scope="col"></th>
+                <th scope="col" class="text-right"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in not_reg_puples %}
+                {% if i.status == "ST11" %}
+                    <tr>
+                        <td>{{ i.surname }}</td>
+                        <td class="text-left">{{ i.name }}</td>
+                        <td class="text-right">{{ i.get_status_display }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block detail_active_checklist %} active{% endblock %}

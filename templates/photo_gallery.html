@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block main %}
+    {% load static %}
+    <div class="container py-3">
+        <h2 class="text-left font-weight-light">ЗАЯВЛЕНИЕ В 10 ПРОФИЛЬНЫЙ КЛАСС</h2>
+        <hr>
+        <form method="post">{% csrf_token %}
+            <div class="form-group">
+                <label for="name">ФИО родителя</label>
+                <input type="text" placeholder="Иванов Иван Иванович" class="form-control" id="name" name="name" value="">
+            </div>
+            <div class="form-group">
+                <label for="address">Адрес проживания родителя</label>
+                <input type="text" class="form-control" id="address" placeholder="г.Москва, Северное Чертаново, 809" name="address" value="">
+            </div>
+            <div class="form-group">
+                <label for="number">Телефон родителя</label>
+                <input type="text" class="form-control" id="number" placeholder="89261234567" name="number" value="">
+            </div>
+            <hr>
+            <div class="form-group pt-3">
+                <label for="name_child">ФИО ребенка</label>
+                <input type="text" class="form-control" id="name_child" placeholder="Иванов Иван Иванович" name="name_child" value="">
+            </div>
+            <div class="form-group">
+                <label for="date_br">Дата рождения ребенка</label>
+                <input type="text" class="form-control" id="date_br" placeholder="01.01.2000" name="date_br" value="">
+            </div>
+            <div class="form-group">
+                <label for="address_child">Адрес проживания ребенка</label>
+                <input type="text" class="form-control" id="address_child"
+                       placeholder="г.Москва, Северное Чертаново, 809" name="address_child" value="">
+            </div>
+            <div class="form-group">
+                <label for="profile">Выберите профиль класса</label>
+                <select class="form-control" id="profile" name="profile" value="">
+                    <option>ИТ-класс</option>
+                    <option>Инженерный класс</option>
+                    <option>Медицинский класс</option>
+                    <option>Гуманитарный (юридический)</option>
+                    <option>Гуманитарный (филологический)</option>
+                    <option>Социально-экономический</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="class">Выберите класс в котором учился ребенок</label>
+                <select class="form-control" id="class" name="class" value="">
+                    <option>9А</option>
+                    <option>9Б</option>
+                    <option>9В</option>
+                    <option>9Г</option>
+                    <option>9Д</option>
+                    <option>9Е</option>
+                    <option>9Ж</option>
+                    <option>9З</option>
+                    <option>9И</option>
+                    <option>9К</option>
+                    <option>9Л</option>
+                </select>
+            </div>
+            <button class="btn btn-success mt-3" type="submit" >Отправить заявление в школу</button>
+        </form>
+    </div>
+{% endblock %}
+{% block detail_active %} active{% endblock %}

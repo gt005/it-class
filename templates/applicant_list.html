@@ -1,0 +1,58 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    {% if user.username != "" %}
+        <div class="table-responsive">
+            <table class="table table-sm text-center table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th></th>
+                    <th class="text-left py-3">Фамилия</th>
+                    <th class="text-left py-3">Имя</th>
+                    <th class="py-3">Баллы</th>
+                    {% if user.is_superuser %}
+                        <th class="text-center py-3">Подтверждение</th>
+                        <th class="text-center py-3">Дата</th>
+                        <th class="text-center py-3">Время</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                {% for puple in puples_list %}
+                    {% for app in puple.applicantaction_set.all %}
+                        {% if puple.name != "-" %}
+                            <tr onclick="window.location.href='/statistic/pupil/{{ puple.id }}'; return false"
+                                    {% if puple.surname == user.last_name %}
+                                class="table-warning" {% elif puple.applicant_progress == 75 %}
+                                class="table-success"{% endif %}>
+
+                                <td><img src="{{ puple.image.url }}" alt="..." class="rounded-circle" ,
+                                         style="width: 75px; object-fit: cover; height:75px;"></td>
+                                <td class="text-left align-middle">{{ puple.surname }}</td>
+                                <td class="text-left align-middle">{{ puple.name }}</td>
+                                <td class="align-middle">{{ puple.applicant_first_result }}</td>
+
+                                <td class="align-middle">{% if app.check is True %}
+                                    <img class="img-fluid" style="width: 25px;"
+                                         src="{% static '/images/interface-2.png' %}">{% else %}
+                                    <img class="img-fluid" style="width: 25px;"
+                                         src="{% static '/images/signs.png' %}">{% endif %}</td>
+                                <td class="align-middle">{{ app.date }}</td>
+                                <td class="align-middle">{{ app.time }}</td>
+                            </tr>
+                        {% endif %}
+
+                    {% endfor %}
+                {% endfor %}
+
+            </table>
+            <hr>
+            <div class="container">
+                <h4 class="font-weight-light">Общая информация по кандидатам:</h4>
+                <hr>
+                <p class="font-weight-light">Количество кандидатов: {{ puples_list.count }}</p>
+                <p class="font-weight-light">Количество кандидатов не прошедших собеседование: {{ app_without_interview }} {{ app_result_count }}</p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block detail_active %} active{% endblock %}

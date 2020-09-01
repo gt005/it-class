@@ -1,0 +1,248 @@
+{% extends  'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3 py-3">
+                <h1 class="font-weight-light">ИТ-класс</h1>
+                <h3 class="font-weight-light">в школе 1158</h3>
+            </div>
+            <div class="col">
+
+                <h1 class="pt-3 font-weight-light">ИНФОРМАЦИОННАЯ БЕЗОПАСТНОСТЬ</h1>
+
+                <h4 class="font-weight-light">ОСНОВНОЕ НАШЕ НАПРАВЛЕНИЕ</h4>
+                <hr>
+                <p class="font-weight-light" style="font-size: 20px;">Значимость процесса обеспечения информационной
+                    безопасности (ИБ) в современном
+                    мире трудно переоценить.
+                    Пренебрежение информационной безопасностью – это не только материальный ущерб или удар по репутации,
+                    но
+                    и вред здоровью граждан, подрыв экологии, нарушение инфраструктуры, угроза государственной
+                    безопасности
+                    и т.п. Проблемы защиты информации актуальны практически для всех видов деятельности: банковской
+                    сферы,
+                    энергетики, ВПК, политики, культуры, образования, транспорта и т.д.</p>
+
+                <p class="font-weight-light" style="font-size: 20px;">Профессионалы в области информационной
+                    безопасности всегда востребованы в
+                    государственных и коммерческих
+                    структурах. Существующий спрос на таких специалистов будет только расти в связи с увеличением
+                    проникновения информатизации во все сферы жизни и усиления степени зависимости от состояния
+                    информационной безопасности. Основная задача специалистов по проактивной защите — быть на шаг
+                    впереди
+                    злоумышленника.</p>
+
+                <p class="font-weight-light pb-5" style="font-size: 20px;">Учебный курс по профилю «Информационная
+                    безопасность» специально
+                    разработан для
+                    формирования у будущих
+                    специалистов компетенций в области обеспечения информационной безопасности, правовых аспектов ИБ,
+                    кибербезопасности, а также получения базовых знаний по криптографии и элементам сетевой
+                    безопасности,
+                    обеспечения ИБ личного пространства.</p>
+            </div>
+        </div>
+    </div>
+    <div id="headerwrap" style="background: url(static/images/header-bg.jpg) no-repeat center top;
+  margin-top: -10px;
+  padding-top: 20px;
+  text-align: center;
+  background-attachment: relative;
+  background-position: center center;
+  min-height: 500px;
+  width: 100%;
+  -webkit-background-size: 100%;
+  -moz-background-size: 100%;
+  -o-background-size: 100%;
+  background-size: 100%;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;">
+        <div class="container">
+            <div class="row ">
+                <div class="col-lg-8 col-lg-offset-2 text-left">
+                    <h1 style="margin-top: 100px;
+  color: white;
+  font-size: 70px;
+  font-weight: 300;
+  letter-spacing: 5px;">АТАКА<br></h1>
+                    <h1 style="
+  color: white;
+  font-size: 70px;
+  font-weight: 300;
+  letter-spacing: 5px;" class="text-center"><b>УЯЗВИМОСТЬ</b></h1>
+                    <h2 class="text-right" style="color: white;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;">КИБЕРЗАЩИТА</h2>
+                </div>
+            </div>
+            <!-- row -->
+        </div>
+        <!-- container -->
+    </div>
+    <div class="container">
+        <h2 class="font-weight-light text-center pt-5">ЧЕМУ ТЫ НАУЧИШЬСЯ</h2>
+        <hr>
+        <div class="row pt-5">
+            <div class="col-12 col-xl">
+                <div class="row pb-4">
+                    <div class="col-2"><img class="img-fluid mx-3"
+                                            style="width: 50px; object-fit: cover; height:50px;"
+                                            src="{% static '/images/html.png' %}"></div>
+                    <div class="col-10">
+                        <h3 class="font-weight-light">Основы веб-разработки</h3>
+                        <p class="font-weight-light" style="font-size: 20px;">Вы изучите базовые веб-технологии: Python,
+                            Linux, Bash.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2"><img class="img-fluid mx-3"
+                                            style="width: 50px; object-fit: cover; height:50px;"
+                                            src="{% static '/images/insect.png' %}"></div>
+                    <div class="col-10">
+                        <h3 class="font-weight-light">Поиск уязвимостей</h3>
+                        <p class="font-weight-light" style="font-size: 20px;">Сможете найти и эксплуатировать типовые
+                            уязвимости в веб-приложениях.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2"><img class="img-fluid mx-3"
+                                            style="width: 50px; object-fit: cover; height:50px;"
+                                            src="{% static '/images/linux.png' %}"></div>
+                    <div class="col-10">
+                        <h3 class="font-weight-light">Администрирование Linux-систем</h3>
+                        <p class="font-weight-light" style="font-size: 20px;">Научитесь проводить основные операции в
+                            Bash-терминале и работать с файлами и каталогами.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl">
+                <div class="row">
+                    <div class="col-2"><img class="img-fluid mx-3"
+                                            style="width: 50px; object-fit: cover; height:50px;"
+                                            src="{% static '/images/db.png' %}"></div>
+                    <div class="col-10">
+                        <h3 class="font-weight-light">Управление базами данных</h3>
+                        <p class="font-weight-light" style="font-size: 20px;">Познакомитесь с языком SQL и получите
+                            представление об управлении базами данных.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2"><img class="img-fluid mx-3"
+                                            style="width: 50px; object-fit: cover; height:50px;"
+                                            src="{% static '/images/worker.png' %}"></div>
+                    <div class="col-10">
+                        <h3 class="font-weight-light">Реверс-инжиниринг</h3>
+                        <p class="font-weight-light" style="font-size: 20px;">Освоите инструменты реверс-инжиниринга и
+                            узнаете полную классификацию вредоносного ПО.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2"><img class="img-fluid mx-3"
+                                            style="width: 50px; object-fit: cover; height:50px;"
+                                            src="{% static '/images/search.png' %}"></div>
+                    <div class="col-10">
+                        <h3 class="font-weight-light">Автоматизация работы</h3>
+                        <p class="font-weight-light" style="font-size: 20px;">Научитесь проверять сайты на защищённость
+                            с помощью профессионального инструментария.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fuild bg-light pt-4 mt-4">
+        <h2 class="font-weight-light text-center">ОБУЧЕНИЕ НА СОВРЕМЕННОМ ОБОРУДОВАНИИ</h2>
+        <hr>
+        <div class="row no-gutters pt-4">
+            <div class="col-xl-6 col-12 font-weight-light text-left px-3">
+                <p style="font-size: 20px;">Наш IT-полигон имеет самое современное оснащение, позволяющее решать
+                    амбициозные проектные
+                    решения по различным направлениям. IT-полигон - это новый образовательный формат и социально
+                    значимый
+                    проект, который доступен детям.</p>
+                <p style="font-size: 20px;">IT-полигон - это площадка, призванная изменить стандартный подход к обучению
+                    высоким технологиям. Сама
+                    идея
+                    полигона проста - от теории к практике! В IT-полигоне все желающие могут найти свое направление в
+                    области
+                    информационных технологий, а таких направлений немало: робототехника, программирование,
+                    3D-моделирование,
+                    системное администрирование, разработка игр и дополненной реальности, разработка и пилотирование
+                    беспилотных
+                    летательных аппаратов и многое другое.</p>
+            </div>
+            <div class="col-xl-6 col-12">
+                <img class="img-fluid" src="{% static '/images/itpoligon.jpg' %}">
+            </div>
+
+        </div>
+    </div>
+    <div class="container pt-4">
+        <h2 class="font-weight-light text-center py-4">НАПРАВЛЕНИЯ ПРОЕКТА ИТ-КЛАССЫ</h2>
+        <div class="row py-2">
+            <div class="col-12 col-xl-6">
+                <ul class="font-weight-light text-center list-unstyled" style="font-size: 25px;">
+                    <li class="py-2">ПРОГРАММИРОВАНИЕ</li>
+                    <hr>
+                    <p class="font-weight-light" style="font-size: 14px;"> Формирование навыков разработки
+                        алгоритмов и написания кода на различных языках программирования</p>
+                    <li class="py-2">МОДЕЛИРОВАНИЕ И ПРОТОТИПИРОВАНИЕ</li>
+                    <hr>
+                    <p class="font-weight-light" style="font-size: 14px;"> Формирование навыков
+                        3D-моделирования, прототипирования
+                        оборудования и его элементов,
+                        инженерного черчения
+                        и промышленного дизайна</p>
+                    <li class="py-2">ИТ-БЕЗОПАСНОСТЬ</li>
+                    <hr>
+                    <p class="font-weight-light" style="font-size: 14px;">Обучение методам защиты информации</p>
+
+                </ul>
+            </div>
+            <div class="col col-xl-6">
+                <ul class="font-weight-light text-center list-unstyled" style="font-size: 25px;">
+                    <li class="py-2">БОЛЬШИЕ ДАННЫЕ</li>
+                    <hr>
+                    <p class="font-weight-light" style="font-size: 14px;">Формирование навыков работы
+                        с большими массивами данных,
+                        анализом данных, элементами
+                        машинного обучения.</p>
+                    <li class="py-2">РОБОТОТЕХНИКА</li>
+                    <hr>
+                    <p class="font-weight-light" style="font-size: 14px;">Формирование навыков проектирования,
+                        конструирования и программирования
+                        роботизированных систем.</p>
+                    <li class="py-2">ТЕХНОЛОГИЯ СВЯЗИ</li>
+                    <hr>
+                    <p class="font-weight-light" style="font-size: 14px;">Формирование навыков программирования,
+                        настройки, конфигурирования, использования
+                        телекоммуникационных систем, оборудования, протоколов связи.</p>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid bg-light">
+        <div class="container py-2 pb-5 text-center">
+            <h2 class="font-weight-light text-center py-3">ПОСТУПИТЬ В ИТ-КЛАСС</h2>
+            <p class="font-weight-light" style="font-size: 20px;">Если ты учишься в 9 классе и тебе интересны
+                информационные
+                технологии. Ты готов тратить много время на изучение математики, информатики и физики. Тебе интересны
+                различные направления проекта. Тогда жми на кнопку ниже.</p>
+            <a href="/test_applicant" class="btn btn-warning font-weight-light" style="font-size: 22px;">
+                Заполнить анкету
+            </a>
+
+        </div>
+    </div>
+    </div>
+{% endblock %}
+{% block main_active %} active{% endblock %}

@@ -1,0 +1,70 @@
+{% extends  'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block main %}
+    {% if user.is_superuser %}
+    <script src="{% static 'js/notatifications.js' %}"></script>
+    <div class="container">
+        <h2 class="font-weight-light pt-3">Оповещение участников проекта</h2>
+        <hr>
+        <form method="post">{% csrf_token %}
+            <div class="form-group">
+                <label for="theme_letter">Тема письма:</label>
+                <input type="text" name="theme_letter" value="" class="form-control" id="theme_letter"
+                       placeholder="Укажите тему">
+            </div>
+            <div class="form-group">
+                <label for="header_letter">Заголовок письма:</label>
+                <input type="text" name="header_letter" value="" class="form-control" id="header_letter"
+                       placeholder="Укажите заголовок">
+            </div>
+            <div class="form-group">
+                <label for="text_letter">Текст письма:</label>
+                <textarea class="form-control" name="text_letter" value="" id="text_letter" rows="5"
+                          placeholder="Напишите текст"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="checkbox_telegram" class="mr-5">Опубликовать в телеграм-канал</label>
+                <input class="form-check-input align-middle" type="checkbox"
+                       name="checkbox_telegram" value="True"
+                       id="checkbox_telegram">
+            </div>
+            <div class="form-group row pt-2">
+                <label for="exampleFormControlTextarea2" class="col-lg-2 align-baseline">Укажите получателя:</label>
+                <div class="col">
+                    <input type="text" class="form-control" id="myInput">
+                    <button id="AllButton" class="btn btn-outline-secondary btn-sm mt-2">Все</button>
+                    {#                    <button id="class10" class="btn btn-outline-secondary btn-sm mt-2">Ученики 10 класса</button>#}
+                    {#                    <button type="submit" class="btn btn-outline-secondary btn-sm mt-2">Ученики 11 класса</button>#}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <table id="table" class="table table-sm text-center {% if user.is_superuser %}table-hover{% endif %}">
+                    {% for puple in puples_list %}
+                        {% if puple.email != "" %}
+                            <tbody id="myTable">
+                            <tr>
+                                <td><img src="{{ puple.image.url }}" alt="..." class="rounded-circle"
+                                         style="width: 75px; object-fit: cover; height:75px;"></td>
+                                <td class="text-left align-middle">{{ puple.surname }}</td>
+                                <td class="text-left align-middle">{{ puple.name }}</td>
+                                <td class="align-middle">{{ puple.get_status_display }}</td>
+                                <td class="align-middle"><input class="form-check-input" type="checkbox"
+                                                                name="checkbox_puple" value="{{ puple.user.id }}"
+                                                                id="checkbox_puple">
+                                    <label class="form-check-label" for="defaultCheck1">
+                                    </label></td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <button type="submit" class="btn btn-success mt-5">Отправить оповещение</button>
+        </form>
+    </div>
+        {{ form|crispy }}
+    {% endif %}
+{% endblock %}
+{% block detail_active_hach %} active{% endblock %}

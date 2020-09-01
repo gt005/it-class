@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block main %}
+    {% load static %}
+    <div class="container-xl my-4 bg-light">
+        <div class="row">
+            <div class="col col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                <h3 class="my-3">
+                    {{ puples.name }} {{ puples.surname }}
+                </h3>
+                <img src="{{ puples.image.url }}" class="img-fluid">
+                <div class="row no-gutters py-3">
+                    <div class="col-12"><a href="/statistic/pupil/{{ puples.pk }}/img-change/"
+                                           class="btn btn-block btn-info btn-sm" role="button">Изменить фотографию
+                        профиля</a></div>
+                    <div class="col-12 pt-1"><a href="/password-change/" class="btn btn-block btn-info btn-sm"
+                                                role="button">Изменить
+                        пароль учетной записи</a></div>
+                    <div class="col-12 py-3">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="custom-file col-12">
+                                    <input type="file" class="custom-file-input" id="customFile" name="image" required>
+                                    <label class="custom-file-label" for="customFile">Выберите файл</label>
+                                <script>
+                                    $('#customFile').on('change', function () {
+                                        //get the file name
+                                        var fileName = $(this).val();
+                                        //replace the "Choose a file" label
+                                        $(this).next('.custom-file-label').html('Файл добавлен');
+                                    })
+                                </script>
+                            </div>
+                             <p class="text-muted font-weight-light mx-2 pt-1" style="font-size: 12px;">Вы можете сделать моментальную фотографию, если Ваше устройство
+                                    оснащено веб-камерой, или загрузить изображение в формате JPG, GIF или PNG.</p>
+                            <div class="row no-gutters p-0">
+                                <div class="col p-1">
+                                    <button type="submit" class="btn btn-info btn-block btn-sm">Сохранить</button>
+                                </div>
+                                <div class="col p-1"><a class="btn btn-danger btn-block btn-sm"
+                                                        href="/statistic/pupil/{{ puples.id }}" role="button">Отмена</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    <h3 class="pt-3 col-12 col-lg-8">
+                        {% if puples.status == "ST10" or puples.status == "ST11" %}Список посещенных
+                            мероприятий{% else %}Вступительные испытания{% endif %}
+                    </h3>
+
+                    <p class="font-weight-light text-right mt-2 col">Статус: {{ puples.get_status_display }}</p>
+
+                </div>
+                {% if puples.status != "APP" %}
+                    <table class="table table-sm text-center my-4">
+                        <thead class="thead text-center">
+                        <tr>
+                            <th class="text-left">Дата посещения</th>
+                            <th class="text-left">Название</th>
+                            <th>Организатор</th>
+                            <th>Документ</th>
+                        </tr>
+                        </thead>
+                        {% for event in allevents %}
+                            <tr {% if event.check is False %} class="alert-warning" {% endif %}>
+                                <td class="align-middle">{{ event.date }} {% if event.check is False %}
+                                    <p class="alert-warning">На
+                                        модерации</p>{% endif %}
+                                </td>
+                                <td class="text-left align-middle">{{ event.name }}</td>
+                                <td class="text-left align-middle">{{ event.organization }}</td>
+                                <td class="text-center align-middle">
+                                    <form method="post" action="{% url 'verification_file_download' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="file_base_dir" value="{{ event.verification_file }}">
+                                        <input type="hidden" name="usr_pk" value="{{ puples.user.pk }}">
+                                        <button type="submit" class="btn btn-outline-success">Скачать</button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                    </table>
+                    <a class="btn btn-info btn-lg btn-block" href="add_events" role="button">Добавить новое
+                        мероприятие</a>
+                    <p class="my-3">Количество посещенных мероприятий: {{ events_count }} </p>
+                    <p class="my-3">Общий рейтинг: {{ puples.rate }}</p>
+                {% else %}
+                    <hr><p class="font-weight-light my-4">Промежуточный результат отборочного
+                    этапа: {{ puples.applicant_first_result }}
+                    баллов</p>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped bg-info progress-bar-animated" role="progressbar"
+                             aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
+                             style="width:{{ puples.applicant_progress }}%"></div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <p class="font-weight-light">Тестирование 14 мая 2020</p>
+                        </div>
+                        <div class="col d-xl-block d-sm-none d-none">
+                            <p class="font-weight-light">Анализ итоговых оценок</p>
+                        </div>
+                        <div class="col">
+                            <p class="font-weight-light">Собеседование</p>
+                        </div>
+                        <div class="col d-xl-block d-sm-none d-none">
+                            <p class="font-weight-light">Средний балл аттестата</p>
+                        </div>
+                        <div class="col">
+                            <p class="font-weight-light">Результат отбора</p>
+                        </div>
+                    </div>
+                    {% if puples.applicant_progress == 50 %}
+                        <h3 class="font-weight-light">Собеседование</h3>
+                        {% if app.check is False %}
+                            <p class="font-weight-light text-uppercase text-danger">Участие не подтверждено</p>
+                        {% else %}<p class="font-weight-light text-uppercase text-success">Участие подтверждено</p>
+                        {% endif %}
+                        <hr>
+                        <p class="font-weight-light">Время собеседования 15 минут</p>
+                        <p class="font-weight-light">До собеседования вспомни все олимпиады, конкурсы и конференции в
+                            которых ты
+                            участвовал в
+                            9 классе, подготовь подтверждающие документы участия или победы (можно в электронном
+                            варианте).
+                            Подготовь свой паспорт для подтверждения своей личности.</p>
+
+                        <p class="font-weight-light">Если ты еще не являешься учащимся ГБОУ Школы №1158, то будь готов
+                            показать
+                            свои оценки по
+                            математике и информатике за первое полугодие и год из электронного дневника.</p>
+                        <h5 class="font-weight-light">Информация о твоем собеседовании:</h5>
+                        <table class="table font-weight-light">
+                            <tbody>
+                            <tr>
+                                <th scope="row">Время:</th>
+                                <td>{{ app.date }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Дата:</th>
+                                <td>{{ app.time }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ссылка на собеседование:</th>
+                                <td>{{ app.url }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Идентификатор конференции:</th>
+                                <td>{{ app.login }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Пароль конференции:</th>
+                                <td>{{ app.password }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p class="font-weight-light">Если ты со всем ознакомился, нажми "подтвердить участие в
+                            собеседовании",
+                            чтобы мы знали о серьезности твоих намерений поступить в ИТ-класс</p>
+                        <p class="font-weight-light">Если ты передумал поступить в ИТ-класс напиши нам об этом на почту
+                            admin@it-class.site</p>
+                        {% if app.check is False %}
+                            <form method="post">{% csrf_token %}
+                                <input type="hidden" name="check" value="True"/>
+                                <button class="btn btn-success mb-3">Подтвердить участие в собеседовании</button>
+                            </form>
+                        {% endif %}
+                    {% elif puples.applicant_progress == 75 %}
+                        <h3 class="font-weight-light">Подсчет результатов</h3>
+                        <hr>
+                        <p class="font-weight-light">Ты прошел этап собеседование, очень скоро мы посчитаем твои
+                            баллы.</p>
+                        <p class="font-weight-light">Балл мог уже измениться, т.к. мы добавили баллы за успеваемость по
+                            профильным предметам в 9 классе.</p>
+                        <br>
+                        <h5 class="font-weight-light">29 мая 2020 года мы подведем итог твоего собеседования.</h5>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block detail_active %} active{% endblock %}

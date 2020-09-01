@@ -1,0 +1,54 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+
+    <div class="container-fuild">
+        <h3 class="text-center font-weight-light py-4">Мои работы в ИТ-классе</h3>
+        <div class="row">
+            <div class="col">
+                <table class="table text-center ">
+                    <thead class="thead-light">
+                    <tr>
+                        <th></th>
+                        <th class="text-left">Название темы</th>
+                        <th class="text-center">Название работы</th>
+                        <th class="text-left">Результат</th>
+                    </tr>
+                    </thead>
+                    {% for work in works_list %}
+                        <tr>
+                            <td class="align-middle">{{ work.date }}</td>
+                            <td class="text-left align-middle">{{ work.theme }}</td>
+                            <td class="text-center align-middle">{{ work.name }}</td>
+                            <td class="text-left align-middle"><a class="text-dark" href="
+                                    {% static 'images/' %}{{ work.result }}{{ user.id }}.pdf">Посмотреть
+                                результат</a></td>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <h3 class="text-center font-weight-light py-4">Самостоятельные работы</h3>
+        <table class="table text-center ">
+            <thead class="thead-light">
+            <tr>
+                <th></th>
+                <th class="text-left">Название темы</th>
+                <th class="text-center">Название работы</th>
+                <th class="text-left">Результат</th>
+            </tr>
+            </thead>
+            <tr>
+                <td class="align-middle">13.05.2020 г.</td>
+                <td class="text-left align-middle">Программирование</td>
+                <td class="text-center align-middle">Работа на функции</td>
+                <td class="text-left align-middle"><a class="text-dark"
+                                                      href="{% static 'images/puples_works/it-sr.pdf' %}">Посмотреть
+                    работу</a></td>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}
+{% block detail_active_works %} active{% endblock %}

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% load static %}
+<head>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/favicon/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/favicon/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/favicon/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/favicon/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/favicon/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/favicon/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/favicon/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/favicon/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'images/favicon/manifest.json' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <script src="{% static 'js/preloader.js' %}"></script>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/pre.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'js/metrika_yandex.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="{% static 'js/confetti.min.js' %}"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{% static 'js/date_script.js' %}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.715">
+    <title>ИТ-класс в школе 1158</title>
+</head>
+<body>
+
+<!-- ====== Preloader ======  -->
+<div id="preloader">
+    <div id="loader"></div>
+</div>
+<!-- ======./ Preloader ======  -->
+
+<div class="container-fuild">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a href="/" class="navbar-brand">
+            <img class="img-fluid mx-3"
+                 style="width: 100px; object-fit: cover; height:100px;"
+                 src="{% static '/images/itclass-logo.png' %}"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link{% block main_active %}{% endblock %}" href="/">ГЛАВНАЯ<span class="sr-only">(current)</span></a>
+                </li>
+                {% if user.is_authenticated and user.puples.status != "APP" %}
+                    <li class="nav-item">
+                        <a class="nav-link{% block detail_active %}{% endblock %}" href="/rate">РЕЙТИНГ УЧАСТНИКОВ</a>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated and user.puples.status != "APP" %}
+                    <li class="nav-item">
+                        <a class="nav-link{% block detail_active_works %}{% endblock %}" href="/works">МОИ РАБОТЫ</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle{% block detail_active_hach %}{% endblock %}" href="#"
+                       id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        МЕРОПРИЯТИЯ
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item"
+                           href="https://events.educom.ru/calendar?onlyActual=false&pageNumber=1&search=&portalIds=21&portalIds=14">IT-СУББОТЫ</a>
+                        <a class="dropdown-item" href="http://events.mosedu.ru">МЕРОПРИЯТИЯ ДЛЯ ИТ-КЛАССОВ</a>
+                        <a class="dropdown-item" href="/hacaton">ХАКАТОН 1-11 МАЯ 2020г.</a>
+                        {% if user.is_authenticated and user.puples.status != "APP" %}
+                            <a class="dropdown-item" href="/summer_practice">ЛЕТНЯЯ ПРАКТИКА 2020г.</a>
+                        {% endif %}
+                    </div>
+                </li>
+                {% if user.is_authenticated and user.puples.status != "APP" %}
+                    <li class="nav-item">
+                        <a class="nav-link{% block detail_active_task %}{% endblock %}" href="/task_day/">ЗАДАЧА ДНЯ</a>
+                    </li>
+                {% endif %}
+                {% if user.is_superuser %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#"
+                           id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            ПАНЕЛЬ АДМИНИСТРАТОРА
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/notifications">ОПОВЕЩЕНИЯ</a>
+                            <a class="dropdown-item" href="/summer_practice/admin">ЛЕТНЯЯ ПРАКТИКА</a>
+                            {% if applicants_count != 0 %}
+                                <a class="dropdown-item" href="/applicant_list">СПИСОК КАНДИДАТОВ</a>{% endif %}
+                            {% if events_new != 0 %}
+                                <a class="dropdown-item notification bg-info text-white mr-3
+                                        {% block detail_active_checklist %}{% endblock %}"
+                                   href="/check_list"><span>СПИСОК
+                            НА МОДЕРАЦИЮ</span>
+                                <span class="badge mr-3 mr-lg-0">{{ events_new }}</span>{% endif %}</a>
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                {% if user.is_authenticated %}
+                    <a class="nav-link text-dark disabled p-0"
+                       href="/account/">{{ user.last_name }} {{ user.first_name }}</a>
+                    <a href="/account/">
+                        <img class="img-fluid mx-3 rounded-circle shadow-lg"
+                             style="width: 50px; object-fit: cover; height:50px;"
+                             src="{{ user.puples.image.url }}"></a>
+                {% endif %}
+                {% if user.username == "" %}
+                    <a class="nav-link disabled" href="#">Гость</a>
+                    <a class="btn btn-outline-success my-2 my-sm-0" href="/login">Войти</a>
+                {% else %}
+                    <a class="btn btn-outline-danger my-2 my-sm-0" href="/logout">Выйти</a>
+                {% endif %}
+            </form>
+        </div>
+    </nav>
+    {% block main %}
+    {% endblock %}
+    <footer id="sticky-footer" class="py-4 bg-dark text-white-50 mt-5">
+        <div class="container text-center">
+            <small>ГБОУ школа № 1158. &copy; Все права защищены</small>
+        </div>
+    </footer>
+</div>
+<script src="{% static 'js/stupidtable.min.js' %}"></script>
+<script src="{% static 'js/table.js' %}"></script>
+<script src="{% static 'js/easyTable.js' %}"></script>
+</body>
+</html>

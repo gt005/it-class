@@ -1,0 +1,14 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container h-100">
+        <h2 class="text-left font-weight-light pt-3">Задача дня</h2>
+            <hr>
+            <h5 class="font-weight-light text-center">К сожалению, задача решена неверно.</h5>
+            <p class="font-weight-light text-center"> Количество верных решений: {{ score }}</p>
+            <a href="/task_day">
+                <button type="button" class="btn btn-success">Попробовать еще раз</button>
+            </a>
+    </div>
+{% endblock %}
+{% block detail_active_task %} active{% endblock %}

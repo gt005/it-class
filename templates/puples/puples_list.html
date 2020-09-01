@@ -1,0 +1,39 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    {% if user.username != "" %}
+        <table class="table table-sm text-center {% if user.is_superuser %}table-hover table-responsive-sm table-responsive-md{% endif %}">
+            <thead class="thead-dark">
+            <tr>
+                <th></th>
+                <th class="text-left py-3" data-sort="string">Фамилия</th>
+                <th class="text-left py-3" data-sort="string">Имя</th>
+                <th class="py-3" data-sort="int">Баллы</th>
+                {% if superusr %}
+                    <th class="py-3" data-sort="int">Телефон</th>
+                    <th class="py-3" data-sort="string">Статус</th>
+                {% endif %}
+            </tr>
+            </thead>
+            {% for puple in puples_list %}
+                {% if puple.status == user.puples.status or superusr %}
+                    <tr{% if superusr or pupil_pk == puple.pk %}
+                        onclick="window.location.href='/statistic/pupil/{{ puple.id }}'; return false" {% endif %}
+                            {% if pupil_pk == puple.pk %} class="table-warning" {% endif %}>
+{#                            {% if puple.surname == user.last_name %} class="table-warning" {% endif %}>#}
+                        <td><img src="{{ puple.image.url }}" alt="..." class="rounded-circle"
+                                 style="width: 75px; object-fit: cover; height:75px;"></td>
+                        <td class="text-left align-middle">{{ puple.surname }}</td>
+                        <td class="text-left align-middle">{{ puple.name }}</td>
+                        <td class="align-middle">{{ puple.rate }}</td>
+                        {% if superusr %}
+                            <td class="align-middle">{{ puple.phone }}<br>{{ puple.email }}</td>
+                            <td class="align-middle">{{ puple.get_status_display }}</td>
+                        {% endif %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}
+{% block detail_active %} active{% endblock %}
