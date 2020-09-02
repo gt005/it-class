@@ -101,6 +101,10 @@
                     <li class="nav-item">
                         <a class="nav-link{% block detail_active_task %}{% endblock %}" href="/task_day/">ЗАДАЧА ДНЯ</a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link{% block market_active %}{% endblock %}" href="/market">МАГАЗИН</a>
+                    </li>
                 {% endif %}
                 {% if user.is_superuser %}
                     <li class="nav-item dropdown">
@@ -120,6 +124,7 @@
                                    href="/check_list"><span>СПИСОК
                             НА МОДЕРАЦИЮ</span>
                                 <span class="badge mr-3 mr-lg-0">{{ events_new }}</span>{% endif %}</a>
+                            <a class="dropdown-item" href="/market/bought_product_list">КУПЛЕННЫЕ ТОВАРОВ</a>
                         </div>
                     </li>
                 {% endif %}

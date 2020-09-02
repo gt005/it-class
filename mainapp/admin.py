@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice, MarketProduct, BoughtProduct
+from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice
+from market.models import MarketProduct, BoughtProduct
 
 
 class EventsAdmin(admin.ModelAdmin):

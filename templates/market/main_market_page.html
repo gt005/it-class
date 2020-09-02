@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+    <style>
+        .product-card {
+            height: 100%;
+            border-radius: 10px;
+            -webkit-box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);
+            -moz-box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);
+            box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);
+        }
+
+        .product-card:hover, .product-card.disabled-card {
+            -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+            -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+            box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+        }
+
+        .product-card:hover img {
+            transform: scale(0.99);
+        }
+
+        .product-card.disabled-card {
+            opacity: 0.4;
+        }
+
+        .product-card img {
+            padding: 30px 0;
+            width: 90%;
+        }
+
+        .product-card__description {
+            padding: 30px;
+        }
+
+        .product-card__description__name {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .product-card__description p {
+            margin: 0;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="mt-4" style="font-size: 44px"><span class="font-weight-normal">Баланс:</span> <strong>{{ user.puples.rate }}</strong></h2>
+            </div>
+        </div>
+        <div class="row flex-wrap">
+            {% for product in marketproduct_list %}
+            <div class="col-12 col-md-6 col-lg-4 my-4">
+                <div class="product-card text-center justify-content-center {% if product.remained_amount == 0 or product.price > user.puples.rate %}disabled-card{% endif %}">
+                    <img src="{{ product.product_photo.url }}" alt="{{ product.product_name }}">
+                    <div class="product-card__description">
+                        <h3 class="product-card__description__name">{{ product.product_name }}</h3>
+                        <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Размер:</span> {{ product.product_size }}</p>
+                        <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Осталось:</span> {{ product.remained_amount }} шт.</p>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <p style="font-size: 18px;font-weight: bold;">{{ product.price }} {{ product.plural_amount_name }}</p>
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <button {% if product.remained_amount == 0 or user.puples.rate < product.price %}style="visibility: hidden;"{% endif %} class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 20px">
+                            Купить
+                        </button>
+                        <div class="dropdown-menu text-center">
+                            <p>Подтвердите</p>
+                            <input type="submit" class="btn btn-outline-success" name="submit" value="Купить">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block market_active %} active{% endblock %}

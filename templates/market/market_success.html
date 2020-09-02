@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<style>
+    .alert {
+        width: 90%;
+        text-align: center;
+        margin-top: 5%;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-8 offset-md-2 flex-column align-items-center">
+            {% if message != 'Success' %}
+                <div class="alert alert-danger" role="alert">
+                {{ message }}
+             {% else %}
+                <div class="alert alert-success" role="alert">
+                Товар успешно куплен!
+            {% endif %}
+            </div>
+            <a href="/market/"><- Назад в магазин</a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

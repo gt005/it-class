@@ -1,7 +1,8 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
 from .views import PostDetailView, AddEventView, WorksView, ApplicantListView
+
 
 urlpatterns = [
     path("", views.MainView.as_view()),
@@ -24,4 +25,6 @@ urlpatterns = [
     path("summer_practice/", views.SummerPracticeView.as_view(), name="summer_practice"),
     path("summer_practice/admin", views.SummerPracticeAdminView.as_view(), name="summer_practice_admin"),
     path("notifications/", views.NotificationsView.as_view(), name="summer_practice_admin"),
+
+    path("market/", include('market.urls')),
 ]
