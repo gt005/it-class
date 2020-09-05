@@ -1,0 +1,176 @@
+{% extends  'base.html' %}
+
+{% load static %}
+
+{% block main %}
+<style>
+    .product-list {
+        margin-bottom: 40px;
+        position: relative;
+        width: 90%;
+        left: 5%;
+    }
+
+    .product-list tr {
+        padding: 5px;
+        margin: 10px;
+        min-height: 65px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-radius: 10px;
+        box-shadow: 0 0 2px 0 rgba(0,0,0,.1), 0 2px 6px 0 rgba(0,0,0,.1);
+        -webkit-box-shadow: 0 0 2px 0 rgba(0,0,0,.1), 0 2px 6px 0 rgba(0,0,0,.1);
+    }
+
+    .active-products-list td,.active-products-list th {
+        width: 20%;
+        text-align: center;
+    }
+
+    .products-history td, .products-history th {
+        width: 33%;
+        text-align: center;
+    }
+
+    @media (max-width: 992px) {
+        .product-list {
+            width: 100%;
+            left: 0;
+        }
+
+        .active-products-list td:nth-child(1), .active-products-list th:nth-child(1) {
+            display: none;
+        }
+
+        .active-products-list td,.active-products-list th {
+            width: 25%;
+            flex-direction: column;
+        }
+
+        .product-check-list-operation-btn {
+            width: 100%;
+            margin: 5px 0 !important;
+        }
+
+        .product-check-list-operation-btn button {
+            width: 100px;
+            margin: 0;
+        }
+    }
+    
+    .dropdown-menu.show {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+</style>
+    <h1 style="margin-top: 20px;" class="text-center">
+        Активные заказы
+    </h1>
+
+    {% if not_given_product_list %}
+        <table class="product-list active-products-list p-0">
+            <thead class="text-center">
+                <tr style="box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);">
+                    <th scope="col">Фото</th>
+                    <th scope="col">Название товара</th>
+                    <th scope="col">Дата покупки</th>
+                    {% if request.user.is_superuser %}
+                        <th scope="col">Покупатель</th>
+                        <th scope="col">Подтвердить/Отменить заказ</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in not_given_product_list %}
+                    <tr>
+                        <td><img style="height: 70px;" src="{{ product.main_product.product_photo.url }}" alt="{{ product.main_product.product_name }}"></td>
+                        <td>{{ product.main_product }}</td>
+                        <td>{{ product.bought_date }}</td>
+                        {% if request.user.is_superuser %}
+                            <td>
+                                <a style="color: inherit;" href="/statistic/pupil/{{ product.customer.id }}">
+                                    {{ product.customer.surname }} {{ product.customer.name }}
+                                </a>
+                            </td>
+                            <td class="d-flex justify-content-center">
+                                <form class="product-check-list-operation-btn" method="post" style="margin-right: 5px">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="button" class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Выдать
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <p>Подтвердите</p>
+                                        <input type="submit" name="action-give" class="btn btn-outline-success" value="Выдать">
+                                    </div>
+                                </form>
+
+                                <form class="product-check-list-operation-btn" method="post" style="margin-left: 5px">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="button" class="btn btn-outline-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Отмена
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <p>Подтвердите</p>
+                                        <input type="submit" name="action-cancel" class="btn btn-outline-danger" value="Отмена">
+                                    </div>
+                                </form>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+    <h4 style="font-weight: 300;" class="text-center">
+        Нет активных заказов
+    </h4>
+    {% endif %}
+
+
+
+    <h1 class="text-center">
+        Выданные заказы
+    </h1>
+    {% if given_product_list %}
+        <table class="product-list products-history p-0">
+            <thead class="text-center">
+            <tr style="box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);">
+                <th scope="col">Название товара</th>
+                <th scope="col">Дата покупки</th>
+                <th scope="col">Дата выдачи</th>
+                {% if request.user.is_superuser %}
+                    <th scope="col">Покупатель</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in given_product_list %}
+                {% if product.customer.id == user.puples.id or request.user.is_superuser %}
+                    <tr>
+                        <td>{{ product.main_product }}</td>
+                        <td>{{ product.bought_date }}</td>
+                        <td>{{ product.given_date }}</td>
+                        {% if request.user.is_superuser %}
+                            <td>
+                                <a style="color: inherit;" href="/statistic/pupil/{{ product.customer.id }}">
+                                    {{ product.customer.surname }} {{ product.customer.name }}
+                                </a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h4 style="font-weight: 300;" class="text-center">
+            Нет выданных заказов
+        </h4>
+    {% endif %}
+
+{% endblock %}

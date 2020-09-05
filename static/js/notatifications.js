@@ -5,6 +5,14 @@ $(document).ready(function () {
         });
     }
 
+    let adminNotificationTableItem = document.querySelectorAll('#myTable');
+
+    for (let i = 0; i < adminNotificationTableItem.length; i++) {
+        adminNotificationTableItem[i].addEventListener('click', function () {
+            let checkbox = this.querySelector('tr td .form-check-input');
+            checkbox.checked = !checkbox.checked;
+        })
+    }
 
     $("#myTable tr").hide();
     $("#myInput").on("keyup", function () {
@@ -14,7 +22,7 @@ $(document).ready(function () {
         } else {
             $("#myTable tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                selection_row($(this))
+                // selection_row($(this))
             });
         }
     });
@@ -23,7 +31,7 @@ $(document).ready(function () {
         if (ch2) {
             event.preventDefault();
             $("#myTable tr").show("slow");
-            selection_row($("#myTable tr"))
+            // selection_row($("#myTable tr"))
             $("#AllButton").addClass("active");
             $("#class10").removeClass("active");
             ch2 = !ch2;
@@ -35,5 +43,4 @@ $(document).ready(function () {
             ch2 = !ch2;
         }
     });
-})
-;
+});

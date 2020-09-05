@@ -43,7 +43,7 @@
                 <table id="table" class="table table-sm text-center {% if user.is_superuser %}table-hover{% endif %}">
                     {% for puple in puples_list %}
                         {% if puple.email != "" %}
-                            <tbody id="myTable">
+                            <tbody id="myTable" style="cursor: pointer;">
                             <tr>
                                 <td><img src="{{ puple.image.url }}" alt="..." class="rounded-circle"
                                          style="width: 75px; object-fit: cover; height:75px;"></td>
@@ -56,9 +56,10 @@
                                     <label class="form-check-label" for="defaultCheck1">
                                     </label></td>
                             </tr>
+                            </tbody>
                         {% endif %}
                     {% endfor %}
-                    </tbody>
+
                 </table>
             </div>
             <button type="submit" class="btn btn-success mt-5">Отправить оповещение</button>

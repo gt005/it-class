@@ -11,35 +11,25 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from docxtpl import DocxTemplate
 
+from .addons_python.views_addons_classes import HeaderNotificationsCounter
 from .addons_python.notifications import send_mail_to_applicant, send_telegram
+from .addons_python.views_addons_functions import recount_all_peoples_rating
 from .forms import EventsForm, AddEventForm, ImgChangeForm, CollectData, Notifications
 from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice
 
 
-class MainView(ListView):
+class MainView(HeaderNotificationsCounter, ListView):
     puple = Puples
     queryset = Puples.objects.all()
     template_name = "main_page/main_page.html"
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
-        return context
 
-
-class HacatonView(ListView):
+class HacatonView(HeaderNotificationsCounter, ListView):
     model = Puples
     template_name = "hacaton.html"
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
-        return context
 
-
-class WrongTasksView(LoginRequiredMixin, ListView):
+class WrongTasksView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     model = DaysTask
     template_name = "task_day_wrong.html"
     raise_exception = True
@@ -47,12 +37,10 @@ class WrongTasksView(LoginRequiredMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['score'] = len([int(i) for i in DaysTask.objects.get().id_answers.split()])
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
         return context
 
 
-class TasksView(LoginRequiredMixin, ListView):
+class TasksView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     model = DaysTask
     template_name = "task_day.html"
     mass_rate = [5, 3]
@@ -76,8 +64,6 @@ class TasksView(LoginRequiredMixin, ListView):
         context['list_answ'] = [int(i) for i in DaysTask.objects.get().id_answers.split()]
         context['score'] = len([int(i) for i in DaysTask.objects.get().id_answers.split()])
         context['list_wins'] = self.get_list_solved_task(context['list_answ'])
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
         return context
 
     def post(self, request):
@@ -111,7 +97,7 @@ def verificationFileDownload(request):
         return HttpResponseNotFound()
 
 
-class PuplesView(LoginRequiredMixin, ListView):
+class PuplesView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     puple = Puples
     template_name = "puples/puples_list.html"
     queryset = Puples.objects.order_by("-rate")
@@ -123,21 +109,15 @@ class PuplesView(LoginRequiredMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        # mass = [i[0] for i in Puples.objects.order_by("-rate").values_list('id')]
-        # for i in mass:
-        #     pup = Puples.objects.get(id=i)
-        #     pup.rate = sum(map(lambda x: x.event_rate, Events.objects.filter(events__pk=i, check=True)))
-        #     pup.save()
+        recount_all_peoples_rating()
 
         context = super().get_context_data(**kwargs)
         context['superusr'] = self.request.user.is_superuser
         context['pupil_pk'] = self.request.user.puples.pk
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
         return context
 
 
-class ApplicantListView(LoginRequiredMixin, ListView):
+class ApplicantListView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     puple = Puples
     template_name = "applicant_list.html"
     queryset = Puples.objects.filter(status="APP").order_by('-applicant_first_result')
@@ -149,17 +129,11 @@ class ApplicantListView(LoginRequiredMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        mass = [i[0] for i in Puples.objects.order_by("-rate").values_list('id')]
-        for i in mass:
-            pup = Puples.objects.get(id=i)
-            pup.rate = sum(map(lambda x: x.event_rate, Events.objects.filter(events__pk=i, check=True)))
-            pup.save()
+        recount_all_peoples_rating()
 
         context = super().get_context_data(**kwargs)
         context['superusr'] = self.request.user.is_superuser
         context['pupil_pk'] = self.request.user.puples.pk
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
         context['app_without_interview'] = Puples.objects.filter(status="APP").count() - Puples.objects.filter(
             status="APP", applicant_progress="75").count()
         return context
@@ -170,7 +144,7 @@ def account(request):
     return redirect("/statistic/pupil/" + str(var))
 
 
-class ImgChangeView(LoginRequiredMixin, DetailView):
+class ImgChangeView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView):
     model = Puples
     pk_url_kwarg = "pk"
     template_name = "img_change.html"
@@ -179,8 +153,6 @@ class ImgChangeView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
         context['allevents'] = Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date')
         if Puples.objects.get(pk=self.kwargs["pk"]).status == "APP":
             context['app'] = ApplicantAction.objects.get(action_app=self.kwargs['pk'])
@@ -194,7 +166,6 @@ class ImgChangeView(LoginRequiredMixin, DetailView):
         return HttpResponseForbidden()
 
     def post(self, request, pk):
-        # raise IndexError
         puple = request.user.puples
         form = ImgChangeForm(request.POST, request.FILES, instance=puple)
         if form.is_valid():
@@ -203,7 +174,7 @@ class ImgChangeView(LoginRequiredMixin, DetailView):
         return redirect(reverse_lazy("img_change", kwargs={'pk': pk}))
 
 
-class PostDetailView(LoginRequiredMixin, DetailView):
+class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView):
     model = Puples
     pk_url_kwarg = "pk"
     template_name = "puple_detail/puples_detail_end.html"
@@ -230,8 +201,6 @@ class PostDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
         context['allevents'] = Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date')
         context['form'] = CollectData()
         if Puples.objects.get(pk=self.kwargs["pk"]).status == "APP":
@@ -243,7 +212,7 @@ class PostDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class AddEventView(LoginRequiredMixin, DetailView):
+class AddEventView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView):
     model = Puples
     pk_url_kwarg = "pk"
     template_name = "add_event/add_event.html"
@@ -254,8 +223,6 @@ class AddEventView(LoginRequiredMixin, DetailView):
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
         context['allevents'] = Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date')
         context['form'] = EventsForm()
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
         context['rate_event'] = sum(
             map(lambda x: x.event_rate, Events.objects.filter(events__pk=self.kwargs['pk'], check=True)))
         return context
@@ -267,7 +234,7 @@ class AddEventView(LoginRequiredMixin, DetailView):
 
     def post(self, request, pk):
         form = EventsForm(request.POST, request.FILES)
-        print(request.POST['date'], )
+        print(request.POST['date'],)
         if form.is_valid():
             form = form.save(commit=False)
             form.events_id = pk
@@ -276,7 +243,7 @@ class AddEventView(LoginRequiredMixin, DetailView):
         return redirect(reverse_lazy("add_event", kwargs={'pk': pk}))
 
 
-class CheckList(LoginRequiredMixin, ListView):
+class CheckList(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     model = Events
     queryset = Events.objects.filter(check=False)
     template_name = "CheckList/check_list.html"
@@ -299,14 +266,8 @@ class CheckList(LoginRequiredMixin, ListView):
             b.delete()
         return redirect("/check_list/")
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
-        return context
 
-
-class WorksView(LoginRequiredMixin, ListView):
+class WorksView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     queryset = Works.objects.all()
     template_name = "works/works.html"
     login_url = '/login/'
@@ -316,11 +277,6 @@ class WorksView(LoginRequiredMixin, ListView):
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
-        return context
 
 
 class IntensivView(LoginRequiredMixin, ListView):
@@ -358,7 +314,7 @@ class PhotoGalleryView(ListView):
         return HttpResponse("<h1 style='text-align: center; font-family: Helvetica, serif;'>Заявление отправлено</h1>")
 
 
-class SummerPracticeView(LoginRequiredMixin, ListView):
+class SummerPracticeView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     template_name = "summer_practice.html"
     queryset = SummerPractice.objects.all()
     login_url = '/login/'
@@ -379,8 +335,6 @@ class SummerPracticeView(LoginRequiredMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context["user_id"] = str("|*" + str(self.request.user.id) + "*|")
-        context['events_new'] = Events.objects.filter(check=False).count()
-        context['applicants_count'] = Puples.objects.filter(status="APP").count()
         context["all"] = " ".join([SummerPractice.objects.all()[i].id_registers for i in range(3)])
         context["all2"] = " ".join([SummerPractice.objects.all()[i].id_registers for i in range(3, 6)])
         return context

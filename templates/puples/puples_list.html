@@ -20,7 +20,6 @@
                     <tr{% if superusr or pupil_pk == puple.pk %}
                         onclick="window.location.href='/statistic/pupil/{{ puple.id }}'; return false" {% endif %}
                             {% if pupil_pk == puple.pk %} class="table-warning" {% endif %}>
-{#                            {% if puple.surname == user.last_name %} class="table-warning" {% endif %}>#}
                         <td><img src="{{ puple.image.url }}" alt="..." class="rounded-circle"
                                  style="width: 75px; object-fit: cover; height:75px;"></td>
                         <td class="text-left align-middle">{{ puple.surname }}</td>

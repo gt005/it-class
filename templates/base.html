@@ -102,10 +102,20 @@
                         <a class="nav-link{% block detail_active_task %}{% endblock %}" href="/task_day/">ЗАДАЧА ДНЯ</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link{% block market_active %}{% endblock %}" href="/market">МАГАЗИН</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link {% block market_active %}{% endblock %} dropdown-toggle" href="#"
+                           id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            МАГАЗИН
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/market">КАТАЛОГ ТОВАРОВ</a>
+                            <a class="dropdown-item" href="/shopping_cart">КОРЗИНА</a>
+                            <a class="dropdown-item" href="/market/bought_product_list">ЗАКАЗЫ</a>
+                        </div>
                     </li>
                 {% endif %}
+
                 {% if user.is_superuser %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#"
@@ -124,7 +134,6 @@
                                    href="/check_list"><span>СПИСОК
                             НА МОДЕРАЦИЮ</span>
                                 <span class="badge mr-3 mr-lg-0">{{ events_new }}</span>{% endif %}</a>
-                            <a class="dropdown-item" href="/market/bought_product_list">КУПЛЕННЫЕ ТОВАРОВ</a>
                         </div>
                     </li>
                 {% endif %}

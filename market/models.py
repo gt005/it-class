@@ -1,5 +1,5 @@
 from django.db import models
-from mainapp.models import Puples
+from mainapp.models import Puples, Events
 
 
 class MarketProduct(models.Model):
@@ -13,7 +13,7 @@ class MarketProduct(models.Model):
     price = models.PositiveIntegerField("Цена товара", null=False)
 
     def __str__(self):
-        return f"{self.product_name}\t-\t{self.product_size}\t-\t{self.product_color}"
+        return f"{self.product_name}\t-\tразмер {self.product_size}\t-\tцвет {self.product_color}"
 
     def plural_amount_name(self) -> str:
         """ Возвращает верное слово (Баллов/Балла/Балл) для правильного написания """
@@ -36,7 +36,9 @@ class BoughtProduct(models.Model):
 
     customer = models.ForeignKey(Puples, verbose_name="Покупатель товара", on_delete=models.SET_NULL, null=True)
     main_product = models.ForeignKey(MarketProduct, verbose_name="Ссылка на основной товар", on_delete=models.CASCADE)
+    connected_event = models.ForeignKey(Events, verbose_name="Ссылка на Event с этой покупкой", on_delete=models.CASCADE, default=None)
     bought_date = models.DateField("Дата покупки", auto_now_add=True)
+    given_date = models.DateField("Дата выдачи товара", null=True)
     given = models.BooleanField("Выдан ли товар покупателю", default=False)
 
     def __str__(self):
