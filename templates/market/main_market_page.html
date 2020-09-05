@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block main %}
-
+    <script src="https://kit.fontawesome.com/65f48fc481.js" crossorigin="anonymous"></script>
     <style>
         .product-card {
             height: 100%;
@@ -62,14 +62,17 @@
                         <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Цвет:</span> {{ product.product_color }}</p>
                         <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Осталось:</span> {{ product.remained_amount }} шт.</p>
                     </div>
-                    <form method="post">
-                        {% csrf_token %}
-                        <p style="font-size: 18px;font-weight: bold;">{{ product.price }} {{ product.plural_amount_name }}</p>
-                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                        <button data-product-id={{ product.id }}{% if product.remained_amount == 0 or user.puples.rate < product.price %}style="visibility: hidden;"{% endif %} class="btn btn-outline-success" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 20px">
-                            Добавить в корзину
+
+                    <p style="font-size: 18px;font-weight: bold;">{{ product.price }} {{ product.plural_amount_name }}</p>
+
+                        <button data-product-id="{{ product.id }}" {% if product.remained_amount == 0 or user.puples.rate < product.price %}style="visibility: hidden;"{% endif %} onclick="addToCart(this)" class="btn btn-outline-success" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 20px">
+                           {% if product.id in products_in_cart %}
+                               <i class="fas fa-check"></i> В корзине
+                           {% else %}
+                            В корзину
+                           {% endif %}
                         </button>
-                    </form>
+
                 </div>
             </div>
             {% empty %}
@@ -80,6 +83,61 @@
         </div>
     </div>
 
+    <script>
+    let CookieManager = {
+        set: function (name, value, days) {
+             let expires = "";
+              if (days) {
+                  let d = new Date();
+                  d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                  expires = "; expires=" + d.toGMTString();
+              }
+              document.cookie = name + "=" + value + expires + ";";
+              return this.get(name);
+        },
+        get: function (name) {
+              name += "=";
+              let b = document.cookie.split(';'), c;
+              for (var i = 0; i < b.length; i++) {
+                  c = b[i].replace(/(^\s+)|(\s+$)/g, "");
+                  while (c.charAt(0) == ' ')
+                       c = c.substring(1, c.length);
+                  if (c.indexOf(name) == 0)
+                       return c.substring(name.length, c.length);
+              }
+              return null;
+        },
+        remove: function (name) {
+              this.set(name, "", -1);
+        }
+    };
+
+
+    function addToCart (btn) {
+        let productsInCart = CookieManager.get('products');
+
+        if (productsInCart == '' || productsInCart == null) {
+            CookieManager.set('products', '|' + btn.dataset.productId + '|');
+            btn.innerHTML = '<i class="fas fa-check"></i> В корзине';
+        }
+        else if (productsInCart.indexOf(('|' + btn.dataset.productId + '|')) == -1) {
+            CookieManager.set('products', productsInCart + btn.dataset.productId + '|');
+            btn.innerHTML = '<i class="fas fa-check"></i> В корзине';
+        }
+        else {
+            let productsInCartList = productsInCart.split('|');
+            productsInCartList = productsInCartList.slice(1, productsInCartList.length - 1);
+
+            productsInCartList = productsInCartList.slice(0, productsInCartList.indexOf(btn.dataset.productId)).concat(productsInCartList.slice(productsInCartList.indexOf(btn.dataset.productId) + 1, productsInCartList.length));
+
+            CookieManager.set('products', ('|' + productsInCartList.join('|') + '|'));
+
+            btn.innerHTML = 'В корзину';
+        }
+
+
+    }
+    </script>
 {% endblock %}
 
 {% block market_active %} active{% endblock %}

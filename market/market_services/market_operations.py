@@ -75,3 +75,17 @@ def cancel_given_product_to_customer(product_to_cancel_id: int, request) -> None
     product_to_cancel.customer.save()
     product_to_cancel.connected_event.delete()
     product_to_cancel.delete()
+
+
+def refactor_shopping_cart_elements_string_to_list(request) -> list:
+    """
+    Преобразует куки корзины товаров из формата |2|3|4| в список чисел.
+    Если куки пустой, то вернет пустой список.
+    """
+    added_products = request.COOKIES.get("products")
+    if added_products:
+        return []
+
+    added_products = added_products.split('|')[1:-1]  # Используется срез, так как первый и последний символ получается пустая строка
+    added_products = list(map(int, added_products))
+    return added_products

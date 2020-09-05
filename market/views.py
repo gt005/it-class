@@ -1,8 +1,8 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from mainapp.addons_python.views_addons_functions import recount_all_peoples_rating
+from mainapp.addons_python.views_addons_functions import *
 from mainapp.addons_python.views_addons_classes import HeaderNotificationsCounter
 
 from .market_services.market_operations import *
@@ -18,6 +18,17 @@ class MainMarketPage(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     def dispatch(self, request, *args, **kwargs):
         recount_all_peoples_rating()
         return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, **kwargs):
+        marketproduct_list = self.model.objects.all()
+
+        response = render(request, self.template_name, {
+            'marketproduct_list': marketproduct_list,
+            'products_in_cart': refactor_shopping_cart_elements_string_to_list(request)
+        })
+        print(products_in_cart)
+        response.delete_cookie('products')
+        return response
 
     def post(self, request):
         buying_result = buying_product_from_market(
@@ -67,3 +78,14 @@ class MarketOperations(HeaderNotificationsCounter, TemplateView):
         context["message"] = self.request.GET.get("message")
         return context
 
+
+class ShoppingCart(HeaderNotificationsCounter, TemplateView):
+    template_name = "market/shopping_cart.html"
+
+    # TODO: Преобразить cookie, добавив количество элементов, исправить на ListView
+    # TODO: подумать как делать уведомления в корзине(типа закончился товар или не хватает денег) (использовать json, а уведомления - bootstrap)
+
+    def get_context_data(self, request, **kwargs):
+        context = super(ShoppingCart, self).get_context_data(**kwargs)
+        context["shopping_cart_items"] = refactor_shopping_cart_elements_string_to_list(request)
+        return context
