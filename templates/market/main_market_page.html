@@ -42,6 +42,10 @@
         .product-card__description p {
             margin: 0;
         }
+
+        .product-card .btn:hover .spinner-grow {
+            color: #fff !important;
+        }
     </style>
 
     <div class="container">
@@ -65,8 +69,8 @@
 
                     <p style="font-size: 18px;font-weight: bold;">{{ product.price }} {{ product.plural_amount_name }}</p>
 
-                        <button data-product-id="{{ product.id }}" {% if product.remained_amount == 0 or user.puples.rate < product.price %}style="visibility: hidden;"{% endif %} onclick="addToCart(this)" class="btn btn-outline-success" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 20px">
-                           {% if product.id in products_in_cart %}
+                        <button data-product-id="{{ product.id }}" {% if product.remained_amount == 0 or user.puples.rate < product.price %}style="visibility: hidden;"{% endif %} onclick="addToCart(this)" class="btn btn-outline-success {% if product in shopping_cart_list %}added-to-card-btn{% endif %}" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 20px">
+                           {% if product in shopping_cart_list %}
                                <i class="fas fa-check"></i> В корзине
                            {% else %}
                             В корзину
@@ -81,6 +85,26 @@
                 </div>
             {% endfor %}
         </div>
+    </div>
+
+    <div class="modal fade" id="mainMessageWarning" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Ошибка</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="mainMessageWarning-text">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -113,29 +137,47 @@
     };
 
 
-    function addToCart (btn) {
-        let productsInCart = CookieManager.get('products');
+    function sendShoppingCartOperation(url) {
+        let request = new XMLHttpRequest();
+        request.open('GET', url);
+        request.responseType = 'json';
+        request.send();
+        return request
+    }
 
-        if (productsInCart == '' || productsInCart == null) {
-            CookieManager.set('products', '|' + btn.dataset.productId + '|');
-            btn.innerHTML = '<i class="fas fa-check"></i> В корзине';
-        }
-        else if (productsInCart.indexOf(('|' + btn.dataset.productId + '|')) == -1) {
-            CookieManager.set('products', productsInCart + btn.dataset.productId + '|');
-            btn.innerHTML = '<i class="fas fa-check"></i> В корзине';
+    function addToCart (btn) {
+
+        if (btn.classList.contains("added-to-card-btn")) {
+            btn.innerHTML = 'Удаляется <div class="spinner-grow text-success" style="height: 1em;width: 1em;" role="status"></div>'
+            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?remove_product=' + btn.dataset.productId);
+            request.onload = function () {
+                if (request.response.message != "success") {
+                    document.querySelector("#mainMessageWarning-text").textContent = request.response.success;
+                    $('#mainMessageWarning').modal('show');
+                    btn.innerHTML = '<i class="fas fa-check"></i> В корзине';
+                }
+                else {
+                    btn.innerHTML = 'В корзину';
+                    btn.classList.remove("added-to-card-btn");
+                }
+
+            }
         }
         else {
-            let productsInCartList = productsInCart.split('|');
-            productsInCartList = productsInCartList.slice(1, productsInCartList.length - 1);
-
-            productsInCartList = productsInCartList.slice(0, productsInCartList.indexOf(btn.dataset.productId)).concat(productsInCartList.slice(productsInCartList.indexOf(btn.dataset.productId) + 1, productsInCartList.length));
-
-            CookieManager.set('products', ('|' + productsInCartList.join('|') + '|'));
-
-            btn.innerHTML = 'В корзину';
+            btn.innerHTML = 'Добавляется <div class="spinner-grow text-success" style="height: 1em;width: 1em;" role="status"></div>'
+            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?add_product=' + btn.dataset.productId);
+            request.onload = function () {
+                if (request.response.message != "success") {
+                    document.querySelector("#mainMessageWarning-text").textContent = request.response.success;
+                    $('#mainMessageWarning').modal('show');
+                    btn.innerHTML = 'В корзину';
+                }
+                else {
+                    btn.innerHTML = '<i class="fas fa-check"></i> В корзине';
+                    btn.classList.add("added-to-card-btn");
+                }
+            };
         }
-
-
     }
     </script>
 {% endblock %}

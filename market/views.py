@@ -1,11 +1,14 @@
+import json
 from django.shortcuts import redirect, render
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 
 from mainapp.addons_python.views_addons_functions import *
 from mainapp.addons_python.views_addons_classes import HeaderNotificationsCounter
 
 from .market_services.market_operations import *
+from .market_services.market_classes import ShoppingCart
 from .models import MarketProduct, BoughtProduct
 
 
@@ -19,22 +22,10 @@ class MainMarketPage(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
         recount_all_peoples_rating()
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, **kwargs):
-        marketproduct_list = self.model.objects.all()
-
-        response = render(request, self.template_name, {
-            'marketproduct_list': marketproduct_list,
-            'products_in_cart': refactor_shopping_cart_elements_string_to_list(request)
-        })
-        print(products_in_cart)
-        response.delete_cookie('products')
-        return response
-
-    def post(self, request):
-        buying_result = buying_product_from_market(
-            product_id_for_buy=request.POST.get('product_id'),
-            request=request)
-        return redirect(f"/market/market_success/?message={buying_result}")
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(MainMarketPage, self).get_context_data(**kwargs)
+        context['shopping_cart_list'] = ShoppingCart(self.request).get_shopping_cart_list()
+        return context
 
 
 class BoughtProductList(HeaderNotificationsCounter, ListView):
@@ -79,13 +70,22 @@ class MarketOperations(HeaderNotificationsCounter, TemplateView):
         return context
 
 
-class ShoppingCart(HeaderNotificationsCounter, TemplateView):
+class ShoppingCartView(HeaderNotificationsCounter, TemplateView):
     template_name = "market/shopping_cart.html"
 
-    # TODO: Преобразить cookie, добавив количество элементов, исправить на ListView
-    # TODO: подумать как делать уведомления в корзине(типа закончился товар или не хватает денег) (использовать json, а уведомления - bootstrap)
-
-    def get_context_data(self, request, **kwargs):
-        context = super(ShoppingCart, self).get_context_data(**kwargs)
-        context["shopping_cart_items"] = refactor_shopping_cart_elements_string_to_list(request)
+    def get_context_data(self, *args, **kwargs):
+        context = super(ShoppingCartView, self).get_context_data(**kwargs)
+        context["shopping_cart_items"] = ShoppingCart(request=self.request)
         return context
+
+
+class ShoppingCartOperations(LoginRequiredMixin, View):
+    def get(self, request):
+        cart = ShoppingCart(request)
+
+        if "add_product" in request.GET:
+            msg = cart.add(request.GET["add_product"])
+        elif "remove_product" in request.GET:
+            msg = cart.remove(request.GET["remove_product"])
+
+        return JsonResponse({'message': msg})

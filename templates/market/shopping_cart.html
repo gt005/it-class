@@ -66,111 +66,60 @@
     }
 
 </style>
-    <h1 style="margin-top: 20px;" class="text-center">
-        Активные заказы
-    </h1>
+    <h2 style="font-size: 40px;margin-top: 20px;" class="text-center">
+        Корзина
+    </h2>
 
-    {% if not_given_product_list %}
+    {% if shopping_cart_items %}
         <table class="product-list active-products-list p-0">
             <thead class="text-center">
                 <tr style="box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);">
                     <th scope="col">Фото</th>
                     <th scope="col">Название товара</th>
-                    <th scope="col">Дата покупки</th>
-                    {% if request.user.is_superuser %}
-                        <th scope="col">Покупатель</th>
-                        <th scope="col">Подтвердить/Отменить заказ</th>
-                    {% endif %}
+                    <th scope="col">Количество</th>
+                    <th scope="col">Цена за штуку</th>
+                    <th scope="col">Стоимость</th>
                 </tr>
             </thead>
             <tbody>
-                {% for product in not_given_product_list %}
+                {% for product in shopping_cart_items %}
                     <tr>
-                        <td><img style="height: 70px;" src="{{ product.main_product.product_photo.url }}" alt="{{ product.main_product.product_name }}"></td>
-                        <td>{{ product.main_product }}</td>
-                        <td>{{ product.bought_date }}</td>
-                        {% if request.user.is_superuser %}
-                            <td>
-                                <a style="color: inherit;" href="/statistic/pupil/{{ product.customer.id }}">
-                                    {{ product.customer.surname }} {{ product.customer.name }}
-                                </a>
-                            </td>
-                            <td class="d-flex justify-content-center">
-                                <form class="product-check-list-operation-btn" method="post" style="margin-right: 5px">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                                    <button type="button" class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Выдать
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <p>Подтвердите</p>
-                                        <input type="submit" name="action-give" class="btn btn-outline-success" value="Выдать">
-                                    </div>
-                                </form>
-
-                                <form class="product-check-list-operation-btn" method="post" style="margin-left: 5px">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                                    <button type="button" class="btn btn-outline-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Отмена
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <p>Подтвердите</p>
-                                        <input type="submit" name="action-cancel" class="btn btn-outline-danger" value="Отмена">
-                                    </div>
-                                </form>
-                            </td>
-                        {% endif %}
+                        <td><img style="height: 70px;" src="{{ product.product.product_photo.url }}" alt="{{ product.product_name }}"></td>
+                        <td>{{ product.product }}</td>
+                        <td class="product-amount-btns">
+                            <input type="button" class="amount-decrement" value="-">
+                            <input type="number" min="0" value="{{ product.amount }}">
+                            <input type="button" class="amount-increment" value="+">
+                        </td>
+                        <td>{{ product.product.price }} {{ product.product.plural_amount_name }}</td>
+                        <td data-price-for-one-product="{{ product.price }}" class="total-price-label">{% widthratio product.product.price 1 product.amount %} {{ product.product.plural_amount_name }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
     <h4 style="font-weight: 300;" class="text-center">
-        Нет активных заказов
+        Корзина пуста
     </h4>
     {% endif %}
 
+    <script>
+        let shoppingCartRow = document.querySelectorAll("tbody tr");
 
+        for (let i = 0; i < shoppingCartRow.length; i++) {
+            let amountButtons = shoppingCartRow[i].querySelector(".product-amount-btns"),
+                totalPriceLabel = shoppingCartRow[i].querySelector(".total-price-label");
 
-    <h1 class="text-center">
-        Выданные заказы
-    </h1>
-    {% if given_product_list %}
-        <table class="product-list products-history p-0">
-            <thead class="text-center">
-            <tr style="box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);">
-                <th scope="col">Название товара</th>
-                <th scope="col">Дата покупки</th>
-                <th scope="col">Дата выдачи</th>
-                {% if request.user.is_superuser %}
-                    <th scope="col">Покупатель</th>
-                {% endif %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for product in given_product_list %}
-                {% if product.customer.id == user.puples.id or request.user.is_superuser %}
-                    <tr>
-                        <td>{{ product.main_product }}</td>
-                        <td>{{ product.bought_date }}</td>
-                        <td>{{ product.given_date }}</td>
-                        {% if request.user.is_superuser %}
-                            <td>
-                                <a style="color: inherit;" href="/statistic/pupil/{{ product.customer.id }}">
-                                    {{ product.customer.surname }} {{ product.customer.name }}
-                                </a>
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endif %}
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <h4 style="font-weight: 300;" class="text-center">
-            Нет выданных заказов
-        </h4>
-    {% endif %}
+            amountButtons.querySelector("input[type='number']").oncha
+
+            amountButtons.querySelector(".amount-decrement").onclick = function () {
+
+            }
+
+        }
+
+        document.querySelectorAll(".total-price-label");
+
+    </script>
 
 {% endblock %}

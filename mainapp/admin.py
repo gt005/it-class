@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice
-from market.models import MarketProduct, BoughtProduct
 
 
 class EventsAdmin(admin.ModelAdmin):
@@ -51,22 +50,9 @@ class PuplesAdmin(admin.ModelAdmin):
     change_class_10.allowed_permissions = ("change",)
 
 
-class MarketProductAdmin(admin.ModelAdmin):
-    list_display = ("product_name", "product_size", "product_color", "price", "remained_amount")
-    search_fields = ("product_name", )
-
-
-class BoughtProductAdmin(admin.ModelAdmin):
-    list_display = ("main_product", "customer", "bought_date", "given")
-    search_fields = ("main_product", "customer")
-    list_filter = ("given", )
-
-
 admin.site.register(Puples, PuplesAdmin)
 admin.site.register(SummerPractice)
 admin.site.register(Events, EventsAdmin)
 admin.site.register(Works, WorksAdmin)
 admin.site.register(DaysTask)
 admin.site.register(ApplicantAction, ApplicantActionAdmin)
-admin.site.register(MarketProduct, MarketProductAdmin)
-admin.site.register(BoughtProduct, BoughtProductAdmin)
