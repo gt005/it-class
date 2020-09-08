@@ -279,18 +279,18 @@ class WorksView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
 
 
 
-class IntensivView(LoginRequiredMixin, ListView):
+class IntensivView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     queryset = Works.objects.all()
     template_name = "intensiv.html"
     raise_exception = True
 
 
-class ApplicantView(ListView):
+class ApplicantView(HeaderNotificationsCounter, ListView):
     template_name = "applicant.html"
     queryset = Events.objects.all()
 
 
-class PhotoGalleryView(ListView):
+class PhotoGalleryView(HeaderNotificationsCounter, ListView):
     template_name = "photo_gallery.html"
     queryset = Events.objects.all()
 
@@ -340,7 +340,7 @@ class SummerPracticeView(HeaderNotificationsCounter, LoginRequiredMixin, ListVie
         return context
 
 
-class SummerPracticeAdminView(LoginRequiredMixin, ListView):
+class SummerPracticeAdminView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     template_name = "summer_practice_admin.html"
     queryset = SummerPractice.objects.all()
     login_url = '/login/'
@@ -360,7 +360,7 @@ class SummerPracticeAdminView(LoginRequiredMixin, ListView):
         return context
 
 
-class NotificationsView(LoginRequiredMixin, ListView):
+class NotificationsView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     template_name = "notifications.html"
     queryset = Puples.objects.all()
     login_url = '/login/'
@@ -368,6 +368,7 @@ class NotificationsView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["status_choices"] = {people.get_status_display() for people in self.queryset}
         return context
 
     def post(self, request):

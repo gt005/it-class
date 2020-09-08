@@ -30,6 +30,13 @@ $(document).ready(function () {
             });
         }
     });
+
+    $("notifications-filter-btn").on('click', function () {
+        for (let i = 0; i < adminNotificationTableItem.length; i++) {
+            if (adminNotificationTableItem.querySelector('tr status-label'))
+        }
+    });
+
     var ch2 = true;
     $("#AllButton").on('click', function (event) {
         if (ch2) {

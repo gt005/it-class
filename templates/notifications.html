@@ -34,8 +34,9 @@
                 <div class="col">
                     <input type="text" class="form-control" id="myInput">
                     <button id="AllButton" class="btn btn-outline-secondary btn-sm mt-2">Все</button>
-                    <button id="AllButton" class="btn btn-outline-secondary btn-sm mt-2">У</button>
-                    <button id="AllButton" class="btn btn-outline-secondary btn-sm mt-2">Все</button>
+                    {% for status in status_choices %}
+                            <button data-status-name="{{ status }}" class="btn btn-outline-secondary btn-sm mt-2 notifications-filter-btn">{{ status }}</button>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -49,7 +50,7 @@
                                          style="width: 75px; object-fit: cover; height:75px;"></td>
                                 <td class="text-left align-middle">{{ puple.surname }}</td>
                                 <td class="text-left align-middle">{{ puple.name }}</td>
-                                <td class="align-middle">{{ puple.get_status_display }}</td>
+                                <td class="align-middle status-label">{{ puple.get_status_display }}</td>
                                 <td class="align-middle" style="display: none">
                                     <input class="form-check-input" type="checkbox"
                                                                 name="checkbox_puple" value="{{ puple.user.id }}"
