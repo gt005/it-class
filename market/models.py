@@ -17,7 +17,7 @@ class MarketProduct(models.Model):
 
     def plural_amount_name(self) -> str:
         """ Возвращает верное слово (Баллов/Балла/Балл) для правильного написания """
-        if 10 <= self.price <= 20 or self.price % 10 == 0 or 5 <= self.price % 10 <= 9:
+        if 10 <= (self.price % 100) <= 20 or self.price % 10 == 0 or 5 <= self.price % 10 <= 9:
             return "Баллов"
         elif self.price % 10 == 1:
             return "Балл"

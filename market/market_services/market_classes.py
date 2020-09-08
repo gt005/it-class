@@ -28,6 +28,11 @@ class ShoppingCart(object):
                 "amount": self.shopping_cart[product]["amount"]
             }
 
+    def len(self):
+        """ Количество элементов в корзине """
+        self.delete_missing_products()
+        return len(self.shopping_cart)
+
     def get_shopping_cart_list(self) -> list:
         """ Возвращает список объектов продуктов из корины """
         self.delete_missing_products()

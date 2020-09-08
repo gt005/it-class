@@ -1,8 +1,7 @@
 $(document).ready(function () {
-    function selection_row(odj) {
-        odj.on("click", function () {
-            $(this).find('input[type=checkbox]').trigger('click');
-        });
+    let allCheckboxes = document.querySelectorAll("input[type='checkbox']");
+    for (let i = 0; i < allCheckboxes.length; i++) {  // Обнуление всех чекбоксов
+        allCheckboxes[i].checked = false;
     }
 
     let adminNotificationTableItem = document.querySelectorAll('#myTable');
@@ -11,8 +10,14 @@ $(document).ready(function () {
         adminNotificationTableItem[i].addEventListener('click', function () {
             let checkbox = this.querySelector('tr td .form-check-input');
             checkbox.checked = !checkbox.checked;
+            if (checkbox.checked) {
+                adminNotificationTableItem[i].style.background = "rgba(31,231,65,0.1)";
+            } else {
+                adminNotificationTableItem[i].style.background = "transparent"
+            }
         })
     }
+
 
     $("#myTable tr").hide();
     $("#myInput").on("keyup", function () {
@@ -22,7 +27,6 @@ $(document).ready(function () {
         } else {
             $("#myTable tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                // selection_row($(this))
             });
         }
     });
@@ -31,14 +35,20 @@ $(document).ready(function () {
         if (ch2) {
             event.preventDefault();
             $("#myTable tr").show("slow");
-            // selection_row($("#myTable tr"))
             $("#AllButton").addClass("active");
             $("#class10").removeClass("active");
             ch2 = !ch2;
 
         } else {
             event.preventDefault();
-            $("#myTable tr").hide("slow");
+
+            $.each($("#myTable tr"), function (index, value) {
+                if (!(value.querySelector("td .form-check-input").checked)) {
+                    $(value).hide("slow");
+                }
+            });
+
+            // $("#myTable tr").hide("slow");
             $("#AllButton").removeClass("active");
             ch2 = !ch2;
         }

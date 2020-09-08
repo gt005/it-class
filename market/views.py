@@ -28,10 +28,11 @@ class MainMarketPage(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
         return context
 
 
-class BoughtProductList(HeaderNotificationsCounter, ListView):
+class BoughtProductList(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     """ Страница с промотром заказов и уже купленных товаров. Войти может только admin """
     template_name = "market/product_check_list.html"
     model = BoughtProduct
+    login_url = "/login/"
 
     def post(self, request):
         if not request.user.is_superuser:
@@ -61,8 +62,9 @@ class BoughtProductList(HeaderNotificationsCounter, ListView):
         return context
 
 
-class MarketOperations(HeaderNotificationsCounter, TemplateView):
+class MarketOperations(HeaderNotificationsCounter, LoginRequiredMixin, TemplateView):
     template_name = "market/market_success.html"
+    login_url = "/login/"
 
     def get_context_data(self, *args, **kwargs):
         context = super(MarketOperations, self).get_context_data(*args, **kwargs)
@@ -70,8 +72,9 @@ class MarketOperations(HeaderNotificationsCounter, TemplateView):
         return context
 
 
-class ShoppingCartView(HeaderNotificationsCounter, TemplateView):
+class ShoppingCartView(HeaderNotificationsCounter, LoginRequiredMixin, TemplateView):
     template_name = "market/shopping_cart.html"
+    login_url = "/login/"
 
     def get_context_data(self, *args, **kwargs):
         context = super(ShoppingCartView, self).get_context_data(**kwargs)
@@ -79,7 +82,7 @@ class ShoppingCartView(HeaderNotificationsCounter, TemplateView):
         return context
 
 
-class ShoppingCartOperations(LoginRequiredMixin, View):
+class ShoppingCartOperations(View):
     def get(self, request):
         cart = ShoppingCart(request)
 
@@ -87,5 +90,7 @@ class ShoppingCartOperations(LoginRequiredMixin, View):
             msg = cart.add(request.GET["add_product"])
         elif "remove_product" in request.GET:
             msg = cart.remove(request.GET["remove_product"])
+        elif "update_product" in request.GET:
+            msg = cart.add(request.GET["update_product"], request.GET["amount"])
 
         return JsonResponse({'message': msg})

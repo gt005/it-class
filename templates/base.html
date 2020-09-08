@@ -68,9 +68,6 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link{% block main_active %}{% endblock %}" href="/">ГЛАВНАЯ<span class="sr-only">(current)</span></a>
-                </li>
                 {% if user.is_authenticated and user.puples.status != "APP" %}
                     <li class="nav-item">
                         <a class="nav-link{% block detail_active %}{% endblock %}" href="/rate">РЕЙТИНГ УЧАСТНИКОВ</a>

@@ -34,8 +34,8 @@
                 <div class="col">
                     <input type="text" class="form-control" id="myInput">
                     <button id="AllButton" class="btn btn-outline-secondary btn-sm mt-2">Все</button>
-                    {#                    <button id="class10" class="btn btn-outline-secondary btn-sm mt-2">Ученики 10 класса</button>#}
-                    {#                    <button type="submit" class="btn btn-outline-secondary btn-sm mt-2">Ученики 11 класса</button>#}
+                    <button id="AllButton" class="btn btn-outline-secondary btn-sm mt-2">У</button>
+                    <button id="AllButton" class="btn btn-outline-secondary btn-sm mt-2">Все</button>
                 </div>
             </div>
 
@@ -43,14 +43,15 @@
                 <table id="table" class="table table-sm text-center {% if user.is_superuser %}table-hover{% endif %}">
                     {% for puple in puples_list %}
                         {% if puple.email != "" %}
-                            <tbody id="myTable" style="cursor: pointer;">
+                            <tbody id="myTable" style="cursor: pointer;transition: 0.2s">
                             <tr>
                                 <td><img src="{{ puple.image.url }}" alt="..." class="rounded-circle"
                                          style="width: 75px; object-fit: cover; height:75px;"></td>
                                 <td class="text-left align-middle">{{ puple.surname }}</td>
                                 <td class="text-left align-middle">{{ puple.name }}</td>
                                 <td class="align-middle">{{ puple.get_status_display }}</td>
-                                <td class="align-middle"><input class="form-check-input" type="checkbox"
+                                <td class="align-middle" style="display: none">
+                                    <input class="form-check-input" type="checkbox"
                                                                 name="checkbox_puple" value="{{ puple.user.id }}"
                                                                 id="checkbox_puple">
                                     <label class="form-check-label" for="defaultCheck1">
