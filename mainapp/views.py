@@ -368,7 +368,7 @@ class NotificationsView(HeaderNotificationsCounter, LoginRequiredMixin, ListView
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["status_choices"] = {people.get_status_display() for people in self.queryset}
+        context["status_choices"] = sorted(list({people.get_status_display() for people in self.queryset}))
         return context
 
     def post(self, request):

@@ -103,7 +103,6 @@
                 <tbody>
                     {% for product in shopping_cart_items %}
                         <tr>
-                        {{ product.amount }}
                             <td><img style="height: 70px;" src="{{ product.product.product_photo.url }}" alt="{{ product.product_name }}"></td>
                             <td>{{ product.product }}</td>
                             <td class="product-amount-btns">
@@ -117,6 +116,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center">
+                    <button type="button" class="btn btn-outline-success">Оформить заказ</button>
+                </div>
+            </div>
         {% else %}
         <h4 style="font-weight: 300;" class="text-center">
             Корзина пуста
@@ -127,8 +131,37 @@
 
     <script>
 
+    let CookieManager = {
+        set: function (name, value, days) {
+             let expires = "";
+              if (days) {
+                  let d = new Date();
+                  d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                  expires = "; expires=" + d.toGMTString();
+              }
+              document.cookie = name + "=" + value + expires + ";";
+              return this.get(name);
+        },
+        get: function (name) {
+              name += "=";
+              let b = document.cookie.split(';'), c;
+              for (var i = 0; i < b.length; i++) {
+                  c = b[i].replace(/(^\s+)|(\s+$)/g, "");
+                  while (c.charAt(0) == ' ')
+                       c = c.substring(1, c.length);
+                  if (c.indexOf(name) == 0)
+                       return c.substring(name.length, c.length);
+              }
+              return null;
+        },
+        remove: function (name) {
+              this.set(name, "", -1);
+        }
+    };
+
     function sendShoppingCartOperation(url) {
         let request = new XMLHttpRequest();
+        url += ("&token=" + CookieManager.get("csrftoken"));
         request.open('GET', url);
         request.responseType = 'json';
         request.send();
@@ -176,7 +209,7 @@
                 }
             }
             else {
-                let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInput.value - 1));
+                let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInput.valueAsNumber - 1));
                 request.onload = function () {
                     if (request.response.message == "success") {
                         amountNumberInput.value--;
@@ -188,7 +221,7 @@
         }
 
         amountButtons.querySelector(".amount-increment").onclick = function () {
-            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInput.value + 1));
+            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInput.valueAsNumber + 1));
             request.onload = function () {
                 if (request.response.message == "success") {
                      amountNumberInput.value++;

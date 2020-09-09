@@ -31,14 +31,14 @@ ALLOWED_HOSTS = ['127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'mainapp',
-    'market',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'mainapp',
+    'market',
     'crispy_forms',
     'bootstrap4',
     'tinymce',
@@ -57,11 +57,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'itclass.urls'
 
-EMAIL_HOST = 'mail.it-class1158.site'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "admin@it-class1158.site"
-EMAIL_HOST_PASSWORD = "wsx123451"
-EMAIL_USE_SSL = True
+# EMAIL_HOST = 'mail.it-class1158.site'
+# EMAIL_PORT = 465
+# EMAIL_HOST_USER = "admin@it-class1158.site"
+# EMAIL_HOST_PASSWORD = "wsx123451"
+# EMAIL_USE_SSL = True
 
 TEMPLATES = [
     {

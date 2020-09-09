@@ -1,7 +1,7 @@
 import json
-from django.shortcuts import redirect, render
 from django.views.generic import ListView, TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect, render
 from django.http import JsonResponse
 
 from mainapp.addons_python.views_addons_functions import *
@@ -83,7 +83,11 @@ class ShoppingCartView(HeaderNotificationsCounter, LoginRequiredMixin, TemplateV
 
 
 class ShoppingCartOperations(View):
+
     def get(self, request):
+        if (request.COOKIES.get("csrftoken") != request.GET.get("token")):
+            return JsonResponse({'message': "Wrong Token!"})
+
         cart = ShoppingCart(request)
 
         if "add_product" in request.GET:

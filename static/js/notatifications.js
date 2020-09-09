@@ -31,10 +31,28 @@ $(document).ready(function () {
         }
     });
 
-    $("notifications-filter-btn").on('click', function () {
+    $(".notifications-filter-btn").on('click', function (event) {
+        event.preventDefault();
+
         for (let i = 0; i < adminNotificationTableItem.length; i++) {
-            if (adminNotificationTableItem.querySelector('tr status-label'))
+            let statusLabel = adminNotificationTableItem[i].querySelector('tr .status-label');
+
+            if (statusLabel.textContent == this.dataset.statusName) {
+                let checkbox = adminNotificationTableItem[i].querySelector('tr td .form-check-input');
+                if (this.classList.contains("active")) {
+                    checkbox.checked = false;
+                    if (!$("#AllButton").hasClass("active")) {
+                        $(adminNotificationTableItem[i].querySelector("tr")).hide("slow");
+                    }
+                    adminNotificationTableItem[i].style.background = "transparent";
+                } else {
+                    checkbox.checked = true;
+                    $(adminNotificationTableItem[i].querySelector("tr")).show("slow");
+                    adminNotificationTableItem[i].style.background = "rgba(31,231,65,0.1)";
+                }
+            }
         }
+        this.classList.toggle("active");
     });
 
     var ch2 = true;
