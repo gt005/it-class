@@ -75,3 +75,12 @@ def cancel_given_product_to_customer(product_to_cancel_id: int, request) -> None
     product_to_cancel.customer.save()
     product_to_cancel.connected_event.delete()
     product_to_cancel.delete()
+
+
+def get_correct_form_of_points_number_name(number: int) -> str:
+    """ Возвращает верное слово (Баллов/Балла/Балл) для правильного написания """
+    if 10 <= (number % 100) <= 20 or number % 10 == 0 or 5 <= number % 10 <= 9:
+        return "Баллов"
+    elif number % 10 == 1:
+        return "Балл"
+    return "Балла"

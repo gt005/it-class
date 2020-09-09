@@ -1,6 +1,8 @@
+from typing import Union
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from market.models import MarketProduct
+from market.market_services.market_operations import get_correct_form_of_points_number_name, buying_product_from_market
 
 
 class ShoppingCart(object):
@@ -9,6 +11,7 @@ class ShoppingCart(object):
     def __init__(self, request):
         """ Создание корзины """
 
+        self.request = request
         self.session = request.session
         cart = self.session.get(settings.SHOPPING_CART_SESSION_ID)
         if not cart:  # Если никогда не было
@@ -20,7 +23,7 @@ class ShoppingCart(object):
         Перебор элементов корзины и получение объектов товаров из базы данных.
         Создание итератора словарей {'product': MarketProduct, 'amount': int}
         """
-        self.delete_missing_products()
+        self._delete_missing_products()
 
         for product in self.shopping_cart:
             yield {
@@ -30,12 +33,12 @@ class ShoppingCart(object):
 
     def len(self):
         """ Количество элементов в корзине """
-        self.delete_missing_products()
+        self._delete_missing_products()
         return len(self.shopping_cart)
 
     def get_shopping_cart_list(self) -> list:
         """ Возвращает список объектов продуктов из корины """
-        self.delete_missing_products()
+        self._delete_missing_products()
         return [MarketProduct.objects.get(id=int(product)) for product in self.shopping_cart]
 
     def add(self, product_id: str, amount:int=1) -> str:
@@ -72,17 +75,42 @@ class ShoppingCart(object):
         if product_id in self.shopping_cart:
             del self.shopping_cart[product_id]
             self.save()
-        return "success"
+            return "success"
+        return "Такой товар в корзине не найден"
 
-    def get_total_price(self) -> int:
-        """ Считает общую сумму корзины """
-        self.delete_missing_products()
+    def get_total_price(self, add_points_name: bool=True) -> Union[str, int]:
+        """
+        Считает общую сумму корзины
+        :param bool add_points_name: Если True, то возвращает строку со словом 'баллы' в правильной форме
+        """
+        self._delete_missing_products()
         total_price = 0
         for product in self.shopping_cart:
             product_from_db = MarketProduct.objects.get(id=int(product))
             total_price += (product_from_db.price * self.shopping_cart[product]["amount"])
 
+        if add_points_name:
+            return f"{str(total_price)} {get_correct_form_of_points_number_name(total_price)}"
         return total_price
+
+    def buy_products_from_cart(self) -> str:
+        """
+        Совершает покупку всех товаров в корзине.
+        Делает проверку на наличие средств на покупку, проверку на наличие количества товара в магазине.
+        """
+        if self.request.user.puples.rate < self.get_total_price(add_points_name=False):
+            return "Не хватает денег на покупку"
+
+        for product in self:  # Проверка на наличие каждого товара и в определенном количестве
+            if MarketProduct.objects.get(id=product["product"].id).remained_amount < product["amount"]:
+                return "Какой-то товар закончился или нет столько товара"
+
+        for product in self:  # Покупка каждого товара
+            for amount_of_products in range(product["amount"]):
+                buying_product_from_market(product["product"].id, request=self.request)
+
+        self.clear()
+        return "Success"
 
     def clear(self):
         """ Очистка корзины """
@@ -94,7 +122,7 @@ class ShoppingCart(object):
         """ Сохранение изменений """
         self.session.modified = True
 
-    def delete_missing_products(self) -> None:
+    def _delete_missing_products(self) -> None:
         """
         Удаляет продукты из корзины, которых нет в базе данных.
         Такое может произойти, если товар добавлен в корзину, а из бд удалили.

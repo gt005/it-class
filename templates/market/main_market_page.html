@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block main %}
     <script src="https://kit.fontawesome.com/65f48fc481.js" crossorigin="anonymous"></script>
     <style>
@@ -48,6 +50,10 @@
         }
     </style>
 
+    <div class="messages-container" style="position:fixed;width: 85%;top: 4%; left: 7.5%; z-index: 9999">
+
+    </div>
+
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
@@ -87,93 +93,45 @@
         </div>
     </div>
 
-    <div class="modal fade" id="mainMessageWarning" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Ошибка</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" id="mainMessageWarning-text">
-
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="{% static 'js/market_main_file.js' %}"></script>
     <script>
-    let CookieManager = {
-        set: function (name, value, days) {
-             let expires = "";
-              if (days) {
-                  let d = new Date();
-                  d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-                  expires = "; expires=" + d.toGMTString();
-              }
-              document.cookie = name + "=" + value + expires + ";";
-              return this.get(name);
-        },
-        get: function (name) {
-              name += "=";
-              let b = document.cookie.split(';'), c;
-              for (var i = 0; i < b.length; i++) {
-                  c = b[i].replace(/(^\s+)|(\s+$)/g, "");
-                  while (c.charAt(0) == ' ')
-                       c = c.substring(1, c.length);
-                  if (c.indexOf(name) == 0)
-                       return c.substring(name.length, c.length);
-              }
-              return null;
-        },
-        remove: function (name) {
-              this.set(name, "", -1);
-        }
-    };
 
-
-    function sendShoppingCartOperation(url) {
-        let request = new XMLHttpRequest();
-        url += ("&token=" + CookieManager.get("csrftoken"));
-        request.open('GET', url);
-        request.responseType = 'json';
-        request.send();
-        return request
-    }
-
-    function addToCart (btn) {
-
-        if (btn.classList.contains("added-to-card-btn")) {
-            btn.innerHTML = 'Удаляется <div class="spinner-grow text-success" style="height: 1em;width: 1em;" role="status"></div>'
+    function addToCart (btn)
+    /* Добавляет товар в корзину, если его там еще нет, иначе его удаляет */
+    {
+        if (btn.classList.contains("added-to-card-btn")) {  // Если уже добавлен товар в корзину, то он удаляется
+            btn.innerHTML = 'Удаляется <div class="spinner-grow text-success" style="height: 1em;width: 1em;" role="status"></div>';
             let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?remove_product=' + btn.dataset.productId);
-            request.onload = function () {
-                if (request.response.message != "success") {
-                    document.querySelector("#mainMessageWarning-text").textContent = request.response.success;
-                    $('#mainMessageWarning').modal('show');
+            request.onload = function ()
+            {
+                if (request.response.message != "success") // Если сервер выдал сообщение с ошибкой
+                {
                     btn.innerHTML = '<i class="fas fa-check"></i> В корзине';
+                    showAlertElement(request.response.message);
                 }
-                else {
+                else
+                {
+                    showAlertElement("Товар успешно удален из корзины", success=true);
                     btn.innerHTML = 'В корзину';
                     btn.classList.remove("added-to-card-btn");
                 }
-
             }
         }
-        else {
-            btn.innerHTML = 'Добавляется <div class="spinner-grow text-success" style="height: 1em;width: 1em;" role="status"></div>'
+        else // Если товара еще нет в корзине, то надо его добавить
+        {
+            btn.innerHTML = 'Добавляется <div class="spinner-grow text-success" style="height: 1em;width: 1em;" role="status"></div>';
             let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?add_product=' + btn.dataset.productId);
-            request.onload = function () {
-                if (request.response.message != "success") {
-                    document.querySelector("#mainMessageWarning-text").textContent = request.response.success;
-                    $('#mainMessageWarning').modal('show');
+            request.onload = function ()
+            {
+                if (request.response.message != "success")  // Если сервер выдал сообщение с ошибкой
+                {
                     btn.innerHTML = 'В корзину';
+                    showAlertElement(request.response.message);
                 }
-                else {
+                else
+                {
+                    showAlertElement("Товар успешно добавлен в корзину", success=true);
                     btn.innerHTML = '<i class="fas fa-check"></i> В корзине';
                     btn.classList.add("added-to-card-btn");
                 }

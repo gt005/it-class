@@ -76,9 +76,17 @@ class ShoppingCartView(HeaderNotificationsCounter, LoginRequiredMixin, TemplateV
     template_name = "market/shopping_cart.html"
     login_url = "/login/"
 
+    def post(self, request):
+        message = "Посланы некорректные данные"
+        if "buy_all_products" in request.POST:
+            message = ShoppingCart(request=request).buy_products_from_cart()
+        return redirect("/market/market_success/?message=" + message)
+
     def get_context_data(self, *args, **kwargs):
         context = super(ShoppingCartView, self).get_context_data(**kwargs)
         context["shopping_cart_items"] = ShoppingCart(request=self.request)
+        context["balance_points_name"] = get_correct_form_of_points_number_name(self.request.user.puples.rate)
+        context["total_cart_price_int_number"] = ShoppingCart(request=self.request).get_total_price(add_points_name=False)
         return context
 
 
@@ -86,7 +94,7 @@ class ShoppingCartOperations(View):
 
     def get(self, request):
         if (request.COOKIES.get("csrftoken") != request.GET.get("token")):
-            return JsonResponse({'message': "Wrong Token!"})
+            return JsonResponse({"message": "Wrong Token!"})
 
         cart = ShoppingCart(request)
 
@@ -97,4 +105,4 @@ class ShoppingCartOperations(View):
         elif "update_product" in request.GET:
             msg = cart.add(request.GET["update_product"], request.GET["amount"])
 
-        return JsonResponse({'message': msg})
+        return JsonResponse({"message": msg, "totalPrice": cart.get_total_price(add_points_name=True)})

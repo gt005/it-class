@@ -84,9 +84,13 @@
 
 
 </style>
-    <h2 style="font-size: 40px;margin-top: 20px;" class="text-center">
+    <h2 style="font-size: 45px;font-weight: 300;letter-spacing: 0.04em;margin-top: 20px;" class="text-center">
         Корзина
     </h2>
+
+    <div class="messages-container" style="position:fixed;width: 85%;top: 4%; left: 7.5%; z-index: 9999">
+
+    </div>
 
     <div class="shopping-cart-body">
         {% if shopping_cart_items.len != 0 %}
@@ -117,8 +121,23 @@
                 </tbody>
             </table>
             <div class="row">
+                <div class="col-12 text-center">
+                    <div class="cart-total">
+                        <div class="cart-total__balance">
+                            Баланс: <span class="cart-total__balance__label">{{ user.puples.rate }}</span> {{ balance_points_name }}
+                        </div>
+                        <div class="cart-total-price-label" style="color: rgb(50, 50, 50);">
+                            К оплате: <span class="cart-total-price-label__number" style="color: rgb(128, 128, 128);">{{ shopping_cart_items.get_total_price }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-1">
                 <div class="col-12 d-flex justify-content-center">
-                    <button type="button" class="btn btn-outline-success">Оформить заказ</button>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-outline-success confirm-cart-button {% if user.puples.rate < total_cart_price_int_number %}disabled{% endif %}" value="Купить товары" name="buy_all_products">
+                    </form>
                 </div>
             </div>
         {% else %}
@@ -128,105 +147,101 @@
         {% endif %}
     </div>
 
-
+    <script src="{% static 'js/market_main_file.js' %}"></script>
     <script>
+    let inputNumberProductsAmount = document.querySelectorAll(".input-number-products-amount"),
+        cartTotalPrice = document.querySelector(".cart-total-price-label__number"),
+        shoppingCartRow = document.querySelectorAll("tbody tr"),
+        confirmCartButton = document.querySelector(".confirm-cart-button");
 
-    let CookieManager = {
-        set: function (name, value, days) {
-             let expires = "";
-              if (days) {
-                  let d = new Date();
-                  d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-                  expires = "; expires=" + d.toGMTString();
-              }
-              document.cookie = name + "=" + value + expires + ";";
-              return this.get(name);
-        },
-        get: function (name) {
-              name += "=";
-              let b = document.cookie.split(';'), c;
-              for (var i = 0; i < b.length; i++) {
-                  c = b[i].replace(/(^\s+)|(\s+$)/g, "");
-                  while (c.charAt(0) == ' ')
-                       c = c.substring(1, c.length);
-                  if (c.indexOf(name) == 0)
-                       return c.substring(name.length, c.length);
-              }
-              return null;
-        },
-        remove: function (name) {
-              this.set(name, "", -1);
-        }
-    };
-
-    function sendShoppingCartOperation(url) {
-        let request = new XMLHttpRequest();
-        url += ("&token=" + CookieManager.get("csrftoken"));
-        request.open('GET', url);
-        request.responseType = 'json';
-        request.send();
-        return request
-    }
-
-    function getCorrectNameForPoints (number) {
-        if ((10 <= number % 100) && (number % 100 <= 20) || (number % 10 == 0) || (5 <= (number % 10)) && ((number % 10) <= 9)) {
-            return "Баллов"
-        } else if (number % 10 == 1) {
-            return "Балл"
-        }
-        return "Балла"
-    }
-
-
-    let inputNumberProductsAmount = document.querySelectorAll(".input-number-products-amount");
-    for (let i = 0; i < inputNumberProductsAmount.length; i++) {
+    for (let i = 0; i < inputNumberProductsAmount.length; i++)
+    {
         inputNumberProductsAmount[i].value = inputNumberProductsAmount[i].dataset.value;
     }
 
-    let shoppingCartRow = document.querySelectorAll("tbody tr");
 
-    for (let i = 0; i < shoppingCartRow.length; i++) {
+    function disabledCartBuyButton ()
+    {
+        if (Number(cartTotalPrice.textContent.split(' ')[0]) > Number(document.querySelector(".cart-total__balance__label").textContent))
+        {
+            confirmCartButton.classList.add("disabled");
+        }
+        else
+        {
+            confirmCartButton.classList.remove("disabled");
+        }
+    }
+
+
+    for (let i = 0; i < shoppingCartRow.length; i++)
+    {
         let amountButtons = shoppingCartRow[i].querySelector(".product-amount-btns"),
             totalPriceLabel = shoppingCartRow[i].querySelector(".total-price-label"),
             amountNumberInput = shoppingCartRow[i].querySelector("input[type='number']");
 
         const tempPrice = amountNumberInput.valueAsNumber * totalPriceLabel.dataset.priceForOneProduct;
-            totalPriceLabel.textContent = tempPrice + ' ' + getCorrectNameForPoints(tempPrice);
+        totalPriceLabel.textContent = tempPrice + ' ' + getCorrectNameForPoints(tempPrice);
 
 
-        amountButtons.querySelector(".amount-decrement").onclick = function () {
-            if (amountNumberInput.value - 1 === 0) {
+        amountButtons.querySelector(".amount-decrement").onclick = function ()
+        {
+            if (amountNumberInput.valueAsNumber - 1 === 0)
+            // Удаление товара из корзины, если количество товара равно нулю
+            {
                 let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?remove_product=' + totalPriceLabel.dataset.productId);
-                request.onload = function () {
-                     if (request.response.message == "success") {
+                request.onload = function ()
+                {
+                     if (request.response.message == "success")
+                     {
                          shoppingCartRow[i].parentNode.removeChild(shoppingCartRow[i]);
-                         if (document.querySelectorAll("tbody tr").length == 0) {
+                         cartTotalPrice.textContent = request.response.totalPrice;
+                         disabledCartBuyButton()
+                         if (document.querySelectorAll("tbody tr").length == 0)
+                         {
                              document.querySelector('.shopping-cart-body').innerHTML = "<h4 style=\"font-weight: 300;\" class=\"text-center\"> Корзина пуста </h4>"
                          }
-                     } else {
-                         alert(request.response.message);
+                     } else
+                     {
+                         showAlertElement(request.response.message);
                      }
                 }
             }
             else {
-                let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInput.valueAsNumber - 1));
-                request.onload = function () {
-                    if (request.response.message == "success") {
-                        amountNumberInput.value--;
+                let amountNumberInputNewValue = amountNumberInput.valueAsNumber - 1;
+                let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInputNewValue));
+                request.onload = function ()
+                {
+                    if (request.response.message == "success")
+                    {
+                        amountNumberInput.valueAsNumber = amountNumberInputNewValue;
                         const tempPrice = amountNumberInput.valueAsNumber * totalPriceLabel.dataset.priceForOneProduct;
                         totalPriceLabel.textContent = tempPrice + ' ' + getCorrectNameForPoints(tempPrice);
+                        cartTotalPrice.textContent = request.response.totalPrice;
+                        disabledCartBuyButton()
+                    } else
+                    {
+                        showAlertElement(request.response.message);
                     }
                 }
             }
         }
 
-        amountButtons.querySelector(".amount-increment").onclick = function () {
-            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInput.valueAsNumber + 1));
-            request.onload = function () {
-                if (request.response.message == "success") {
-                     amountNumberInput.value++;
+        amountButtons.querySelector(".amount-increment").onclick = function ()
+        {
+            let amountNumberInputNewValue = amountNumberInput.valueAsNumber + 1;
+            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + amountNumberInputNewValue);
+            request.onload = function ()
+            {
+                if (request.response.message == "success")
+                {
+                     amountNumberInput.valueAsNumber = amountNumberInputNewValue;
                      const tempPrice = amountNumberInput.valueAsNumber * totalPriceLabel.dataset.priceForOneProduct;
                      totalPriceLabel.textContent = tempPrice + ' ' + getCorrectNameForPoints(tempPrice);
+                     cartTotalPrice.textContent = request.response.totalPrice;
+                     disabledCartBuyButton();
+                } else
+                {
+                    showAlertElement(request.response.message);
                 }
             }
         }
