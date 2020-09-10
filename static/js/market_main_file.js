@@ -57,7 +57,7 @@ function showAlertElement(message, success=false) {
 
     document.querySelector(".messages-container").innerHTML += alertElement;
 
-    $(".alert").delay(3500).slideUp(200, function() {
+    $(".alert").delay(2500).slideUp(200, function() {
         $(this).alert('close');
     });
 }

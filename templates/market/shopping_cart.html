@@ -136,7 +136,7 @@
                 <div class="col-12 d-flex justify-content-center">
                     <form method="post">
                         {% csrf_token %}
-                        <input type="submit" class="btn btn-outline-success confirm-cart-button {% if user.puples.rate < total_cart_price_int_number %}disabled{% endif %}" value="Купить товары" name="buy_all_products">
+                        <input type="submit" class="btn btn-outline-success confirm-cart-button" {% if user.puples.rate < total_cart_price_int_number %}disabled{% endif %} value="Купить товары" name="buy_all_products">
                     </form>
                 </div>
             </div>
@@ -162,13 +162,14 @@
 
     function disabledCartBuyButton ()
     {
+        console.log(confirmCartButton.disabled)
         if (Number(cartTotalPrice.textContent.split(' ')[0]) > Number(document.querySelector(".cart-total__balance__label").textContent))
         {
-            confirmCartButton.classList.add("disabled");
+            confirmCartButton.disabled = true;
         }
         else
         {
-            confirmCartButton.classList.remove("disabled");
+            confirmCartButton.disabled = false;
         }
     }
 
