@@ -15,10 +15,8 @@ urlpatterns = [
     path("works/", WorksView.as_view(), name="works"),
     path("download/", views.verificationFileDownload, name="verification_file_download"),
     path("account/", views.account, name="puples"),
-    path("task_day/", views.TasksView.as_view(), name="task_day1"),
     path("intensiv/", views.IntensivView.as_view(), name="intensiv"),
     path("test_applicant/", views.ApplicantView.as_view(), name="applicant"),
-    path("task_day/wrong", views.WrongTasksView.as_view(), name="task_day_wrong"),
     path("hacaton/", views.HacatonView.as_view()),
     path("applicant_list/", ApplicantListView.as_view(), name="applicant_list"),
     path("login/success/", views.account, name="applicant_list"),
@@ -27,4 +25,5 @@ urlpatterns = [
     path("notifications/", views.NotificationsView.as_view(), name="summer_practice_admin"),
 
     path("market/", include('market.urls')),
+    path("daytask/", include('daytask.urls')),
 ]

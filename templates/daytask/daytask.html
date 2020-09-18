@@ -1,0 +1,35 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container pt-3">
+        <p class="font-weight-light text-right text-muted">{{ end_time }}</p>
+        {% if task %}
+            <h2 class="text-left font-weight-light pt-3">Задача дня</h2>
+            <h2 class="text-center font-weight-light">{{ task.name }}</h2>
+            <hr>
+            {% autoescape off %}
+                {{ task.discription_task }}
+            {% endautoescape %}
+            <hr>
+            <h4 class="font-weight-light">Ответ:</h4>
+            <form method="post">{% csrf_token %}
+                <input type="text"
+                       class="form-control text-left"
+                       name="result" placeholder="Внесите ответ на задачу" onkeydown="if(event.keyCode==13){return false;}">
+                <button class="btn {% if button %}btn-success mt-3"{% else %}btn-secondary mt-3" disabled{% endif %}
+                type="submit">{% if button %}{{ button }}{% else %}Попытки закончились{% endif %}</button>
+            </form>
+
+            <p class="font-weight-light text-right">Совершено попыток: {{ tries }} </p>
+            {#            {{ task.name }}#}
+            {#            {% autoescape off %}#}
+            {#                {{ task.discription_task }}#}
+            {#            {% endautoescape %}#}
+        {% else %}
+            <p class="font-weight-light text-muted text-center">В данный момент нет активных задач для решения. <br>
+                Очень скоро задача появится.</p>
+        {% endif %}
+
+    </div>
+{% endblock %}
+{% block detail_active_task %} active{% endblock %}
