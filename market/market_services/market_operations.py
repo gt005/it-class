@@ -2,6 +2,7 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from mainapp.models import Events
 from market.models import MarketProduct, BoughtProduct
+from pymorphy2 import MorphAnalyzer
 
 
 def buying_product_from_market(product_id_for_buy: int, request) -> str:
@@ -79,8 +80,8 @@ def cancel_given_product_to_customer(product_to_cancel_id: int, request) -> None
 
 def get_correct_form_of_points_number_name(number: int) -> str:
     """ Возвращает верное слово (Баллов/Балла/Балл) для правильного написания """
-    if 10 <= (number % 100) <= 20 or number % 10 == 0 or 5 <= number % 10 <= 9:
-        return "Баллов"
-    elif number % 10 == 1:
+    if not isinstance(number, int):  # Ввелось не число
         return "Балл"
-    return "Балла"
+
+    analysis = MorphAnalyzer().parse("Балл")[0]
+    return analysis.make_agree_with_number(number).word
