@@ -35,6 +35,9 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
         conv_word = a.parse(word)[0]
         return conv_word.make_agree_with_number(number).word
 
+    def tries_list_with_time(self, str):
+        return [(int(i.split("|")[0]), i.split("|")[1]) for i in str.split()]
+
 
     def post(self, request):
         now_task = Tasks.objects.get(date=dt.datetime.now().date(), status_task=self.request.user.puples.status)
@@ -45,10 +48,10 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
                                   event_rate=now_task.score // (len(now_task.id_puple_correct_answers.split()) + 1),
                                   check=True, verification_file="123.jpg")
             now_task.id_puple_correct_answers += " " + str(Puples.objects.get(user=request.user.id).user.id) + " "
-            now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + " "
+            now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(dt.datetime.now().strftime("%H:%M:%S")) + " "
             now_task.save()
             return redirect("/daytask")
-        now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + " "
+        now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(dt.datetime.now().strftime("%H:%M:%S")) + " "
         now_task.save()
         return redirect("/daytask")
 
@@ -79,7 +82,7 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
         context["end_time"] = self.time_end_task(context["task"])
         try:
             made_tries = len(list(filter(lambda x: x == self.request.user.id,
-                                         [int(i) for i in context['task'].tries_list.split()])))
+                                         [i[0] for i in self.tries_list_with_time(context['task'].tries_list)])))
             if made_tries and made_tries != context["task"].tries:
                 context['mistake'] = "Ответ неверный"
             context['tries'] = made_tries
