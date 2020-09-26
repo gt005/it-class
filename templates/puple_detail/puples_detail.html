@@ -1,6 +1,7 @@
 {% load crispy_forms_tags %}
 {% block main %}
     {% load static %}
+
     {% if puples.email != "" and puples.phone != "" or user.is_superuser %}
         <div class="container-xl my-4 bg-light">
         <div class="row">
@@ -20,14 +21,28 @@
                         профиля</a></div>
                     <div class="col pt-1"><a href="/password-change/" class="btn btn-block btn-info btn-sm"
                                              role="button">Изменить
-                        пароль учетной записи</a></div>
+                        пароль учетной записи</a>
+                    </div>
                 </div>
-                <p class="font-weight-light text-muted" style="font-size: 10px;">Моя почта: {{ puples.email }}<br>Мой
-                    телефон: {{ puples.phone }}</p>
+                <p class="font-weight-light text-muted" style="font-size: 12px;">
+                    Моя почта: {{ puples.email }}
+                    <a href="#" style="padding-left: 5px;color: CurrentColor;">
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+</svg>
+                    </a>
+                    <br>
+                    Мой телефон: {{ puples.phone }}
+                    <a href="#" style="padding-left: 5px;color: CurrentColor;">
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+</svg>
+                    </a>
+                </p>
 
                 <a href="https://t.me/joinchat/AAAAAFJI5PL5wZKFKSr4Fw" class="navbar-brand text-muted font-weight-light"
-                   style="font-size: 10px;"><img class="img-fluid mr-2"
-                                                 style="width: 15px; height:15px;"
+                   style="font-size: 12px;"><img class="img-fluid mr-2"
+                                                 style="width: 18px; height:18px;"
                                                  src="{% static '/images/telegram.png' %}">Присоедениться к
                     телеграм
                     каналу</a>

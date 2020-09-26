@@ -189,7 +189,7 @@
             if (amountNumberInput.valueAsNumber - 1 === 0)
             // Удаление товара из корзины, если количество товара равно нулю
             {
-                let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?remove_product=' + totalPriceLabel.dataset.productId);
+                let request = sendShoppingCartOperation(location.origin + '/market/shopping-cart_operations/?remove_product=' + totalPriceLabel.dataset.productId);
                 request.onload = function ()
                 {
                      if (request.response.message == "success")
@@ -209,7 +209,7 @@
             }
             else {
                 let amountNumberInputNewValue = amountNumberInput.valueAsNumber - 1;
-                let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInputNewValue));
+                let request = sendShoppingCartOperation(location.origin + '/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInputNewValue));
                 request.onload = function ()
                 {
                     if (request.response.message == "success")
@@ -230,7 +230,7 @@
         amountButtons.querySelector(".amount-increment").onclick = function ()
         {
             let amountNumberInputNewValue = amountNumberInput.valueAsNumber + 1;
-            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + amountNumberInputNewValue);
+            let request = sendShoppingCartOperation(location.origin + '/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + amountNumberInputNewValue);
             request.onload = function ()
             {
                 if (request.response.message == "success")
