@@ -26,7 +26,7 @@ SECRET_KEY = 'efgj!udo53#9=3dnuy3n%(=)$pdz-5@dv@me=dl1wky#&dhe$*'
 DEBUG = True
 
 # KarimGt005
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.14.103']
 
 # Application definition
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'tinymce',
     'daytask',
+    'ckeditor',
 ]
 
 
@@ -132,5 +133,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [STATIC_DIR]
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
