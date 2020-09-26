@@ -1,9 +1,11 @@
 {% extends  'base.html' %}
 {% load static %}
 {% block main %}
-    <div class="container pt-3">
-        <p class="font-weight-light text-right text-muted">{{ end_time }}</p>
-        {% if task %}
+    <div class="container pt-3 {% if not button %}text-muted{% endif %}">
+
+        <!--Отображение задачи-->
+        {% if task and user.id not in id_puple_correct_answers and count_right_answers < task.count_answer %}
+            <p class="font-weight-light text-right text-muted">{{ end_time }}</p>
             <h2 class="text-left font-weight-light pt-3">Задача дня</h2>
             <h2 class="text-center font-weight-light">{{ task.name }}</h2>
             <hr>
@@ -15,21 +17,143 @@
             <form method="post">{% csrf_token %}
                 <input type="text"
                        class="form-control text-left"
-                       name="result" placeholder="Внесите ответ на задачу" onkeydown="if(event.keyCode==13){return false;}">
+                       name="result" placeholder="Внесите ответ на задачу"
+                       onkeydown="if(event.keyCode==13){return false;}">
+                <p class="text-danger font-weight-bold">{{ mistake }}</p>
                 <button class="btn {% if button %}btn-success mt-3"{% else %}btn-secondary mt-3" disabled{% endif %}
                 type="submit">{% if button %}{{ button }}{% else %}Попытки закончились{% endif %}</button>
-            </form>
 
-            <p class="font-weight-light text-right">Совершено попыток: {{ tries }} </p>
-            {#            {{ task.name }}#}
-            {#            {% autoescape off %}#}
-            {#                {{ task.discription_task }}#}
-            {#            {% endautoescape %}#}
+            </form>
+            <div class="container mt-3 text-muted">
+                <p class="font-weight-light text-right">Количество человек, которые могут решить
+                    задачу: {{ task.count_answer }} </p>
+                <p class="font-weight-light text-right">Максимальный балл за задачу: {{ task.score }} </p>
+                <p class="font-weight-light text-right">Совершено попыток: {{ tries }} </p>
+            </div>
+
+
+            <!--Отображение экрана давшего правильный ответ-->
+        {% elif user.id in id_puple_correct_answers %}
+            <h4 class="font-weight-light">Задача решена верно.</h4>
+            <hr>
+            <p class="font-weight-light">В твой профиль автоматически добавлено мероприятие с данной
+                задачей.<br> Твой рейтинг пересчитался автоматически.</p>
+            <p class="font-weight-light"> Количество верных решений: {{ count_right_answers }}</p>
+            <br>
+            <p class="font-weight-light"> На данную задачу правильно дали ответ:</p>
+            <p class="font-weight-light"><strong>{% for list_tuple_surname_name in list_name_right_answers %}
+                {% for tuple_surname_name in list_tuple_surname_name %}
+                    {{ tuple_surname_name }}
+                {% endfor %}
+                <br>
+            {% endfor %}
+            </strong></p>
+            <br>
+            <p class="font-weight-light">Очень скоро появится новая задача</p>
+            <a href="/account/">
+                <button type="button" class="btn btn-secondary mt-3">Перейти в свой профиль</button>
+            </a>
+
+            <!--Отображение экрана при максимальном количестве ответивших-->
+        {% elif not user.is_superuser and count_right_answers == task.count_answer and task %}
+            <h4 class="font-weight-light">Задача решена максимальным количеством человек.</h4>
+            <hr>
+            <p class="font-weight-light"> Количество верных решений: {{ count_right_answers }}</p>
+            <br>
+            <p class="font-weight-light"> На данную задачу правильно дали ответ:</p>
+            <p class="font-weight-light"><strong>{% for list_tuple_surname_name in list_name_right_answers %}
+                {% for tuple_surname_name in list_tuple_surname_name %}
+                    {{ tuple_surname_name }}
+                {% endfor %}
+                <br>
+            {% endfor %}
+            </strong></p>
+            <br>
+            <p class="font-weight-light">Очень скоро появится новая задача</p>
+
+            <!--Отображение экрана администратора-->
+        {% elif user.is_superuser %}
+            <h2 class="font-weight-light">Задача дня (учитель)</h2>
+            <hr>
+            <h4 class="font-weight-light text-dark">Активные задачи</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col" class="font-weight-light">Дата публикации</th>
+                    <th scope="col" class="font-weight-light">Название задачи</th>
+                    <th scope="col" class="font-weight-light">Уровень задачи</th>
+                    <th scope="col" class="font-weight-light">Решили задачу</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for task, list_success in tasks_active_teacher %}
+                    <tr>
+                        <th scope="row" class="font-weight-light align-middle">{{ task.date }}</th>
+                        <td class="font-weight-light align-middle">{{ task.name }}</td>
+                        <td class="font-weight-light align-middle">{{ task.get_status_task_display }}</td>
+                        <td class="font-weight-light align-middle">
+                            {% for i in list_success %}<a href="/statistic/pupil/{{ i.id }}" class="text-muted">{{ i.surname }} {{ i.name }}</a><br>{% endfor %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if not tasks_active_teacher %}
+                <p class="font-weight-light text-muted text-center">Нет активных задач</p>
+            {% endif %}
+            <h4 class="font-weight-light text-muted">Предстоящие задачи</h4>
+            <table class="table text-muted">
+                <thead>
+                <tr>
+                    <th scope="col" class="font-weight-light">Дата публикации</th>
+                    <th scope="col" class="font-weight-light">Название задачи</th>
+                    <th scope="col" class="font-weight-light">Уровень задачи</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for task, list_success in tasks_fiture_teacher %}
+                    <tr>
+                        <th scope="row" class="font-weight-light align-middle">{{ task.date }}</th>
+                        <td class="font-weight-light align-middle">{{ task.name }}</td>
+                        <td class="font-weight-light align-middle">{{ task.get_status_task_display }}</td>
+                          </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <h4 class="font-weight-light text-muted">Архивные задачи</h4>
+            <table class="table text-muted">
+                <thead>
+                <tr>
+                    <th scope="col" class="font-weight-light">Дата публикации</th>
+                    <th scope="col" class="font-weight-light">Название задачи</th>
+                    <th scope="col" class="font-weight-light">Уровень задачи</th>
+                    <th scope="col" class="font-weight-light">Решили задачу</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for task, list_success in tasks_last_teacher %}
+                    <tr>
+                        <th scope="row" class="font-weight-light align-middle">{{ task.date }}</th>
+                        <td class="font-weight-light align-middle">{{ task.name }}</td>
+                        <td class="font-weight-light align-middle">{{ task.get_status_task_display }}</td>
+                        <td class="font-weight-light align-middle">
+                            {% for i in list_success %}<a href="/statistic/pupil/{{ i.id }}" class="text-muted">{{ i.surname }} {{ i.name }}</a><br>{% endfor %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="container text-right">
+                <a href="add/">
+                    <button type="button" class="btn btn-secondary rounded-circle align-right"
+                            style="width: 50px; height: 50px; font-size: 22px;"> +
+                    </button>
+                </a>
+            </div>
+
+            <!--Отображение экрана нет задачи-->
         {% else %}
             <p class="font-weight-light text-muted text-center">В данный момент нет активных задач для решения. <br>
                 Очень скоро задача появится.</p>
         {% endif %}
-
     </div>
 {% endblock %}
 {% block detail_active_task %} active{% endblock %}

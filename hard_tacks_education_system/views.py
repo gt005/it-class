@@ -5,4 +5,4 @@ from django.views.generic import ListView, TemplateView, View
 
 
 class test(ListView):
-    model = EducationTask
+    # model = EducationTask

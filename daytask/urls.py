@@ -4,4 +4,5 @@ from . import views
 
 urlpatterns = [
     path('', views.DayTaskView.as_view(), name='Задача дня'),
+    path('add/', views.DayTaskAddView.as_view(), name='Задача дня'),
     ]
