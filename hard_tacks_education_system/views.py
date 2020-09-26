@@ -5,4 +5,5 @@ from django.views.generic import ListView, TemplateView, View
 
 
 class test(ListView):
+    pass
     # model = EducationTask
