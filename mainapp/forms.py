@@ -32,5 +32,18 @@ class CollectData(forms.ModelForm):
         model = Puples
         fields = ("email", "phone")
 
+
+class ChangeEmailForm(forms.ModelForm):
+    class Meta:
+        model = Puples
+        fields = ("email",)
+
+
+class ChangeMobileNumberForm(forms.ModelForm):
+    class Meta:
+        model = Puples
+        fields = ("phone",)
+
+
 class Notifications(forms.ModelForm):
     theme = forms.CharField(label="Тема")

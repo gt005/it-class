@@ -23,6 +23,11 @@
         -webkit-box-shadow: 0 0 2px 0 rgba(0,0,0,.1), 0 2px 6px 0 rgba(0,0,0,.1);
     }
 
+    .input-number-products-amount::-webkit-outer-spin-button,
+    .input-number-products-amount::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
     .active-products-list td,.active-products-list th {
         width: 20%;
         text-align: center;
@@ -209,7 +214,7 @@
             }
             else {
                 let amountNumberInputNewValue = amountNumberInput.valueAsNumber - 1;
-                let request = sendShoppingCartOperation(location.origin + '/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInputNewValue));
+                let request = getJsonResponseWithRequestData(location.origin + '/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + (amountNumberInputNewValue));
                 request.onload = function ()
                 {
                     if (request.response.message == "success")
@@ -230,7 +235,7 @@
         amountButtons.querySelector(".amount-increment").onclick = function ()
         {
             let amountNumberInputNewValue = amountNumberInput.valueAsNumber + 1;
-            let request = sendShoppingCartOperation(location.origin + '/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + amountNumberInputNewValue);
+            let request = getJsonResponseWithRequestData(location.origin + '/market/shopping-cart_operations/?update_product=' + totalPriceLabel.dataset.productId + "&amount=" + amountNumberInputNewValue);
             request.onload = function ()
             {
                 if (request.response.message == "success")
