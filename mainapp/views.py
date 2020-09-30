@@ -1,10 +1,12 @@
 import datetime
 import datetime as dt
 import os
+import re
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView
@@ -181,6 +183,7 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
     login_url = '/login/'
 
     def post(self, request, pk):
+
         form = CollectData(request.POST)
         if form.is_valid():
             a = Puples.objects.get(user=request.user.id)
@@ -195,6 +198,35 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
 
     def get(self, request, pk):
         if request.user.is_superuser or request.user.puples.pk == pk:
+            if "edit_data" in request.GET:
+                if (request.COOKIES.get("csrftoken") != request.GET.get("token")):
+                    return HttpResponseForbidden()
+
+                student = Puples.objects.get(user=request.user.id)
+
+                message = "Неверный формат запроса"
+                if request.GET.get("edit_data") == 'tel':
+                    mobile_number_regular = re.compile(r'^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{9,10}$')
+                    new_number = request.GET.get("tel")
+                    if mobile_number_regular.match(new_number):
+                        # TODO: Сделать форматирование номера под стандарт 81231231212
+                        student.phone = new_number
+                        student.save()
+                        message = "success"
+                    else:
+                        message = "Неправильный формат номера"
+
+                elif request.GET.get("edit_data") == 'email':
+                    email_regular = re.compile(r'(^|\s)[-a-z0-9_.]+@([-a-z0-9]+\.)+[a-z]{2,6}(\s|$)')
+                    new_email = request.GET.get("email")
+                    if email_regular.match(new_email):
+                        student.email = new_email
+                        student.save()
+                        message = "success"  # "Почта успешно изменена!"
+                    else:
+                        message = "Неправильный формат почты"
+                return JsonResponse({"message": message})
+
             return super().get(request, pk)
         return HttpResponseForbidden()
 

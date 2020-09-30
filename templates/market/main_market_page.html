@@ -102,7 +102,7 @@
     {
         if (btn.classList.contains("added-to-card-btn")) {  // Если уже добавлен товар в корзину, то он удаляется
             btn.innerHTML = 'Удаляется <div class="spinner-grow text-success" style="height: 1em;width: 1em;" role="status"></div>';
-            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?remove_product=' + btn.dataset.productId);
+            let request = getJsonResponseWithRequestData(location.origin + '/market/shopping-cart_operations/?remove_product=' + btn.dataset.productId);
             request.onload = function ()
             {
                 if (request.response.message != "success") // Если сервер выдал сообщение с ошибкой
@@ -121,7 +121,7 @@
         else // Если товара еще нет в корзине, то надо его добавить
         {
             btn.innerHTML = 'Добавляется <div class="spinner-grow text-success" style="height: 1em;width: 1em;" role="status"></div>';
-            let request = sendShoppingCartOperation('http://127.0.0.1:8000/market/shopping-cart_operations/?add_product=' + btn.dataset.productId);
+            let request = getJsonResponseWithRequestData(location.origin + '/market/shopping-cart_operations/?add_product=' + btn.dataset.productId);
             request.onload = function ()
             {
                 if (request.response.message != "success")  // Если сервер выдал сообщение с ошибкой
