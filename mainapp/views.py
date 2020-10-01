@@ -198,11 +198,16 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
 
     def get(self, request, pk):
         if request.user.is_superuser or request.user.puples.pk == pk:
+
             if "edit_data" in request.GET:
+                if request.user.puples.pk != pk and not request.user.is_superuser:
+                    # Если пытается изменить не свой email и не является админом
+                    return HttpResponseForbidden()
+
                 if (request.COOKIES.get("csrftoken") != request.GET.get("token")):
                     return HttpResponseForbidden()
 
-                student = Puples.objects.get(user=request.user.id)
+                student = Puples.objects.get(id=pk)
 
                 message = "Неверный формат запроса"
                 if request.GET.get("edit_data") == 'tel':
@@ -232,6 +237,7 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['pk'] = self.kwargs['pk']
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
         context['allevents'] = Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date')
         context['form'] = CollectData()
