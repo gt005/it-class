@@ -1,15 +1,16 @@
+import datetime as dt
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView
+from pymorphy2 import MorphAnalyzer
 
 from mainapp.addons_python.views_addons_classes import HeaderNotificationsCounter
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, TemplateView, View, CreateView
-from .models import Tasks
-from .forms import TaskForm
 from mainapp.models import Events, Puples
-import datetime as dt
-from pymorphy2 import MorphAnalyzer
-from django.shortcuts import redirect
+from .forms import TaskForm
+from .models import Tasks
+
 
 class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     template_name = "daytask/daytask.html"
@@ -38,7 +39,6 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     def tries_list_with_time(self, str):
         return [(int(i.split("|")[0]), i.split("|")[1]) for i in str.split()]
 
-
     def post(self, request):
         now_task = Tasks.objects.get(date=dt.datetime.now().date(), status_task=self.request.user.puples.status)
         if request.POST["result"] == now_task.result:
@@ -48,20 +48,21 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
                                   event_rate=now_task.score // (len(now_task.id_puple_correct_answers.split()) + 1),
                                   check=True, verification_file="123.jpg")
             now_task.id_puple_correct_answers += " " + str(Puples.objects.get(user=request.user.id).user.id) + " "
-            now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(dt.datetime.now().strftime("%H:%M:%S")) + " "
+            now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(
+                dt.datetime.now().strftime("%H:%M:%S")) + " "
             now_task.save()
             return redirect("/daytask")
-        now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(dt.datetime.now().strftime("%H:%M:%S")) + " "
+        now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(
+            dt.datetime.now().strftime("%H:%M:%S")) + " "
         now_task.save()
         return redirect("/daytask")
 
-
     def type_tasks(self, day):
-        all_types_tasks = {"active" : [(i, [Puples.objects.get(user=j) for j in i.id_puple_correct_answers.split()])\
-                                       for i in Tasks.objects.filter(date=day)]}
-        all_types_tasks["last"] = [(i, [Puples.objects.get(user=j) for j in i.id_puple_correct_answers.split()])\
+        all_types_tasks = {"active": [(i, [Puples.objects.get(user=j) for j in i.id_puple_correct_answers.split()]) \
+                                      for i in Tasks.objects.filter(date=day)]}
+        all_types_tasks["last"] = [(i, [Puples.objects.get(user=j) for j in i.id_puple_correct_answers.split()]) \
                                    for i in Tasks.objects.filter(date__lt=day)]
-        all_types_tasks["fiture"] = [(i, [Puples.objects.get(user=j) for j in i.id_puple_correct_answers.split()])\
+        all_types_tasks["fiture"] = [(i, [Puples.objects.get(user=j) for j in i.id_puple_correct_answers.split()]) \
                                      for i in Tasks.objects.filter(date__gt=day)]
         return all_types_tasks
 
@@ -117,10 +118,8 @@ class DayTaskAddView(HeaderNotificationsCounter, LoginRequiredMixin, CreateView)
             return False
         status_POST = request.POST["status_task"]
         self.errors['same_task'] = "Задача на указанную дату уже существует, укажите другую дату."
-        return not any(i[0] == dt.date(yy, mm, dd) and i[1] == status_POST for i in [(task.date, task.status_task)\
+        return not any(i[0] == dt.date(yy, mm, dd) and i[1] == status_POST for i in [(task.date, task.status_task) \
                                                                                      for task in Tasks.objects.all()])
-
-
 
     def post(self, request):
         form = TaskForm(request.POST)
@@ -132,3 +131,51 @@ class DayTaskAddView(HeaderNotificationsCounter, LoginRequiredMixin, CreateView)
         return render(request, 'daytask/daytask_add.html', self.errors)
 
 
+class DayTaskShowView(DayTaskView):
+    template_name = "daytask/daytask_show.html"
+    queryset = Tasks
+    login_url = '/login/'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['task'] = Tasks.objects.get(id=int(self.kwargs['id']))
+        return context
+
+    def __init__(self):
+        super().__init__()
+
+
+class DayTaskEditView(DayTaskAddView):
+    template_name = "daytask/daytask_edit.html"
+    queryset = Tasks
+    login_url = '/login/'
+    form_class = TaskForm
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['task'] = Tasks.objects.get(id=int(self.kwargs['id']))
+        yy, mm, dd = map(str, str(context['task'].date).split("-"))
+        context['date'] = dd + "." + mm + "." + yy
+        context['form'] = TaskForm(
+            initial={"name": context['task'].name,
+                     "discription_task": context['task'].discription_task,
+                     "status_task": context['task'].status_task,
+                     "result": context['task'].result,
+                     "count_answer": context['task'].count_answer,
+                     "score": context['task'].score,
+                     "tries": context['task'].tries})
+        return context
+
+    def post(self, request, id):
+        form = TaskForm(request.POST)
+        self.errors = {'form': form}
+        yy, mm, dd = map(str, str(Tasks.objects.get(id=id).date).split("-"))
+        self.str_date = dd + "." + mm + "." + yy
+        if form.is_valid() and (
+                request.POST['date'] == self.str_date or self.check_date_class_not_in_tasks(request)):
+            a = Tasks.objects.get(id=id)
+            form = TaskForm(request.POST, instance=a)
+            form.save()
+            return redirect("/daytask")
+        print(self.errors)
+        return render(request, 'daytask/daytask_edit.html', self.errors)

@@ -1,29 +1,6 @@
 {% extends  'base.html' %}
 {% load static %}
 {% block main %}
-
-    <style>
-    .tasks-active-teacher__row {
-        transition: 0.15s;
-    }
-
-    .tasks-active-teacher__row:hover {
-        background: rgba(23, 162, 184, 0.1);
-    }
-
-    .tasks-active-teacher__row__edit-btn {
-        opacity: 0;
-        visibility: hidden;
-        transition: 0.15s;
-    }
-
-    .tasks-active-teacher__row:hover .tasks-active-teacher__row__edit-btn {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    </style>
-    
     <div class="container pt-3 {% if not button %}text-muted{% endif %}">
 
         <!--Отображение задачи-->
@@ -116,24 +93,36 @@
                         <td class="font-weight-light align-middle">{{ task.get_status_task_display }}</td>
                         <td class="font-weight-light align-middle d-flex justify-content-between">
                             <div class="solved-task__puples">
-                                {% for i in list_success %}<a href="/statistic/pupil/{{ i.id }}" class="text-muted">{{ i.surname }} {{ i.name }}</a><br>{% endfor %}
+                                {% for i in list_success %}<a href="/statistic/pupil/{{ i.id }}"
+                                                              class="text-muted">{{ i.surname }} {{ i.name }}</a>
+                                    <br>{% endfor %}
                             </div>
                             <a href="#" class="tasks-active-teacher__row__edit-btn">
-                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-    </svg>
-                            </a>
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil"
+                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
 
+                                </svg>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
+
             {% if not tasks_active_teacher %}
                 <p class="font-weight-light text-muted text-center">Нет активных задач</p>
             {% endif %}
-            <h4 class="font-weight-light text-muted">Предстоящие задачи</h4>
-            <table class="table text-muted">
+            <div class="container text-right">
+                <a href="add/">
+                    <button type="button" class="btn btn-secondary rounded-circle align-right"
+                            style="width: 50px; height: 50px; font-size: 22px;"> +
+                    </button>
+                </a>
+            </div>
+            <h4 class="font-weight-light text-muted content_toggle_future">Предстоящие задачи</h4>
+            <table class="table text-muted content_block_table_future">
                 <thead>
                 <tr>
                     <th scope="col" class="font-weight-light">Дата публикации</th>
@@ -143,16 +132,27 @@
                 </thead>
                 <tbody>
                 {% for task, list_success in tasks_fiture_teacher %}
-                    <tr>
+                    <tr class="tasks-active-teacher__row">
                         <th scope="row" class="font-weight-light align-middle">{{ task.date }}</th>
                         <td class="font-weight-light align-middle">{{ task.name }}</td>
-                        <td class="font-weight-light align-middle">{{ task.get_status_task_display }}</td>
-                          </tr>
+                        <td class="font-weight-light align-middle d-flex justify-content-between">{{ task.get_status_task_display }}
+                            <a href="edit/{{ task.id }}" class="tasks-active-teacher__row__edit-btn">
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil"
+                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                </svg>
+                            </a>
+                            <a href="show/{{ task.id }}" class="tasks-active-teacher__row__edit-btn">
+
+                            </a>
+                        </td>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <h4 class="font-weight-light text-muted">Архивные задачи</h4>
-            <table class="table text-muted">
+            <h4 class="font-weight-light text-muted content_toggle">Архивные задачи</h4>
+            <table class="table text-muted content_block_table">
                 <thead>
                 <tr>
                     <th scope="col" class="font-weight-light">Дата публикации</th>
@@ -168,18 +168,13 @@
                         <td class="font-weight-light align-middle">{{ task.name }}</td>
                         <td class="font-weight-light align-middle">{{ task.get_status_task_display }}</td>
                         <td class="font-weight-light align-middle">
-                            {% for i in list_success %}<a href="/statistic/pupil/{{ i.id }}" class="text-muted">{{ i.surname }} {{ i.name }}</a><br>{% endfor %}</td>
+                            {% for i in list_success %}<a href="/statistic/pupil/{{ i.id }}"
+                                                          class="text-muted">{{ i.surname }} {{ i.name }}</a>
+                                <br>{% endfor %}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <div class="container text-right">
-                <a href="add/">
-                    <button type="button" class="btn btn-secondary rounded-circle align-right"
-                            style="width: 50px; height: 50px; font-size: 22px;"> +
-                    </button>
-                </a>
-            </div>
 
             <!--Отображение экрана нет задачи-->
         {% else %}

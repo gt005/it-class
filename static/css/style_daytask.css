@@ -1,0 +1,18 @@
+.tasks-active-teacher__row {
+    transition: 0.15s;
+}
+
+.tasks-active-teacher__row:hover {
+    background: rgba(23, 162, 184, 0.1);
+}
+
+.tasks-active-teacher__row__edit-btn {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.15s;
+}
+
+.tasks-active-teacher__row:hover .tasks-active-teacher__row__edit-btn {
+    opacity: 1;
+    visibility: visible;
+}
