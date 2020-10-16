@@ -5,16 +5,6 @@
 <div class="container pt-3">
     <h2 class="font-weight-light">{{ task.name }}</h2>
     <hr>
-<!--            <form method="post" novalidate>-->
-<!--                {% csrf_token %}-->
-<!--                <p class="text-danger font-weight-bold" style="font-size: 13px;">{{ same_task }}{{ last_date }}</p>-->
-<!--                <label for="datepicker">Дата публикации задачи*</label>-->
-<!--                <input type="text" class="form-control col-xl-2" id="datepicker" placeholder="Введите дату" name="date"-->
-<!--                       required>-->
-<!--                {{ form|crispy }}-->
-<!--                <button type="submit" class="btn btn-info">Добавить задачу</button>-->
-<!--                <a class="btn btn-danger" href="javascript:history.back()" role="button">Отмена</a>-->
-<!--            </form>-->
     <form method="post">
         {% csrf_token %}
         <p class="text-danger font-weight-bold" style="font-size: 13px;">{{ same_task }}{{ last_date }}</p>

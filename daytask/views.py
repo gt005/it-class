@@ -41,7 +41,9 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
 
     def post(self, request):
         now_task = Tasks.objects.get(date=dt.datetime.now().date(), status_task=self.request.user.puples.status)
-        if request.POST["result"] == now_task.result:
+        self.made_tries = len(list(filter(lambda x: x == self.request.user.id,
+                                          [i[0] for i in self.tries_list_with_time(now_task.tries_list)])))
+        if request.POST["result"] == now_task.result and self.made_tries < now_task.tries:
             Events.objects.create(name=f"Задача дня \"{now_task.name}\"", date=dt.date.today(),
                                   organization="ГБОУ Школа 1158",
                                   events=Puples.objects.get(user=request.user.id),
@@ -51,6 +53,8 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
             now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(
                 dt.datetime.now().strftime("%H:%M:%S")) + " "
             now_task.save()
+            return redirect("/daytask")
+        if self.made_tries >= now_task.tries:
             return redirect("/daytask")
         now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(
             dt.datetime.now().strftime("%H:%M:%S")) + " "
@@ -82,14 +86,14 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
             context["task"] = None
         context["end_time"] = self.time_end_task(context["task"])
         try:
-            made_tries = len(list(filter(lambda x: x == self.request.user.id,
+            self.made_tries = len(list(filter(lambda x: x == self.request.user.id,
                                          [i[0] for i in self.tries_list_with_time(context['task'].tries_list)])))
-            if made_tries and made_tries != context["task"].tries:
+            if self.made_tries and self.made_tries != context["task"].tries:
                 context['mistake'] = "Ответ неверный"
-            context['tries'] = made_tries
-            if context['task'].tries - made_tries > 0:
-                context["button"] = f"Отправить (осталось {context['task'].tries - made_tries} \
-                {self.convert_words('попытка', context['task'].tries - made_tries)})"
+            context['tries'] = self.made_tries
+            if context['task'].tries - self.made_tries > 0:
+                context["button"] = f"Отправить (осталось {context['task'].tries - self.made_tries} \
+                {self.convert_words('попытка', context['task'].tries - self.made_tries)})"
             elif context['task'].tries == -1:
                 context["button"] = "Отправить решение"
             else:
