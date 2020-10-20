@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mainapp',
     'market',
+    'hard_tacks_education_system',
     'crispy_forms',
     'bootstrap4',
     'tinymce',

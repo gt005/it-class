@@ -26,4 +26,5 @@ urlpatterns = [
 
     path("market/", include('market.urls')),
     path("daytask/", include('daytask.urls')),
+    path("tasks/", include('hard_tacks_education_system.urls')),
 ]
