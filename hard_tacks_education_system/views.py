@@ -5,5 +5,5 @@ from django.views.generic import ListView, TemplateView, View
 
 
 class test(TemplateView):
-    template_name = "hard_tacks_education_system/hard_tacks_education_system_base_template.html"
+    template_name = "tacks_education_system/tacks_education_system_base_template.html"
     # model = EducationTask
