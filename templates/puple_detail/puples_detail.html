@@ -1,7 +1,7 @@
 {% load crispy_forms_tags %}
 {% block main %}
     {% load static %}
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
     <div class="messages-container" style="position:fixed;width: 85%;top: 4%; left: 7.5%; z-index: 9999">
 
     </div>
@@ -130,6 +130,21 @@
                         мероприятие</a>
                     <p class="my-3">Количество посещенных мероприятий: {{ events_count }} </p>
                     <p class="my-3">Общий рейтинг(автоматический): {{ rate_event }}</p>
+                    <div class="container row">
+                        <canvas id="myChart" class="col-12"></canvas>
+                        <script>
+                            var ctx = document.getElementById('myChart').getContext('2d');
+                            var myRadarChart = new Chart(ctx, {
+                                type: 'radar',
+                                data: {
+                                    labels: ['ЕГЭ 1', 'ЕГЭ 2', 'ЕГЭ 3', 'ЕГЭ 4', 'ЕГЭ 5', 'ЕГЭ 6', 'ЕГЭ 7', 'ЕГЭ 8', 'ЕГЭ 9', 'ЕГЭ 10', 'ЕГЭ 11', 'ЕГЭ 12', 'ЕГЭ 13', 'ЕГЭ 14', 'ЕГЭ 15', 'ЕГЭ 16', 'ЕГЭ 17', 'ЕГЭ 18', 'ЕГЭ 19', 'ЕГЭ 20', 'ЕГЭ 21', 'ЕГЭ 22', 'ЕГЭ 23', 'ЕГЭ 24', 'ЕГЭ 25', 'ЕГЭ 26', 'ЕГЭ 27',],
+                                    datasets: [{
+                                        data: {{ uuu }}
+                                    }]
+                                }
+                            });
+                        </script>
+                    </div>
                 {% elif puples.status == "APP" and puples.applicant_progress < 100 %}
                     <hr><p class="font-weight-light my-4">Промежуточный результат отборочного
                     этапа: {{ puples.applicant_first_result }}

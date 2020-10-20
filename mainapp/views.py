@@ -247,6 +247,8 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
             context['app'] = 1
         context['rate_event'] = sum(
             map(lambda x: x.event_rate, Events.objects.filter(events__pk=self.kwargs['pk'], check=True)))
+        context["uuu"] = [9, 2, 45, 3, 4, 3, 2, 11, 2, 3, 2, 3, 30, 10, 4, 2, 2, 3, 4, 5, 6, 7, 8, 32, 3, 4, 5]
+        context["label_chart"] = ['ЕГЭ 1', 'ЕГЭ 2', 'ЕГЭ 3', 'ЕГЭ 4', 'ЕГЭ 5', 'ЕГЭ 6', 'ЕГЭ 7', 'ЕГЭ 8', 'ЕГЭ 9', 'ЕГЭ 10', 'ЕГЭ 11', 'ЕГЭ 12', 'ЕГЭ 13', 'ЕГЭ 14', 'ЕГЭ 15', 'ЕГЭ 16', 'ЕГЭ 17', 'ЕГЭ 18', 'ЕГЭ 19', 'ЕГЭ 20', 'ЕГЭ 21', 'ЕГЭ 22', 'ЕГЭ 23', 'ЕГЭ 24', 'ЕГЭ 25', 'ЕГЭ 26', 'ЕГЭ 27',]
         return context
 
 
