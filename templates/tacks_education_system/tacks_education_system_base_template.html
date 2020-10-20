@@ -45,8 +45,56 @@
 </head>
 <body>
 
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a href="/" class="navbar-brand">
+            <img class="img-fluid mx-3"
+                 width="150" height="150"
+                 src="{% static '/images/logo_it_class.svg' %}"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link link-navbar {% block detail_active_active_task %}{% endblock %}" href="/tasks/active_task">Активная задача</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link link-navbar {% block detail_active_my_works %}{% endblock %}" href="/tasks/active_task">Мои работы</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link link-navbar {% block detail_active_tasks_to_check %}{% endblock %} position-relative" href="/tasks/active_task">
+                    <!-- if есть на проверку -->
+                        <span class="tasks-amount-to-check">2</span>
+                        Оценить задачи</a>
+                    <!-- -->
+                </li>
+            </ul>
+
+            <form class="form-inline my-2 my-lg-0">
+                {% if user.is_authenticated %}
+                    <a class="nav-link text-dark disabled p-0"
+                       href="/account/">{{ user.last_name }} {{ user.first_name }}</a>
+                    <a href="/account/">
+                        <img class="img-fluid mx-3 rounded-circle shadow-lg"
+                             style="width: 50px; object-fit: cover; height:50px;"
+                             src="{{ user.puples.image.url }}"></a>
+                {% endif %}
+                {% if user.username == "" %}
+                    <a class="nav-link disabled" href="#">Гость</a>
+                    <a class="btn btn-outline-success my-2 my-sm-0" href="/login">Войти</a>
+                {% else %}
+                    <a class="btn btn-outline-danger my-2 my-sm-0" href="/logout">Выйти</a>
+                {% endif %}
+            </form>
+        </div>
+    </nav>
+</header>
+
 <main>
-    GHbdtn vbh!
+    {% block main %}{% endblock %}
 </main>
 
 <footer id="sticky-footer" class="py-4 bg-dark text-white-50 mt-5">

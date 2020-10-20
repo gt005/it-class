@@ -1,13 +1,22 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
+{% extends 'tacks_education_system/tacks_education_system_base_template.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block main %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-2">
+            <a class="task-page__main-back-buttons pr-3" href="/tasks/active_task">
+                <span class="task-page__main-back-buttons__back-buttons">
+                    <img src="{% static 'images/back_button.svg' %}" alt="<">
+                    <img src="{% static 'images/back_button_hover.svg' %}" alt="<">
+                </span>
+                Все задачи
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block detail_active_active_task %}active{% endblock %}
