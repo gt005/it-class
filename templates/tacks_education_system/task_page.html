@@ -3,19 +3,67 @@
 
 {% block main %}
 
-<div class="container">
-    <div class="row">
-        <div class="col-2">
-            <a class="task-page__main-back-buttons pr-3" href="/tasks/active_task">
-                <span class="task-page__main-back-buttons__back-buttons">
-                    <img src="{% static 'images/back_button.svg' %}" alt="<">
-                    <img src="{% static 'images/back_button_hover.svg' %}" alt="<">
-                </span>
-                Все задачи
-            </a>
+    <section class="task-page__past-header">
+        <div class="container">
+            <div class="row task-page__back-button-row">
+                <div class="col-6 col-lg-2">
+                    <a class="task-page__main-back-buttons pr-3" href="/tasks/active_task">
+                        <span class="task-page__main-back-buttons__back-buttons">
+                            <img src="{% static 'images/back_button.svg' %}" alt="<">
+                            <img src="{% static 'images/back_button_hover.svg' %}" alt="<">
+                        </span>
+                        Все задачи
+                    </a>
+                </div>
+                <div class="col-6 col-lg-4 ml-auto task-page__time-remainder">
+                    Осталось времени: <span id="task-page__time-remainder__time">62345</span>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    </section>
+
+    <section class="task-page__task-description">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <!-- Название задачи -->
+                    <h1 class="task-page__task-description__task-name">
+                        Попытка к бегству
+                    </h1>
+                    <!-- Описание задачи -->
+                    <p class="task-page__task-description__main-description">
+                        Узник пытается бежать из замка, который состоит из MN
+                        квадратных комнат, расположенных в виде прямоугольника
+                        M×N. Между любыми двумя соседними комнатами есть дверь
+                        , однако некоторые комнаты закрыты и попасть в них
+                        нельзя. В начале узник находится в угловой комнате и
+                        для спасения ему надо попасть в противоположную угловую
+                        комнату. Времени у него немного, всего он может
+                        побывать не более, чем в M+N-1 комнате, включая
+                        начальную и конечную комнату на своем пути, то есть с
+                        каждым переходом в соседнюю комнату расстояние до
+                        выхода из замка должно уменьшаться. От вас требуется
+                        найти количество различных маршрутов, ведущих к
+                        спасению.
+                    </p>
+                    <!-- Формат ввода -->
+                    <h2 class="task-page__task-description__input-format">
+                        Формат ввода
+                    </h2>
+                    <p>Первая строчка входных данных содержит натуральные числа
+                        M и N, не превосходящих 1000. Далее идет план замка в
+                        виде M строчек из N символов в каждой. Один символ
+                        соответствует одной комнате: если символ равен 1, то в
+                        комнату можно попасть, если он равен 0, то комната
+                        закрыта. Первоначальное положение узника – левый нижний
+                        угол (первый символ последней строки), выход находится
+                        в правом верхнем углу (последний символ первой строки,
+                        оба этих символа равны 1).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
 {% endblock %}
 

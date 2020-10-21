@@ -93,6 +93,10 @@
     </nav>
 </header>
 
+<div class="messages-container" style="position:fixed;width: 85%;top: 4%; left: 7.5%; z-index: 9999">
+
+</div>
+
 <main>
     {% block main %}{% endblock %}
 </main>
@@ -102,6 +106,8 @@
         <small>ГБОУ школа № 1158. &copy; Все права защищены</small>
     </div>
 </footer>
+
+<script src="{% static 'js/tacks_education_system/main.js' %}"></script>
 
 </body>
 </html>
