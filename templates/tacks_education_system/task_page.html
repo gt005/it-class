@@ -1,22 +1,38 @@
 {% extends 'tacks_education_system/tacks_education_system_base_template.html' %}
 {% load static %}
 
-{% block main %}
+{% block head_links %}
+    <link rel="stylesheet" href="{% static 'css/tacks_education_system/codemirror-5.58.1/lib/codemirror.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tacks_education_system/codemirror-5.58.1/theme/neat.min.css' %}">
+    <script src="{% static 'css/tacks_education_system/codemirror-5.58.1/lib/codemirror.js' %}"></script>
+    <script src="{% static 'css/tacks_education_system/codemirror-5.58.1/mode/clike/clike.js' %}"></script>
+    <script src="{% static 'css/tacks_education_system/codemirror-5.58.1/mode/python/python.js' %}"></script>
+{% endblock %}
 
+{% block main %}
     <section class="task-page__past-header">
         <div class="container">
             <div class="row task-page__back-button-row">
                 <div class="col-6 col-lg-2">
-                    <a class="task-page__main-back-buttons pr-3" href="/tasks/active_task">
+                    <a class="task-page__main-back-buttons pr-3"
+                       href="/tasks/active_task">
                         <span class="task-page__main-back-buttons__back-buttons">
-                            <img src="{% static 'images/back_button.svg' %}" alt="<">
-                            <img src="{% static 'images/back_button_hover.svg' %}" alt="<">
+                            <img src="{% static 'images/back_button.svg' %}"
+                                 alt="<">
+                            <img src="{% static 'images/back_button_hover.svg' %}"
+                                 alt="<">
                         </span>
                         Все задачи
                     </a>
                 </div>
+                <div class="col-lg-3 offset-lg-2">
+                    <h2 class="task-page__task-level-label">
+                        Уровень 2
+                    </h2>
+                </div>
                 <div class="col-6 col-lg-4 ml-auto task-page__time-remainder">
-                    Осталось времени: <span id="task-page__time-remainder__time">62345</span>
+                    Осталось времени: <span
+                        id="task-page__time-remainder__time">62345</span>
                 </div>
             </div>
         </div>
@@ -60,6 +76,132 @@
                         в правом верхнем углу (последний символ первой строки,
                         оба этих символа равны 1).
                     </p>
+                    <h2 class="task-page__task-description__output-format">
+                        Формат вывода
+                    </h2>
+                    <p>Программа должна напечатать количество маршрутов,
+                        ведущих узника к выходу и проходящих через M+N-1
+                        комнату, или слово impossible, если таких маршрутов не
+                        существует.
+                        <br><br>
+                        Входные данные подобраны таким образом, что искомое
+                        число маршрутов не превосходит 2.000.000.000.
+                    </p>
+                    <!-- Если есть if not_empty -->
+                    <h2 class="task-page__task-description__photos-header">
+                        Фото для задачи
+                    </h2>
+                    <div class="task-page__task-description__photos">
+                        <img src="{% static 'images/test_image_to_tasks_1.png' %}"
+                             alt="">
+                        <img src="{% static 'images/test_image_to_tasks.png' %}"
+                             alt="">
+                    </div>
+
+                    <div class="task-page__task-example">
+                        <h2 class="task-page__task-example__header">
+                            Пример 1
+                            <!-- с помощью цикла или для конкретной порядковой записи свой блок -->
+                        </h2>
+                        <h3>
+                            Ввод
+                        </h3>
+                        <pre class="task-page__task-example__data">2 2</pre>
+                        <h3>
+                            Вывод
+                        </h3>
+                        <pre class="task-page__task-example__data">YES</pre>
+                    </div>
+
+                    <div class="task-page__task-example">
+                        <h2 class="task-page__task-example__header">
+                            Пример 2
+                            <!-- с помощью цикла или для конкретной порядковой записи свой блок -->
+                        </h2>
+                        <h3>
+                            Ввод
+                        </h3>
+                        <pre class="task-page__task-example__data">2 3 213
+123 12 45</pre>
+                        <h3>
+                            Вывод
+                        </h3>
+                        <pre class="task-page__task-example__data">NO</pre>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="task-page__insert-code">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active"
+                               id="task-page__insert-code__write-code-tab"
+                               data-toggle="tab"
+                               href="#task-page__insert-code__write-code"
+                               role="tab"
+                               aria-controls="task-page__insert-code__write-code"
+                               aria-selected="true">Набрать здесь</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link"
+                               id="task-page__insert-code__insert-file-tab"
+                               data-toggle="tab"
+                               href="#task-page__insert-code__insert-file"
+                               role="tab"
+                               aria-controls="task-page__insert-code__insert-file"
+                               aria-selected="false">Отправить файлом</a>
+                        </li>
+                    </ul>
+
+                    <div class="col-lg-4 col-12 py-5 d-flex align-items-center">
+                        <label class="my-1 mr-5"
+                               for="task-page__inlineFormCustomSelectPref">Язык</label>
+                        <select class="custom-select my-1 mr-sm-2"
+                                id="task-page__inlineFormCustomSelectPref">
+                            <option selected value="Python 3.7.3" data-lang="python">
+                                Python 3.7.3
+                            </option>
+                            <option value="GNU c++17 7.3" data-lang="text/x-c++src">
+                                GNU c++17 7.3
+                            </option>
+                            <option value="GNU C11 7.3" data-lang="text/x-csrc">
+                                GNU C11 7.3
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active"
+                             id="task-page__insert-code__write-code"
+                             role="tabpanel"
+                             aria-labelledby="task-page__insert-code__write-code-tab">
+                            <div id="task-page__insert-code__write-code-tab__code-editor">
+
+                            </div>
+                        </div>
+                        <div class="tab-pane fade col-lg-4 col-12"
+                             id="task-page__insert-code__insert-file"
+                             role="tabpanel"
+                             aria-labelledby="task-page__insert-code__insert-file-tab">
+                            <div class="custom-file mb-3">
+                                <input type="file" class="custom-file-input"
+                                       id="validatedCustomFile" required>
+                                <label class="custom-file-label"
+                                       for="validatedCustomFile">
+                                    Выбрать
+                                </label>
+                                <div class="invalid-feedback">Example invalid
+                                    custom file feedback
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,3 +210,6 @@
 {% endblock %}
 
 {% block detail_active_active_task %}active{% endblock %}
+{% block scripts_include %}
+
+{% endblock %}

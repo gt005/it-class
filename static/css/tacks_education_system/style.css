@@ -20,16 +20,20 @@ a:hover {
 h1 {
   color: inherit;
   font-size: 40px;
-  font-style: normal;
   font-weight: 600;
   line-height: 50px;
 }
 
 h2 {
   font-size: 25px;
-  font-style: normal;
   font-weight: 600;
   line-height: 30px;
+}
+
+h3 {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 28px;
 }
 
 p {
@@ -38,6 +42,8 @@ p {
   font-weight: 400;
   line-height: 23px;
   text-align: left;
+  padding: 0;
+  margin: 0;
 }
 
 .link-navbar {
@@ -56,6 +62,10 @@ p {
 
 .task-page__past-header {
   padding: 0 0 60px 0;
+}
+
+.task-page__task-level-label {
+  text-align: center;
 }
 
 .tasks-amount-to-check {
@@ -113,8 +123,50 @@ p {
   font-weight: initial;
 }
 
-.task-page__task-description__main-description {
-  padding: 55px 0;
+.task-page__task-description p {
+  padding: 20px 0px 55px;
+}
+
+.task-page__task-description__photos {
+  display: flex;
+  padding-top: 20px;
+}
+.task-page__task-description__photos img {
+  width: 350px;
+  height: fit-content;
+}
+.task-page__task-description__photos img:nth-child(2) {
+  margin: 0 20px;
+}
+
+.task-page__task-example h3 {
+  color: #484848;
+}
+
+.task-page__task-example__header {
+  margin: 55px 0 15px;
+  color: #484848;
+}
+
+.task-page__task-example__data {
+  font-size: 18px;
+  font-family: monospace !important;
+}
+
+.task-page__insert-code .nav-link {
+  color: #1e8bff;
+  padding: 0.4rem 1rem;
+}
+.task-page__insert-code .nav-link.active {
+  color: #5c646d;
+}
+
+.CodeMirror {
+  height: 540px;
+}
+
+.CodeMirror-code {
+  font-size: 18px;
 }
 
 /*# sourceMappingURL=style.css.map */

@@ -16,15 +16,18 @@ a
 h1
   color: inherit
   font-size: 40px
-  font-style: normal
   font-weight: 600
   line-height: 50px
 
 h2
   font-size: 25px
-  font-style: normal
   font-weight: 600
   line-height: 30px
+
+h3
+  font-size: 22px
+  font-weight: 500
+  line-height: 28px
 
 p
   font-size: 16px
@@ -32,6 +35,8 @@ p
   font-weight: 400
   line-height: 23px
   text-align: left
+  padding: 0
+  margin: 0
 
 .link-navbar
   padding: 8px 11px !important
@@ -45,6 +50,9 @@ p
 
 .task-page__past-header
   padding: 0 0 60px 0
+
+.task-page__task-level-label
+  text-align: center
 
 .tasks-amount-to-check
   position: absolute
@@ -92,8 +100,52 @@ p
   & #task-page__time-remainder__time
     font-weight: initial
 
-.task-page__task-description__main-description
-  padding: 55px 0
+.task-page__task-description
+  & p
+    padding: 20px 0px 55px
+
+.task-page__task-description__photos
+  display: flex
+  padding-top: 20px
+  & img
+    width: 350px
+    height: fit-content
+
+  & img:nth-child(2)
+    margin: 0 20px
+
+.task-page__task-example
+  & h3
+    color: #484848
+
+.task-page__task-example__header
+  margin: 55px 0 15px
+  color: rgb(72, 72, 72)
+
+.task-page__task-example__data
+  font-size: 18px
+  font-family: monospace !important
+
+.task-page__insert-code
+  & .nav-link
+    color: rgb(30, 139, 255)
+    padding: 0.4rem 1rem
+    &.active
+      color: #5c646d
+
+.CodeMirror
+  height: 540px
+
+.CodeMirror-code
+  font-size: 18px
+
+
+
+
+
+
+
+
 
 
 
