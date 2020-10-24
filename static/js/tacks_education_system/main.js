@@ -68,17 +68,34 @@ function deleteTaskPageInsertCodeArea() {
     $(codeSection).slideUp('slow');
 }
 
+function changeLastSolutionTaskPage (solutionTime, codeLang, solutionCode) {
+    /* Изменяет таблицу с последним решение,
+     если она пустая, то добавляется запись,
+      иначе обновляется надписи последней записи
+    */
 
-function sendTaskWithFile(fileOrCodeText, codeLang, type) {
+    let lastSolutionTable = document.querySelector('.task-page__last-solutions__table'),
+        lastSolutionTableRowTime = document.querySelector('.task-page__last-solutions__table__body__row__time'),
+        lastSolutionTableRowLang = document.querySelector('.task-page__last-solutions__table__body__row__lang'),
+        lastSolutionCodeArea = document.querySelector('.task-page__last-solutions__table__body__row__show-code-area pre');
+
+    lastSolutionTableRowTime.textContent = solutionTime;
+    lastSolutionTableRowLang.textContent = modeToLang[codeLang];
+    lastSolutionCodeArea.textContent = solutionCode;
+}
+
+function sendTaskSolution(fileOrCodeText, codeLang, type) {
 
     let csrfToken = document.querySelector('#task-page__code-tabs-content input[name="csrfmiddlewaretoken"]').value,
-        codeAreaLoader = document.querySelector(".task-page__insert-code__loader");
+        codeAreaLoader = document.querySelector(".task-page__insert-code__loader"),
+        codeToAddToLastSolution = '';
 
     codeAreaLoader.style = 'opacity: 1;visibility: visible;';
 
     let data = new FormData();
     if (type === 'code') {
         data.append('taskSolutionType', 'code');
+        codeToAddToLastSolution = fileOrCodeText;
         data.append('codeText', fileOrCodeText);
     } else if (type === 'file') {
         data.append('taskSolutionType', 'file');
@@ -99,11 +116,12 @@ function sendTaskWithFile(fileOrCodeText, codeLang, type) {
         return response.json();
     }).then(function (json) {
         if (json) {
-            // json.message
-            setTimeout(() => {
-                showAlertElement("Задача отправлена!" + json.message, true);
-                codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
-            }, 2500)
+            if (codeToAddToLastSolution === '') {
+                codeToAddToLastSolution = json.solutionCode;
+            }
+            changeLastSolutionTaskPage(json.solutionTime, codeLang, codeToAddToLastSolution)
+            showAlertElement("Задача отправлена!" + json.message, true);
+            codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
         }
     });
 }
@@ -113,10 +131,15 @@ let remainderTime = document.querySelector("#task-page__time-remainder__time"),
     remainderTimeStartSeconds = remainderTime.textContent,
     taskPageCodeSection = document.querySelector(".task-page__insert-code"),
     taskPageTimeEndLabel = document.querySelector('.task-page__insert-code__time-end-label'),
-    modesAndExpansion = {
+    expansionToMode = {
         'py': 'python',
         'c': 'text/x-csrc',
         'cpp': 'text/x-c++src'
+    },
+    modeToLang = {
+        'python': 'Python 3.7.3',
+        'text/x-csrc': 'GNU c++17 7.3',
+        'text/x-c++src': 'GNU C11 7.3'
     };
 
 remainderTime.textContent = convertSecondsToHoursAndMinutes(remainderTimeStartSeconds);
@@ -173,8 +196,7 @@ let codeEditor = CodeMirror(document.querySelector("#task-page__insert-code__wri
     tabSize: 4,
     indentUnit: 4,
     matchBrackets: true,
-    // theme: 'neat',
-    // theme: 'dracula'
+    theme: 'default',
 });
 
 
@@ -185,7 +207,7 @@ codeEditor.on('drop', function (data, e) {
     */
     let file = e.dataTransfer.files[0];
 
-    if ((file.name.split('.').length == 2) && (file.name.split('.')[1] in modesAndExpansion)) {
+    if ((file.name.split('.').length == 2) && (file.name.split('.')[1] in expansionToMode)) {
         let expansion = file.name.split('.')[1];
 
         programmingLangChooseOptions.forEach(function (option) {
@@ -193,9 +215,9 @@ codeEditor.on('drop', function (data, e) {
         })
 
         programmingLangChoose.querySelector(
-            `option[data-lang="${modesAndExpansion[expansion]}"]`
+            `option[data-lang="${expansionToMode[expansion]}"]`
         ).selected = true;
-        codeEditor.setOption("mode", modesAndExpansion[expansion]);
+        codeEditor.setOption("mode", expansionToMode[expansion]);
         codeEditor.setValue("");  // Очистка поля, чтобы новый был только файл открыт
         codeEditor.clearHistory();
     } else {
@@ -209,7 +231,7 @@ codeEditor.on('drop', function (data, e) {
 programmingLangChoose.onchange = function () {  // При изменении языка в dropbox, меняется подстветка синтаксиса
     let langToSelect = this.querySelector(`option[value='${this.value}']`);
     codeEditor.setOption("mode", langToSelect.dataset.lang);
-}
+};
 
 
 // Кнопки для сдачи задачи
@@ -222,7 +244,7 @@ taskPageSendCodeButton.onclick = () => {
     let codeText = codeEditor.getValue(),
         codeLang = codeEditor.getOption('mode');
 
-    sendTaskWithFile(codeText, codeLang, 'code');
+    sendTaskSolution(codeText, codeLang, 'code');
 }
 
 taskPageSendFileButton.onclick = () => {
@@ -231,18 +253,17 @@ taskPageSendFileButton.onclick = () => {
         showAlertElement("Не загружен файл.");
         return
     }
-    if (file.name.split('.').length == 2 && file.name.split('.')[1] in modesAndExpansion) {
-        sendTaskWithFile(file, modesAndExpansion[file.name.split('.')[1]], 'file');
+    if (file.name.split('.').length === 2 && file.name.split('.')[1] in expansionToMode) {
+        sendTaskSolution(file, expansionToMode[file.name.split('.')[1]], 'file');
     } else {
         showAlertElement("Неверное расширение файла (поддерживаемые: '.py', '.c', '.cpp')");
     }
-}
-
+};
 
 taskPageLoadSolutionFileInput.onchange = function () {
     // Изменение надписи в input и выбор подходящего языка под разширение
     let file = this.files[0];
-    if (file.name.split('.').length == 2 && file.name.split('.')[1] in modesAndExpansion) {
+    if (file.name.split('.').length === 2 && file.name.split('.')[1] in expansionToMode) {
         let expansion = file.name.split('.')[1];
 
         programmingLangChooseOptions.forEach(function (option) {
@@ -250,16 +271,33 @@ taskPageLoadSolutionFileInput.onchange = function () {
         })
 
         programmingLangChoose.querySelector(
-            `option[data-lang="${modesAndExpansion[expansion]}"]`
+            `option[data-lang="${expansionToMode[expansion]}"]`
         ).selected = true;
-
-        taskPageLoadSolutionFileLabel.textContent = file.name;
     }
+    taskPageLoadSolutionFileLabel.textContent = file.name;
+};
+
+
+let taskPageChangeTheme = document.querySelector('#task-page__change-code-theme__select');
+
+taskPageChangeTheme.onchange = function () {
+    let codeEditorHtmlElement = document.querySelector('.CodeMirror');
+    if (this.querySelector(`option[value='${this.value}']`).dataset.themeShade === 'light') {
+        codeEditorHtmlElement.style = '-webkit-box-shadow:-1px 0 0 0 #e8e8e8 inset, 0 -1px 0 0 #e8e8e8 inset, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;box-shadow:inset -1px 0 0 0 #e8e8e8, inset 0 -1px 0 0 #e8e8e8, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;'
+    } else {
+        codeEditorHtmlElement.style = '-webkit-box-shadow:none;box-shadow:none;';
+    }
+    codeEditor.setOption('theme', this.value);
+};
+
+
+// Работа с таблицей после задачи(на предыдущие отправки)
+let openCodeButton = document.querySelector('.task-page__last-solutions__table__body__row__show-code'),
+    lastCode = document.querySelector('.task-page__last-solutions__table__body__row__show-code-area');
+
+openCodeButton.onclick = function () {
+    $(lastCode).fadeToggle('slow');
 }
-
-
-
-
 
 
 
