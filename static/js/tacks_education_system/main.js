@@ -1,4 +1,34 @@
+let CookieManager = {
+    set: function (name, value, days) {
+        let expires = "";
+        if (days) {
+            let d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + d.toGMTString();
+        }
+        document.cookie = name + "=" + value + expires + ";";
+        return this.get(name);
+    },
+    get: function (name) {
+        name += "=";
+        let b = document.cookie.split(';'), c;
+        for (var i = 0; i < b.length; i++) {
+            c = b[i].replace(/(^\s+)|(\s+$)/g, "");
+            while (c.charAt(0) == ' ')
+                c = c.substring(1, c.length);
+            if (c.indexOf(name) == 0)
+                return c.substring(name.length, c.length);
+        }
+        return null;
+    },
+    remove: function (name) {
+        this.set(name, "", -1);
+    }
+};
+
 function showAlertElement(message, success = false) {
+    // Показывает уведомление на 10 секунд.
+    // :param success - true - зеленое, иначе красное.
     let alertElement = `<div class="system-message alert alert-danger alert-dismissible fade show" id="alert-msg" role="alert"><span class="alert-msg-text">${message}</span> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> </div>`;
 
     if (success === true) {
@@ -7,10 +37,11 @@ function showAlertElement(message, success = false) {
 
     document.querySelector(".messages-container").innerHTML += alertElement;
 
-    $(".system-message").delay(10000).fadeOut();
+    $(".system-message").delay(8000).fadeOut();
 }
 
 function convertSecondsToHoursAndMinutes(seconds) {
+    // Перевод секунд в часы, минуты и секунды
     if (seconds < 0) {
         seconds = 0;
     }
@@ -28,20 +59,103 @@ function convertSecondsToHoursAndMinutes(seconds) {
     return resultTime
 }
 
+function deleteTaskPageInsertCodeArea() {
+    // Удаленеи поля с кодом
+    let codeSection = document.querySelector(".task-page__insert-code .container");
+    $(codeSection).slideUp('slow');
+}
+
+function sendTaskWithCodeText(codeText, codeLang) {
+    // Отправлсяет задачу и возвращает true, если задача принята сервером, иначе false
+
+    let csrfToken = document.querySelector('#task-page__code-tabs-content input[name="csrfmiddlewaretoken"]').value,
+        codeAreaLoader = document.querySelector(".task-page__insert-code__loader");
+
+    codeAreaLoader.style = 'opacity: 1;visibility: visible;';
+
+    fetch(`${location.origin}/tasks/active_task/`, {
+        method: "POST",
+        headers: {"X-CSRFToken": csrfToken},
+        body: JSON.stringify({
+            taskSolutionType: 'code',
+            codeText: codeText,
+            codeLang: codeLang,
+        }),
+    }).then(function (response) {
+        if (!response.ok) {
+            showAlertElement('Произошла ошибка, попробуйте перезагрузить страницу');
+            return false
+        }
+        return response.json();
+    }).then(function (json) {
+        if (json) {
+            // json.message
+            setTimeout(() => {
+                showAlertElement("Задача отправлена!", true);
+                codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
+            }, 2500);
+        }
+    });
+}
+
+function sendTaskWithFile(file, codeLang) {
+
+    let csrfToken = document.querySelector('#task-page__code-tabs-content input[name="csrfmiddlewaretoken"]').value,
+        codeAreaLoader = document.querySelector(".task-page__insert-code__loader");
+
+    codeAreaLoader.style = 'opacity: 1;visibility: visible;';
+
+    fetch(`${location.origin}/tasks/active_task/`, {
+        method: 'POST',
+        headers: {"X-CSRFToken": csrfToken},
+        body: JSON.stringify({
+            taskSolutionType: 'file',
+            taskAnswerFile: input.files[0],
+            codeLang: codeLang
+        })
+    }).then(function (response) {
+        if (!response.ok) {
+            showAlertElement('Произошла ошибка, попробуйте перезагрузить страницу');
+            return false
+        }
+        return response.json();
+    }).then(function (json) {
+        if (json) {
+            // json.message
+            setTimeout(() => {
+                showAlertElement("Задача отправлена!", true);
+                codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
+            }, 2500);
+        }
+    });
+}
+
 // Страница с задачей
 let remainderTime = document.querySelector("#task-page__time-remainder__time"),
-    remainderTimeStartSeconds = remainderTime.textContent;
+    remainderTimeStartSeconds = remainderTime.textContent,
+    taskPageCodeSection = document.querySelector(".task-page__insert-code"),
+    taskPageTimeEndLabel = document.querySelector('.task-page__insert-code__time-end-label'),
+    modesAndExpansion = {
+        'py': 'python',
+        'c': 'text/x-csrc',
+        'cpp': 'text/x-c++src'
+    };
 
 remainderTime.textContent = convertSecondsToHoursAndMinutes(remainderTimeStartSeconds);
 
-let remainderTimeInterval = setInterval(function () {
+let remainderTimeInterval = setInterval(() => {
+    // Счетчик времени на странице с задачей
     remainderTimeStartSeconds--;
     remainderTime.textContent = convertSecondsToHoursAndMinutes(remainderTimeStartSeconds);
     if (remainderTimeStartSeconds <= 0) {
-        //    Удалять страницу и отправлять результат
+
         remainderTime.textContent = "Время закончилось";
         remainderTime.style.color = 'red';
         showAlertElement("Время вышло!");
+
+        deleteTaskPageInsertCodeArea();
+        $(taskPageTimeEndLabel).fadeIn('slow');
+
         clearInterval(remainderTimeInterval);
     } else if (remainderTimeStartSeconds <= 60) {
         if (remainderTimeStartSeconds % 2 === 0) {
@@ -55,44 +169,57 @@ let remainderTimeInterval = setInterval(function () {
     }
 }, 1000);
 
-// Поле с кодом
 
-let programmingLangChoseOptions = document.querySelectorAll('#task-page__inlineFormCustomSelectPref option'),
-    programmingLangChose = document.querySelector('#task-page__inlineFormCustomSelectPref');
+let programmingLangChooseOptions = document.querySelectorAll('#task-page__lang-choose option'),
+    programmingLangChoose = document.querySelector('#task-page__lang-choose');
 
-programmingLangChose.onchange =  function () {
-    let a = this.querySelector("option[selected]");
-    console.log(a);
-}
 
 let codeEditor = CodeMirror(document.querySelector("#task-page__insert-code__write-code-tab__code-editor"), {
-    value: "# Пиши свой Python код тут или перетащи сюда файл",
+    // Объект поля с вводом кода
+    value: "class test(object):\n" +
+        "    ''' Строка документации '''\n" +
+        "    def __init__(self, mixin=\"Hello\"):\n" +
+        "        self.mixin = mixin\n" +
+        "        \n" +
+        "    @property\n" +
+        "    def mixin_getter(self):\n" +
+        "        return self.mixin\n" +
+        "    \n" +
+        "def maximum(a, b):\n" +
+        "    if a >= b:\n" +
+        "        return a\n" +
+        "    return b",
     mode: 'python',
     lineNumbers: true,
     dragDrop: true,
     tabSize: 4,
-    // theme: 'neat'
+    indentUnit: 4,
+    matchBrackets: true,
+    // theme: 'neat',
+    // theme: 'dracula'
 });
 
+
 codeEditor.on('drop', function (data, e) {
-    let file = e.dataTransfer.files[0],
-        modesAndExpansion = {
-            'py': 'python',
-            'c': 'text/x-csrc',
-            'cpp': 'text/x-c++src'
-        };
+    /*
+        При перетаскивании файла в поле с кодом, изменяется подстветка синтаксиса
+         и изменяется значение dropbox на нужный язык.
+    */
+    let file = e.dataTransfer.files[0];
 
     if ((file.name.split('.').length == 2) && (file.name.split('.')[1] in modesAndExpansion)) {
         let expansion = file.name.split('.')[1];
 
-        programmingLangChoseOptions.forEach(function (option) {
+        programmingLangChooseOptions.forEach(function (option) {
             option.selected = false
         })
 
-        programmingLangChose.querySelector(
+        programmingLangChoose.querySelector(
             `option[data-lang="${modesAndExpansion[expansion]}"]`
         ).selected = true;
-        codeEditor.mode = modesAndExpansion[expansion];
+        codeEditor.setOption("mode", modesAndExpansion[expansion]);
+        codeEditor.setValue("");  // Очистка поля, чтобы новый был только файл открыт
+        codeEditor.clearHistory();
     } else {
         e.preventDefault();
         e.stopPropagation();
@@ -101,13 +228,41 @@ codeEditor.on('drop', function (data, e) {
 });
 
 
+programmingLangChoose.onchange = function () {  // При изменении языка в dropbox, меняется подстветка синтаксиса
+    let langToSelect = this.querySelector(`option[value='${this.value}']`);
+    codeEditor.setOption("mode", langToSelect.dataset.lang);
+}
 
 
+// Кнопки для сдачи задачи
+let taskPageSendFileButton = document.querySelector('.task-page__insert-code__insert-file-tab__send-button'),
+    taskPageSendCodeButton = document.querySelector('.task-page__insert-code__write-code-tab__send-button');
+
+taskPageSendCodeButton.onclick = () => {
+    let codeText = codeEditor.getValue(),
+        codeLang = codeEditor.getOption('mode');
+
+    sendTaskWithCodeText(codeText, codeLang);
+}
 
 
+taskPageSendFileButton.onclick = () => {
+
+}
 
 
+let taskPageLoadSolutionFileInput = document.querySelector('.task__page-load-file-input'),
+    taskPageLoadSolutionFileLabel = document.querySelector('.task__page-load-file-input__label');
 
+taskPageLoadSolutionFileInput.onchange = function () {
+    let file = this.files[0];
+    if (file.name.split('.').length == 2 && file.name.split('.')[1] in modesAndExpansion) {
+        sendTaskWithFile(file, modesAndExpansion[file.name.split('.')[1]]);
+        // TODO: Сейчас надо сделать отправку(уже готово), посмотреть в views.py что приходит за файл
+    } else {
+        showAlertElement("Неверное расширение файла (поддерживаемые: '.py', '.c', '.cpp')");
+    }
+}
 
 
 

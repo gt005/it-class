@@ -3,6 +3,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("active_task/", views.test.as_view()),
+    path("active_task/", views.ActiveTask.as_view()),
 
 ]

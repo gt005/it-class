@@ -46,6 +46,26 @@ p {
   margin: 0;
 }
 
+.CodeMirror {
+  height: 480px;
+  -webkit-box-shadow: -1px 0 0 0 #e8e8e8 inset, 0 -1px 0 0 #e8e8e8 inset, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;
+  box-shadow: inset -1px 0 0 0 #e8e8e8, inset 0 -1px 0 0 #e8e8e8, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;
+  border-radius: 3px;
+  padding-bottom: 1px;
+}
+.CodeMirror * {
+  font-family: monospace !important;
+  font-size: 16px;
+}
+
+.CodeMirror-code {
+  font-size: 18px;
+}
+
+.CodeMirror-gutters {
+  background-color: white !important;
+}
+
 .link-navbar {
   padding: 8px 11px !important;
 }
@@ -61,17 +81,18 @@ p {
 }
 
 .task-page__past-header {
-  padding: 0 0 60px 0;
+  padding: 0 0 55px 0;
 }
 
 .task-page__task-level-label {
   text-align: center;
+  padding-top: 55px;
 }
 
 .tasks-amount-to-check {
   position: absolute;
-  right: -12px;
-  top: -5px;
+  right: -20px;
+  top: -17px;
   background: #FF4700;
   width: 25px;
   height: 25px;
@@ -87,11 +108,17 @@ p {
 }
 
 .task-page__back-button-row {
-  padding-top: 35px;
+  padding-top: 25px;
+  display: flex;
+  align-items: center;
 }
 
 .task-page__main-back-buttons {
   display: flex;
+  align-items: center;
+}
+.task-page__main-back-buttons .task-page__main-back-buttons__back-buttons img:first-child {
+  position: relative;
 }
 .task-page__main-back-buttons:hover .task-page__main-back-buttons__back-buttons img:last-child {
   opacity: 1;
@@ -153,6 +180,30 @@ p {
   font-family: monospace !important;
 }
 
+.task-page__insert-code {
+  margin-top: 55px;
+}
+.task-page__insert-code .container .row {
+  position: relative;
+}
+.task-page__insert-code .container .row .task-page__insert-code__loader {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.8);
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.3s;
+}
+.task-page__insert-code .container .row .task-page__insert-code__loader .task-page__insert-code__loader__text {
+  font-weight: 600;
+  font-size: 20px;
+}
 .task-page__insert-code .nav-link {
   color: #1e8bff;
   padding: 0.4rem 1rem;
@@ -161,12 +212,38 @@ p {
   color: #5c646d;
 }
 
-.CodeMirror {
-  height: 540px;
+.task-page__insert-code__write-code-tab__send-button {
+  margin: 25px 0 55px;
 }
 
-.CodeMirror-code {
-  font-size: 18px;
+.task-page__insert-code__time-end-label {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .navbar-nav {
+    margin: 0 !important;
+  }
+
+  h2 {
+    font-size: 23px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  .task-page__task-example__data {
+    font-size: 16px;
+  }
+
+  .task-page__task-description__photos {
+    flex-direction: column;
+  }
+  .task-page__task-description__photos img {
+    width: 100%;
+    margin: 0 !important;
+  }
 }
 
 /*# sourceMappingURL=style.css.map */

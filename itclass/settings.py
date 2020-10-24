@@ -26,7 +26,11 @@ SECRET_KEY = 'efgj!udo53#9=3dnuy3n%(=)$pdz-5@dv@me=dl1wky#&dhe$*'
 DEBUG = True
 
 # KarimGt005
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.14.103']
+ALLOWED_HOSTS = [
+    '127.0.0.1', '192.168.14.103',
+    '0.0.0.0', '172.20.10.2',
+    '172.20.10.7'
+]
 
 # Application definition
 
