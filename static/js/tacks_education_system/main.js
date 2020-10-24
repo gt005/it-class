@@ -26,6 +26,7 @@ let CookieManager = {
     }
 };
 
+
 function showAlertElement(message, success = false) {
     // Показывает уведомление на 10 секунд.
     // :param success - true - зеленое, иначе красное.
@@ -39,6 +40,7 @@ function showAlertElement(message, success = false) {
 
     $(".system-message").delay(8000).fadeOut();
 }
+
 
 function convertSecondsToHoursAndMinutes(seconds) {
     // Перевод секунд в часы, минуты и секунды
@@ -59,63 +61,39 @@ function convertSecondsToHoursAndMinutes(seconds) {
     return resultTime
 }
 
+
 function deleteTaskPageInsertCodeArea() {
     // Удаленеи поля с кодом
     let codeSection = document.querySelector(".task-page__insert-code .container");
     $(codeSection).slideUp('slow');
 }
 
-function sendTaskWithCodeText(codeText, codeLang) {
-    // Отправлсяет задачу и возвращает true, если задача принята сервером, иначе false
+
+function sendTaskWithFile(fileOrCodeText, codeLang, type) {
 
     let csrfToken = document.querySelector('#task-page__code-tabs-content input[name="csrfmiddlewaretoken"]').value,
         codeAreaLoader = document.querySelector(".task-page__insert-code__loader");
 
     codeAreaLoader.style = 'opacity: 1;visibility: visible;';
 
-    fetch(`${location.origin}/tasks/active_task/`, {
-        method: "POST",
-        headers: {"X-CSRFToken": csrfToken},
-        body: JSON.stringify({
-            taskSolutionType: 'code',
-            codeText: codeText,
-            codeLang: codeLang,
-        }),
-    }).then(function (response) {
-        if (!response.ok) {
-            showAlertElement('Произошла ошибка, попробуйте перезагрузить страницу');
-            return false
-        }
-        return response.json();
-    }).then(function (json) {
-        if (json) {
-            // json.message
-            setTimeout(() => {
-                showAlertElement("Задача отправлена!", true);
-                codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
-            }, 2500);
-        }
-    });
-}
-
-function sendTaskWithFile(file, codeLang) {
-
-    let csrfToken = document.querySelector('#task-page__code-tabs-content input[name="csrfmiddlewaretoken"]').value,
-        codeAreaLoader = document.querySelector(".task-page__insert-code__loader");
-
-    codeAreaLoader.style = 'opacity: 1;visibility: visible;';
+    let data = new FormData();
+    if (type === 'code') {
+        data.append('taskSolutionType', 'code');
+        data.append('codeText', fileOrCodeText);
+    } else if (type === 'file') {
+        data.append('taskSolutionType', 'file');
+        data.append('taskSolutionFile', fileOrCodeText);
+    }
+    data.append('codeLang', codeLang);
 
     fetch(`${location.origin}/tasks/active_task/`, {
         method: 'POST',
         headers: {"X-CSRFToken": csrfToken},
-        body: JSON.stringify({
-            taskSolutionType: 'file',
-            taskAnswerFile: input.files[0],
-            codeLang: codeLang
-        })
+        body: data
     }).then(function (response) {
         if (!response.ok) {
             showAlertElement('Произошла ошибка, попробуйте перезагрузить страницу');
+            codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
             return false
         }
         return response.json();
@@ -123,9 +101,9 @@ function sendTaskWithFile(file, codeLang) {
         if (json) {
             // json.message
             setTimeout(() => {
-                showAlertElement("Задача отправлена!", true);
+                showAlertElement("Задача отправлена!" + json.message, true);
                 codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
-            }, 2500);
+            }, 2500)
         }
     });
 }
@@ -236,31 +214,46 @@ programmingLangChoose.onchange = function () {  // При изменении я�
 
 // Кнопки для сдачи задачи
 let taskPageSendFileButton = document.querySelector('.task-page__insert-code__insert-file-tab__send-button'),
-    taskPageSendCodeButton = document.querySelector('.task-page__insert-code__write-code-tab__send-button');
+    taskPageSendCodeButton = document.querySelector('.task-page__insert-code__write-code-tab__send-button'),
+    taskPageLoadSolutionFileInput = document.querySelector('.task__page-load-file-input'),
+    taskPageLoadSolutionFileLabel = document.querySelector('.task__page-load-file-input__label');
 
 taskPageSendCodeButton.onclick = () => {
     let codeText = codeEditor.getValue(),
         codeLang = codeEditor.getOption('mode');
 
-    sendTaskWithCodeText(codeText, codeLang);
+    sendTaskWithFile(codeText, codeLang, 'code');
 }
-
 
 taskPageSendFileButton.onclick = () => {
-
+    let file = taskPageLoadSolutionFileInput.files[0];
+    if (file === undefined) {
+        showAlertElement("Не загружен файл.");
+        return
+    }
+    if (file.name.split('.').length == 2 && file.name.split('.')[1] in modesAndExpansion) {
+        sendTaskWithFile(file, modesAndExpansion[file.name.split('.')[1]], 'file');
+    } else {
+        showAlertElement("Неверное расширение файла (поддерживаемые: '.py', '.c', '.cpp')");
+    }
 }
 
 
-let taskPageLoadSolutionFileInput = document.querySelector('.task__page-load-file-input'),
-    taskPageLoadSolutionFileLabel = document.querySelector('.task__page-load-file-input__label');
-
 taskPageLoadSolutionFileInput.onchange = function () {
+    // Изменение надписи в input и выбор подходящего языка под разширение
     let file = this.files[0];
     if (file.name.split('.').length == 2 && file.name.split('.')[1] in modesAndExpansion) {
-        sendTaskWithFile(file, modesAndExpansion[file.name.split('.')[1]]);
-        // TODO: Сейчас надо сделать отправку(уже готово), посмотреть в views.py что приходит за файл
-    } else {
-        showAlertElement("Неверное расширение файла (поддерживаемые: '.py', '.c', '.cpp')");
+        let expansion = file.name.split('.')[1];
+
+        programmingLangChooseOptions.forEach(function (option) {
+            option.selected = false
+        })
+
+        programmingLangChoose.querySelector(
+            `option[data-lang="${modesAndExpansion[expansion]}"]`
+        ).selected = true;
+
+        taskPageLoadSolutionFileLabel.textContent = file.name;
     }
 }
 

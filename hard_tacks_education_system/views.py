@@ -1,5 +1,4 @@
 import datetime
-import json
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
@@ -11,27 +10,19 @@ class ActiveTask(TemplateView):
     template_name = "tacks_education_system/task_page.html"
 
     def post(self, request):
-        try:
-            data = json.loads(request.body.decode())
-        except ValueError:
+        if request.POST.get('taskSolutionType') == 'code':
             return JsonResponse({
-                'error': 'пусто',
+                'message': ' Прислан код на языке ' + request.POST.get('codeLang')
             })
-
-        if data.get('taskSolutionType') == 'code':
+        elif request.POST.get('taskSolutionType') == 'file':
+            print(request.FILES.get('taskSolutionFile').open().read())
             return JsonResponse({
-                'message': data.get('codeText') + '    ' + data.get('codeLang')
-            })
-        elif data.get('taskSolutionType') == 'file':
-            print(data.get('taskAnswerFile'))
-            return JsonResponse({
-                'message': data.get('taskAnswerFile')
+                'message': ' Прислан файл с именем ' + str(request.FILES.get('taskSolutionFile'))
             })
         return HttpResponseBadRequest()
 
-
     def get_context_data(self, **kwargs):
         context = super(ActiveTask, self).get_context_data(**kwargs)
-        context['remined_time_to_solve_a_task'] = (datetime.datetime(2020, 10, 21, 22, 48, 30) - datetime.datetime.now()).seconds - 1  # Секунда дана как время на загрузку страницы
+        context['remainder_time_to_solve_a_task'] = (datetime.datetime(2020, 10, 21, 22, 48, 30) - datetime.datetime.now()).seconds - 1  # Секунда дана как время на загрузку страницы
         return context
 
