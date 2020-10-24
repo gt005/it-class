@@ -216,6 +216,10 @@ p {
   display: flex;
 }
 
+.task-page__last-solutions {
+  display: none;
+}
+
 .task-page__insert-code__write-code-tab__send-button {
   margin: 25px 0 55px;
 }

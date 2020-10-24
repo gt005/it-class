@@ -68,20 +68,46 @@ function deleteTaskPageInsertCodeArea() {
     $(codeSection).slideUp('slow');
 }
 
-function changeLastSolutionTaskPage (solutionTime, codeLang, solutionCode) {
+function changeLastSolutionTaskPage(solutionTime, codeLang, solutionCode) {
     /* Изменяет таблицу с последним решение,
      если она пустая, то добавляется запись,
       иначе обновляется надписи последней записи
     */
 
-    let lastSolutionTable = document.querySelector('.task-page__last-solutions__table'),
+    console.log(solutionTime);
+
+    const lastSolutionRow = `<tr class="task-page__last-solutions__table__body__row">
+                                <td class="task-page__last-solutions__table__body__row__time">${solutionTime}</td>
+                                <td class="task-page__last-solutions__table__body__row__lang">${modeToLang[codeLang]}</td>
+                                <td class="task-page__last-solutions__table__body__row__show-code">
+                                    Посмотреть код
+                                </td>
+                            </tr>`
+
+    let lastSolutionSection = document.querySelector('.task-page__last-solutions'),
+        lastSolutionTable = document.querySelector('.task-page__last-solutions__table'),
         lastSolutionTableRowTime = document.querySelector('.task-page__last-solutions__table__body__row__time'),
         lastSolutionTableRowLang = document.querySelector('.task-page__last-solutions__table__body__row__lang'),
-        lastSolutionCodeArea = document.querySelector('.task-page__last-solutions__table__body__row__show-code-area pre');
+        lastSolutionCodeArea = document.querySelector('.task-page__last-solutions__table__body__row__show-code-area pre'),
+        lastSolutionTableBody = document.querySelector('.task-page__last-solutions__table__body');
 
-    lastSolutionTableRowTime.textContent = solutionTime;
-    lastSolutionTableRowLang.textContent = modeToLang[codeLang];
+    if (lastSolutionTableBody.textContent === '') {
+        $(lastSolutionSection).fadeIn('slow');
+        $(lastSolutionTable).fadeIn('slow');
+        lastSolutionTableBody.innerHTML = lastSolutionRow;
+    } else {
+        lastSolutionTableRowTime.textContent = solutionTime;
+        lastSolutionTableRowLang.textContent = modeToLang[codeLang];
+    }
+
     lastSolutionCodeArea.textContent = solutionCode;
+
+    let openCodeButton = document.querySelector('.task-page__last-solutions__table__body__row__show-code'),
+        lastCode = document.querySelector('.task-page__last-solutions__table__body__row__show-code-area');
+    // Работа с таблицей после задачи(на предыдущие отправки)
+    openCodeButton.onclick = function () {
+        $(lastCode).fadeToggle('slow');
+    }
 }
 
 function sendTaskSolution(fileOrCodeText, codeLang, type) {
@@ -291,13 +317,6 @@ taskPageChangeTheme.onchange = function () {
 };
 
 
-// Работа с таблицей после задачи(на предыдущие отправки)
-let openCodeButton = document.querySelector('.task-page__last-solutions__table__body__row__show-code'),
-    lastCode = document.querySelector('.task-page__last-solutions__table__body__row__show-code-area');
-
-openCodeButton.onclick = function () {
-    $(lastCode).fadeToggle('slow');
-}
 
 
 
