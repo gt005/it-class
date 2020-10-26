@@ -2,7 +2,52 @@
 {% load static %}
 
 {% block main %}
+    <section>
+        <div class="tasks-list-page__level-block">
+            <h4 class="tasks-list-page__level-block__level-header">
+                Уровень
+            </h4>
+            <div class="tasks-list-page__level-block__level-progress">
+                <div class="pre-level level">
+                    <img src="{% static 'images/task-list-page-done-level.svg' %}"
+                         alt="done">
+                    <span>{{ level|add:"-1" }}</span>
+                </div>
+                <hr class="level-line done">
+                <div class="current-level level">
+                    <img src="{% static 'images/task-list-page-done-level.svg' %}"
+                         alt="done">
+                    <span>{{ level }}</span>
+                </div>
+                <hr class="level-line">
+                <div class="next-level level">
+                    <img src="{% static 'images/task-list-page-not-done-level.svg' %}"
+                         alt="not done">
+                    <span>{{ level|add:"1" }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-12">
+                    <h4 class="tasks-list-page__active-task-header">
+                        Активная задача
+                    </h4>
+                </div>
+                <div class="col-12">
+                    <div class="active-task-about-container">
+                        <div class="active-task-about-container__theme-name">
+                            <span>Задача на тему: “Функции”</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}
 
 {% block detail_active_active_task %}active{% endblock %}

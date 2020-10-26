@@ -1,3 +1,6 @@
+$done-level-color: #72DA8A
+$not-done-level-color: rgb(167, 167, 167)
+
 *
   margin: 0
   padding: 0
@@ -80,21 +83,10 @@ p
   padding-top: 55px
 
 .tasks-amount-to-check
-  position: absolute
-  right: -20px
-  top: -17px
-  background: #FF4700
-  width: 25px
-  height: 25px
-  max-height: 25px
-  max-width: 25px
-  border-radius: 100px
+  transform: translate(-5px, -10px)
+  background-color: #FF4700
   color: #fff
-  display: flex
-  justify-content: center
-  align-items: center
-  font-weight: 500
-  line-height: 25
+  padding: 3px 5px
 
 .task-page__back-button-row
   padding-top: 25px
@@ -254,6 +246,78 @@ p
     transition: 0.3s
     &:hover
       background-color: rgba(0, 0, 0, 0.03)
+
+
+// List tasks page
+.tasks-list-page__level-block
+  padding-top: 55px
+  text-align: center
+
+.tasks-list-page__level-block__level-header
+  font-size: 30px
+  font-weight: 500
+  letter-spacing: 0.03em
+
+.tasks-list-page__level-block__level-progress
+  display: flex
+  justify-content: center
+  align-items: center
+  margin-top: 20px
+  & .level-line
+    margin: 0px 10px
+    width: 270px
+    height: 1px
+    background: $not-done-level-color
+    &.done
+      background: $done-level-color
+  & .next-level span
+    color: $not-done-level-color !important
+  & .level
+    display: flex
+    align-items: center
+    justify-content: center
+    text-align: center
+    position: relative
+    height: 50px
+    width: 50px
+    &.current-level
+      width: 80px
+      height: 80px
+      & span
+        font-size: 45px
+      & img
+        width: 100%
+        height: 100%
+    & span
+      color: #fff
+      font-weight: 400
+      font-size: 25px
+      position: absolute
+
+.tasks-list-page__active-task-header
+  padding-top: 55px
+  padding-bottom: 15px
+  font-weight: 300
+  letter-spacing: 0.02em
+  font-size: 25px
+
+.active-task-about-container
+  display: flex
+  align-items: center
+  border-radius: 15px
+  width: 100%
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1)
+  min-height: 125px
+  color: #484848
+  & .active-task-about-container__theme-name
+    width: 350px
+    height: 100%
+    padding: 30px
+    border-right: 1px rgba(0, 0, 0, 0.1)
+    //box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1)
+
+
+
 
 @media screen and (max-width: 768px)
   .navbar-nav

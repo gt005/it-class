@@ -36,3 +36,8 @@ class ActiveTask(TemplateView):
 
 class TasksList(TemplateView):
     template_name = "tacks_education_system/tasks_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(TasksList, self).get_context_data(**kwargs)
+        context['level'] = 1
+        return context
