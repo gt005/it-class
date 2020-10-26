@@ -27,6 +27,9 @@ let CookieManager = {
 };
 
 
+let lastSolutionsTaskPageSolutionId = 0;
+
+
 function showAlertElement(message, success = false) {
     // Показывает уведомление на 10 секунд.
     // :param success - true - зеленое, иначе красное.
@@ -68,47 +71,56 @@ function deleteTaskPageInsertCodeArea() {
     $(codeSection).slideUp('slow');
 }
 
+
 function changeLastSolutionTaskPage(solutionTime, codeLang, solutionCode) {
     /* Изменяет таблицу с последним решение,
      если она пустая, то добавляется запись,
       иначе обновляется надписи последней записи
     */
 
-    console.log(solutionTime);
-
-    const lastSolutionRow = `<tr class="task-page__last-solutions__table__body__row">
-                                <td class="task-page__last-solutions__table__body__row__time">${solutionTime}</td>
-                                <td class="task-page__last-solutions__table__body__row__lang">${modeToLang[codeLang]}</td>
-                                <td class="task-page__last-solutions__table__body__row__show-code">
-                                    Посмотреть код
-                                </td>
-                            </tr>`
+    let lastSolutionRow = `<div class="card task-page__last-solutions__card">
+                                <div class="card-header" id="heading${lastSolutionsTaskPageSolutionId}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left collapsed"
+                                                type="button"
+                                                data-toggle="collapse"
+                                                data-target="#collapse${lastSolutionsTaskPageSolutionId}"
+                                                data-code=""
+                                                aria-expanded="false"
+                                                aria-controls="collapse${lastSolutionsTaskPageSolutionId}">
+                                            <span class="task-page__last-solutions__table__body__row">
+                                                <span class="task-page__last-solutions__table__body__row__time">
+                                                    ${solutionTime}
+                                                </span>
+                                                <span class="task-page__last-solutions__table__body__row__lang">
+                                                    ${modeToLang[codeLang]}
+                                                </span>
+                                            </span>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapse${lastSolutionsTaskPageSolutionId}" class="collapse"
+                                     aria-labelledby="heading${lastSolutionsTaskPageSolutionId}"
+                                     data-parent="#accordionExample">
+                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
+                                        <pre>${solutionCode}</pre>
+                                    </div>
+                                </div>
+                            </div>`
 
     let lastSolutionSection = document.querySelector('.task-page__last-solutions'),
         lastSolutionTable = document.querySelector('.task-page__last-solutions__table'),
-        lastSolutionTableRowTime = document.querySelector('.task-page__last-solutions__table__body__row__time'),
-        lastSolutionTableRowLang = document.querySelector('.task-page__last-solutions__table__body__row__lang'),
-        lastSolutionCodeArea = document.querySelector('.task-page__last-solutions__table__body__row__show-code-area pre'),
         lastSolutionTableBody = document.querySelector('.task-page__last-solutions__table__body');
 
     if (lastSolutionTableBody.textContent === '') {
         $(lastSolutionSection).fadeIn('slow');
         $(lastSolutionTable).fadeIn('slow');
-        lastSolutionTableBody.innerHTML = lastSolutionRow;
-    } else {
-        lastSolutionTableRowTime.textContent = solutionTime;
-        lastSolutionTableRowLang.textContent = modeToLang[codeLang];
     }
 
-    lastSolutionCodeArea.textContent = solutionCode;
-
-    let openCodeButton = document.querySelector('.task-page__last-solutions__table__body__row__show-code'),
-        lastCode = document.querySelector('.task-page__last-solutions__table__body__row__show-code-area');
-    // Работа с таблицей после задачи(на предыдущие отправки)
-    openCodeButton.onclick = function () {
-        $(lastCode).fadeToggle('slow');
-    }
+    lastSolutionTableBody.innerHTML = lastSolutionRow + lastSolutionTableBody.innerHTML;
+    lastSolutionsTaskPageSolutionId++;
 }
+
 
 function sendTaskSolution(fileOrCodeText, codeLang, type) {
 
@@ -145,12 +157,17 @@ function sendTaskSolution(fileOrCodeText, codeLang, type) {
             if (codeToAddToLastSolution === '') {
                 codeToAddToLastSolution = json.solutionCode;
             }
-            changeLastSolutionTaskPage(json.solutionTime, codeLang, codeToAddToLastSolution)
+            changeLastSolutionTaskPage(
+                json.solutionTime,
+                codeLang,
+                codeToAddToLastSolution,
+            )
             showAlertElement("Задача отправлена!" + json.message, true);
             codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
         }
     });
 }
+
 
 // Страница с задачей
 let remainderTime = document.querySelector("#task-page__time-remainder__time"),
@@ -164,8 +181,8 @@ let remainderTime = document.querySelector("#task-page__time-remainder__time"),
     },
     modeToLang = {
         'python': 'Python 3.7.3',
-        'text/x-csrc': 'GNU c++17 7.3',
-        'text/x-c++src': 'GNU C11 7.3'
+        'text/x-csrc': 'GNU C11 7.3',
+        'text/x-c++src': 'GNU c++17 7.3'
     };
 
 remainderTime.textContent = convertSecondsToHoursAndMinutes(remainderTimeStartSeconds);
@@ -304,17 +321,53 @@ taskPageLoadSolutionFileInput.onchange = function () {
 };
 
 
-let taskPageChangeTheme = document.querySelector('#task-page__change-code-theme__select');
+let taskPageChangeTheme = document.querySelector('#task-page__change-code-theme__select'),
+    codeEditorHtmlElement = document.querySelector('.CodeMirror');
 
-taskPageChangeTheme.onchange = function () {
-    let codeEditorHtmlElement = document.querySelector('.CodeMirror');
-    if (this.querySelector(`option[value='${this.value}']`).dataset.themeShade === 'light') {
+function setOutlineToCodeEditor () {
+    if (taskPageChangeTheme.querySelector(`option[value='${taskPageChangeTheme.value}']`).dataset.themeShade === 'light') {
         codeEditorHtmlElement.style = '-webkit-box-shadow:-1px 0 0 0 #e8e8e8 inset, 0 -1px 0 0 #e8e8e8 inset, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;box-shadow:inset -1px 0 0 0 #e8e8e8, inset 0 -1px 0 0 #e8e8e8, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;'
     } else {
         codeEditorHtmlElement.style = '-webkit-box-shadow:none;box-shadow:none;';
     }
+}
+
+taskPageChangeTheme.onchange = function () {
+    setOutlineToCodeEditor();
+
     codeEditor.setOption('theme', this.value);
+
+    localStorage.setItem('codeEditorTheme', this.value);
 };
+
+
+function setTaskPageCodeThemeFromMemory () {
+    let theme = localStorage.getItem('codeEditorTheme')
+    if (theme) {
+        codeEditor.setOption('theme', theme);
+        taskPageChangeTheme.value = theme;
+    }
+    setOutlineToCodeEditor();
+}
+
+
+
+
+window.onload = function () {
+    setTaskPageCodeThemeFromMemory();
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

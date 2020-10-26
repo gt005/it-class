@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: Montserrat, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-family: Montserrat, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 a {
@@ -64,6 +64,10 @@ p {
 
 .CodeMirror-gutters {
   background-color: white !important;
+}
+
+.btn:focus, .btn.focus {
+  box-shadow: none;
 }
 
 .link-navbar {
@@ -233,13 +237,13 @@ p {
 }
 
 .task-page__last-solutions__table {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   position: relative;
   width: 100%;
 }
 .task-page__last-solutions__table tr {
   padding: 5px;
-  margin: 10px;
+  margin: 10px 0;
   min-height: 65px;
   display: flex;
   justify-content: space-around;
@@ -250,7 +254,21 @@ p {
 }
 .task-page__last-solutions__table tr td, .task-page__last-solutions__table tr th {
   text-align: center;
-  width: 33%;
+  width: 50%;
+}
+
+.task-page__last-solutions__table__body__row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.task-page__last-solutions__table__body__row span {
+  color: initial;
+  width: 50%;
+  text-align: center;
+}
+.task-page__last-solutions__table__body__row span:hover {
+  text-decoration: none;
 }
 
 .task-page__last-solutions__table__body__row__show-code {
@@ -263,7 +281,17 @@ p {
 
 .task-page__last-solutions__table__body__row__show-code-area {
   padding-left: 20px;
-  display: none;
+}
+
+.task-page__last-solutions__card {
+  border-radius: 10px;
+}
+.task-page__last-solutions__card .card-header {
+  background-color: white;
+  transition: 0.3s;
+}
+.task-page__last-solutions__card .card-header:hover {
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 @media screen and (max-width: 768px) {

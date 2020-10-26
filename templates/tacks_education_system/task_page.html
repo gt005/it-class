@@ -27,7 +27,7 @@
             <div class="row task-page__back-button-row">
                 <div class="col-6 col-lg-3">
                     <a class="task-page__main-back-buttons pr-lg-3"
-                       href="/tasks/active_task">
+                       href="/tasks/">
                         <span class="task-page__main-back-buttons__back-buttons">
                             <img src="{% static 'images/back_button.svg' %}"
                                  alt="<">
@@ -249,7 +249,7 @@
             </div>
         </div>
         <h3 class='text-center task-page__insert-code__time-end-label'>Время
-            вышло, ты не успел решить задачу.</h3>
+            вышло.</h3>
     </section>
 
     <section class="task-page__last-solutions">
@@ -257,29 +257,21 @@
             <div class="row">
                 <div class="col-lg-4 col-12">
                     <h2 class="task-page__last-solutions__header-label">
-                        Последняя отправленная:</h2>
+                        Последние отправленные:</h2>
                 </div>
             </div>
             <div class="row">
                 <div class="col-12">
                     <table class="task-page__last-solutions__table p-0">
                         <thead class="text-center">
-                        <tr style="box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);">
-                            <th scope="col">Время сдачи</th>
-                            <th scope="col">Компилятор</th>
-                            <th scope="col">Код</th>
-                            <!-- Вердикт и договор на встречу будет при разворачивании -->
-                        </tr>
-                        </thead>
-                        <tbody class="task-page__last-solutions__table__body"></tbody>
+                            <tr style="box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);">
+                                <th scope="col">Время сдачи</th>
+                                <th scope="col">Компилятор</th>
+                                <!-- Вердикт и договор на встречу будет при разворачивании -->
+                            </tr>
+                            </thead>
                     </table>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="task-page__last-solutions__table__body__row__show-code-area">
-                        <pre></pre>
-                        </div>
+                    <div class="accordion task-page__last-solutions__table__body" id="accordionExample"></div>
                 </div>
             </div>
         </div>
@@ -289,5 +281,4 @@
 
 {% block detail_active_active_task %}active{% endblock %}
 {% block scripts_include %}
-
 {% endblock %}
