@@ -121,7 +121,7 @@ p {
 }
 
 .task-page__main-back-buttons__back-buttons {
-  padding-right: 40px;
+  padding-right: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -302,7 +302,7 @@ p {
 }
 .tasks-list-page__level-block__level-progress .level-line {
   margin: 0px 10px;
-  width: 270px;
+  width: 17vw;
   height: 1px;
   background: #a7a7a7;
 }
@@ -355,12 +355,29 @@ p {
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
   min-height: 125px;
   color: #484848;
+  background-color: white;
+  transition: 0.3s;
+}
+.active-task-about-container:hover {
+  background-color: rgba(0, 0, 0, 0.03);
 }
 .active-task-about-container .active-task-about-container__theme-name {
+  text-align: center;
   width: 350px;
   height: 100%;
   padding: 30px;
   border-right: 1px rgba(0, 0, 0, 0.1);
+}
+.active-task-about-container table {
+  box-shadow: -1px 0 0px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  text-align: center;
+}
+.active-task-about-container.task-actived {
+  background: rgba(114, 238, 138, 0.3);
+}
+.active-task-about-container.task-actived:hover {
+  background: rgba(114, 255, 138, 0.5);
 }
 
 @media screen and (max-width: 768px) {

@@ -108,7 +108,7 @@ p
       opacity: 0
 
 .task-page__main-back-buttons__back-buttons
-  padding-right: 40px
+  padding-right: 20px
   display: flex
   justify-content: center
   align-items: center
@@ -265,7 +265,7 @@ p
   margin-top: 20px
   & .level-line
     margin: 0px 10px
-    width: 270px
+    width: 17vw
     height: 1px
     background: $not-done-level-color
     &.done
@@ -309,12 +309,25 @@ p
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1)
   min-height: 125px
   color: #484848
+  background-color: white
+  transition: 0.3s
+  &:hover
+    background-color: rgba(0, 0, 0, 0.03)
   & .active-task-about-container__theme-name
+    text-align: center
     width: 350px
     height: 100%
     padding: 30px
     border-right: 1px rgba(0, 0, 0, 0.1)
-    //box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1)
+  & table
+    box-shadow: -1px 0 0px rgba(0,0,0,.1)
+    margin: 0
+    text-align: center
+  &.task-actived
+    background: rgba(114, 238, 138, 0.3)
+    &:hover
+      background: rgba(114, 255, 138, 0.5)
+
 
 
 
@@ -341,6 +354,13 @@ p
     & img
       width: 100%
       margin: 0 !important
+
+
+
+
+
+
+
 
 
 

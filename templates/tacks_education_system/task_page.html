@@ -39,7 +39,7 @@
                 </div>
                 <div class="col-6 col-lg-4 ml-auto task-page__time-remainder">
                     Осталось времени: <span
-                        id="task-page__time-remainder__time">2342</span>
+                        id="task-page__time-remainder__time">2</span>
                 </div>
             </div>
         </div>
@@ -264,14 +264,15 @@
                 <div class="col-12">
                     <table class="task-page__last-solutions__table p-0">
                         <thead class="text-center">
-                            <tr style="box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);">
-                                <th scope="col">Время сдачи</th>
-                                <th scope="col">Компилятор</th>
-                                <!-- Вердикт и договор на встречу будет при разворачивании -->
-                            </tr>
-                            </thead>
+                        <tr style="box-shadow: 0 0 0 1px rgba(13,35,67,.07),0 5px 15px -4px rgba(13,35,67,.4);">
+                            <th scope="col">Время сдачи</th>
+                            <th scope="col">Компилятор</th>
+                            <!-- Вердикт и договор на встречу будет при разворачивании -->
+                        </tr>
+                        </thead>
                     </table>
-                    <div class="accordion task-page__last-solutions__table__body" id="accordionExample"></div>
+                    <div class="accordion task-page__last-solutions__table__body"
+                         id="accordionExample"></div>
                 </div>
             </div>
         </div>
@@ -281,4 +282,173 @@
 
 {% block detail_active_active_task %}active{% endblock %}
 {% block scripts_include %}
+
+    <script>
+        let remainderTime = document.querySelector("#task-page__time-remainder__time"),
+            taskPageCodeSection = document.querySelector(".task-page__insert-code"),
+            taskPageTimeEndLabel = document.querySelector('.task-page__insert-code__time-end-label'),
+            expansionToMode = {
+                'py': 'python',
+                'c': 'text/x-csrc',
+                'cpp': 'text/x-c++src'
+            },
+            modeToLang = {
+                'python': 'Python 3.7.3',
+                'text/x-csrc': 'GNU C11 7.3',
+                'text/x-c++src': 'GNU c++17 7.3'
+            };
+
+
+        // Запуск отсчета времени для задачи
+        remainderTimeCounter(
+            remainderTime,
+            "Осталось минута до закрытия задачи, успей отправить решение.",
+            function_on_end = () => {
+                deleteTaskPageInsertCodeArea();
+                $(taskPageTimeEndLabel).fadeIn('slow');
+            }
+        );
+
+
+        let programmingLangChooseOptions = document.querySelectorAll('#task-page__lang-choose option'),
+            programmingLangChoose = document.querySelector('#task-page__lang-choose');
+
+
+        let codeEditor = CodeMirror(document.querySelector("#task-page__insert-code__write-code-tab__code-editor"), {
+            // Объект поля с вводом кода
+            value: "class test(object):\n" +
+                "    ''' Строка документации '''\n" +
+                "    def __init__(self, mixin=\"Hello\"):\n" +
+                "        self.mixin = mixin\n" +
+                "        \n" +
+                "    @property\n" +
+                "    def mixin_getter(self):\n" +
+                "        return self.mixin\n" +
+                "    \n" +
+                "def maximum(a, b):\n" +
+                "    if a >= b:\n" +
+                "        return a\n" +
+                "    return b",
+            mode: 'python',
+            lineNumbers: true,
+            dragDrop: true,
+            tabSize: 4,
+            indentUnit: 4,
+            matchBrackets: true,
+            theme: 'default',
+        });
+
+
+        codeEditor.on('drop', function (data, e) {
+            /*
+                При перетаскивании файла в поле с кодом, изменяется подстветка синтаксиса
+                 и изменяется значение dropbox на нужный язык.
+            */
+            let file = e.dataTransfer.files[0];
+
+            if ((file.name.split('.').length == 2) && (file.name.split('.')[1] in expansionToMode)) {
+                let expansion = file.name.split('.')[1];
+
+                programmingLangChooseOptions.forEach(function (option) {
+                    option.selected = false
+                })
+
+                programmingLangChoose.querySelector(
+                    `option[data-lang="${expansionToMode[expansion]}"]`
+                ).selected = true;
+                codeEditor.setOption("mode", expansionToMode[expansion]);
+                codeEditor.setValue("");  // Очистка поля, чтобы новый был только файл открыт
+                codeEditor.clearHistory();
+            } else {
+                e.preventDefault();
+                e.stopPropagation();
+                showAlertElement("Неверное расширение файла (поддерживаемые: '.py', '.c', '.cpp')");
+            }
+        });
+
+
+        programmingLangChoose.onchange = function () {  // При изменении языка в dropbox, меняется подстветка синтаксиса
+            let langToSelect = this.querySelector(`option[value='${this.value}']`);
+            codeEditor.setOption("mode", langToSelect.dataset.lang);
+        };
+
+
+        // Кнопки для сдачи задачи
+        let taskPageSendFileButton = document.querySelector('.task-page__insert-code__insert-file-tab__send-button'),
+            taskPageSendCodeButton = document.querySelector('.task-page__insert-code__write-code-tab__send-button'),
+            taskPageLoadSolutionFileInput = document.querySelector('.task__page-load-file-input'),
+            taskPageLoadSolutionFileLabel = document.querySelector('.task__page-load-file-input__label');
+
+        taskPageSendCodeButton.onclick = () => {
+            let codeText = codeEditor.getValue(),
+                codeLang = codeEditor.getOption('mode');
+
+            sendTaskSolution(codeText, codeLang, 'code');
+        }
+
+        taskPageSendFileButton.onclick = () => {
+            let file = taskPageLoadSolutionFileInput.files[0];
+            if (file === undefined) {
+                showAlertElement("Не загружен файл.");
+                return
+            }
+            if (file.name.split('.').length === 2 && file.name.split('.')[1] in expansionToMode) {
+                sendTaskSolution(file, expansionToMode[file.name.split('.')[1]], 'file');
+            } else {
+                showAlertElement("Неверное расширение файла (поддерживаемые: '.py', '.c', '.cpp')");
+            }
+        };
+
+        taskPageLoadSolutionFileInput.onchange = function () {
+            // Изменение надписи в input и выбор подходящего языка под разширение
+            let file = this.files[0];
+            if (file.name.split('.').length === 2 && file.name.split('.')[1] in expansionToMode) {
+                let expansion = file.name.split('.')[1];
+
+                programmingLangChooseOptions.forEach(function (option) {
+                    option.selected = false
+                })
+
+                programmingLangChoose.querySelector(
+                    `option[data-lang="${expansionToMode[expansion]}"]`
+                ).selected = true;
+            }
+            taskPageLoadSolutionFileLabel.textContent = file.name;
+        };
+
+
+        let taskPageChangeTheme = document.querySelector('#task-page__change-code-theme__select'),
+            codeEditorHtmlElement = document.querySelector('.CodeMirror');
+
+        function setOutlineToCodeEditor() {
+            if (taskPageChangeTheme.querySelector(`option[value='${taskPageChangeTheme.value}']`).dataset.themeShade === 'light') {
+                codeEditorHtmlElement.style = '-webkit-box-shadow:-1px 0 0 0 #e8e8e8 inset, 0 -1px 0 0 #e8e8e8 inset, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;box-shadow:inset -1px 0 0 0 #e8e8e8, inset 0 -1px 0 0 #e8e8e8, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;'
+            } else {
+                codeEditorHtmlElement.style = '-webkit-box-shadow:none;box-shadow:none;';
+            }
+        }
+
+        taskPageChangeTheme.onchange = function () {
+            setOutlineToCodeEditor();
+
+            codeEditor.setOption('theme', this.value);
+
+            localStorage.setItem('codeEditorTheme', this.value);
+        };
+
+
+        function setTaskPageCodeThemeFromMemory() {
+            let theme = localStorage.getItem('codeEditorTheme')
+            if (theme) {
+                codeEditor.setOption('theme', theme);
+                taskPageChangeTheme.value = theme;
+            }
+            setOutlineToCodeEditor();
+        }
+
+        window.onload = function () {
+            setTaskPageCodeThemeFromMemory();
+        }
+    </script>
+
 {% endblock %}
