@@ -39,6 +39,6 @@ class TasksList(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
-        context['level'] = 1
-        context['active_task_period'] = 3 * 60 * 60
+        context['level'] = 5
+        context['active_task_period'] = 10
         return context

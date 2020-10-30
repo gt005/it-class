@@ -38,30 +38,80 @@
                     </h4>
                 </div>
                 <div class="col-12">
-                    <a class="active-task-about-container" href="active_task/">
-                        <div class="active-task-about-container__theme-name">
+                    <a class="task-list-page__container task-list-page__active-container" href="active_task/">
+                        <div class="task-list-page__container__theme-name">
                             <span>Задача на тему: “Функции”</span>
+                            <br>
+                            <span>Уровень: 5</span>
                         </div>
-                        <table class="table table-borderless">
+                        <table class="table table-borderless task-list-page__container__table">
                             <thead>
                             <tr>
                                 <th scope="col">Время начала</th>
                                 <th scope="col">Время завершения</th>
-                                <th id="tasks-list-page__active-task__time-to-start-label" scope="col">До начала</th>
+                                <th id="tasks-list-page__active-task__time-to-start-label"
+                                    scope="col">До начала
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr>
-                                <td id="tasks-list-page__active-task__start-time">28 окт 2020, 15:00:00</td>
-                                <td>28 окт 2020, 18:00:00</td>
+                                <td id="tasks-list-page__active-task__start-time">
+                                    28 окт 2020, 15:00:00
+                                </td>
+                                <td id="tasks-list-page__active-task__end-time">
+                                    28 окт 2020, 18:00:00
+                                </td>
                                 <td id="tasks-list-page__active-task__time-amount">
-                                    1
+                                    500
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                     </a>
 
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-12">
+                    <h4 class="tasks-list-page__active-task-header">
+                        Прошлые задачи
+                    </h4>
+                </div>
+                <div class="col-12">
+                    <div class="task-list-page__previous-tasks">
+                        <a class="task-list-page__container"
+                           href="active_task/">
+                            <div class="task-list-page__container__theme-name">
+                                <span>Задача на тему: “Списки”</span>
+                                <br>
+                                <span>Уровень: 3</span>
+                            </div>
+                            <table class="table table-borderless">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Оценка Peer 1</th>
+                                    <th scope="col">Оценка Peer 2</th>
+                                    <th scope="col">Оценка системы</th>
+                                    <th scope="col">Итог</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>66</td>
+                                    <td>70</td>
+                                    <td>57</td>
+                                    <td>193</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -75,35 +125,39 @@
     <script>
         let reminderTimeTaskListPage = document.querySelector('#tasks-list-page__active-task__time-amount'),
             taskListActiveTaskStartLabel = document.querySelector('#tasks-list-page__active-task__start-time'),
+            taskListActiveTaskEndLabel = document.querySelector('#tasks-list-page__active-task__end-time'),
             taskListActiveTaskTimeToStartLabel = document.querySelector('#tasks-list-page__active-task__time-to-start-label'),
-            taskListActiveTaskAboutContainer = document.querySelector('.active-task-about-container');
+            taskListActiveTaskAboutContainer = document.querySelector('.task-list-page__container');
 
         function startCountdownOnActiveTask() {
             taskListActiveTaskStartLabel.textContent = "Началось";
-                taskListActiveTaskTimeToStartLabel.textContent = "До конца";
-                reminderTimeTaskListPage.textContent = '{{ active_task_period }}';
-                taskListActiveTaskAboutContainer.classList.add('task-actived');
-                remainderTimeCounter(
-                    reminderTimeTaskListPage,
-                    "Задача закроется через минуту",
-                    function_on_end=undefined,
-                    message_type=false,
-                    red_color_toggle=true,
-                    set_red_end_message=true,
-                    end_message_alert="Задача закрылась, ее решение теперь нельзя отправлять.",
-                    end_message_alert_type=false,
-                );
+            taskListActiveTaskTimeToStartLabel.textContent = "До конца";
+            reminderTimeTaskListPage.textContent = '{{ active_task_period }}';
+            taskListActiveTaskAboutContainer.classList.add('task-actived');
+            remainderTimeCounter(
+                reminderTimeTaskListPage,
+                "Задача закроется через минуту",
+                function_on_end = () => {
+                    taskListActiveTaskAboutContainer.classList.remove('task-actived');
+                    taskListActiveTaskEndLabel.textContent = 'Завершилось'
+                },
+                message_type = false,
+                red_color_toggle = true,
+                set_red_end_message = true,
+                end_message_alert = "Задача закрылась, ее решение больше нельзя отправлять.",
+                end_message_alert_type = false,
+            );
         }
 
         remainderTimeCounter(
             reminderTimeTaskListPage,
             "Задача откроется через минуту",
-            function_on_end=startCountdownOnActiveTask,
-            message_type=true,
-            red_color_toggle=false,
-            set_red_end_message=false,
-            end_message_alert="Задача открылась, можно начать решать.",
-            end_message_alert_type=true,
+            function_on_end = startCountdownOnActiveTask,
+            message_type = true,
+            red_color_toggle = false,
+            set_red_end_message = false,
+            end_message_alert = "Задача открылась, можно начать решать.",
+            end_message_alert_type = true,
         );
     </script>
 

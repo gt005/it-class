@@ -347,7 +347,7 @@ p {
   font-size: 25px;
 }
 
-.active-task-about-container {
+.task-list-page__container {
   display: flex;
   align-items: center;
   border-radius: 15px;
@@ -358,26 +358,32 @@ p {
   background-color: white;
   transition: 0.3s;
 }
-.active-task-about-container:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+.task-list-page__container.task-list-page__active-container {
+  cursor: default;
+  pointer-events: none;
 }
-.active-task-about-container .active-task-about-container__theme-name {
+.task-list-page__container .task-list-page__container__theme-name {
   text-align: center;
   width: 350px;
   height: 100%;
   padding: 30px;
   border-right: 1px rgba(0, 0, 0, 0.1);
 }
-.active-task-about-container table {
+.task-list-page__container table {
   box-shadow: -1px 0 0px rgba(0, 0, 0, 0.1);
   margin: 0;
   text-align: center;
 }
-.active-task-about-container.task-actived {
-  background: rgba(114, 238, 138, 0.3);
+.task-list-page__container table.task-list-page__container__table th, .task-list-page__container table.task-list-page__container__table td {
+  width: 33%;
 }
-.active-task-about-container.task-actived:hover {
-  background: rgba(114, 255, 138, 0.5);
+.task-list-page__container.task-actived {
+  cursor: pointer;
+  background: rgba(0, 255, 0, 0.1);
+  pointer-events: auto;
+}
+.task-list-page__container.task-actived:hover {
+  background: rgba(0, 255, 0, 0.15);
 }
 
 @media screen and (max-width: 768px) {

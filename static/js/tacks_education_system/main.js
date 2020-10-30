@@ -228,7 +228,6 @@ function remainderTimeCounter(
         }
     }, 1000);
 
-    console.log(targetSeconds)
     setTimeout(() => {
         clearInterval(remainderTimeInterval);
     }, targetSeconds * 1000);

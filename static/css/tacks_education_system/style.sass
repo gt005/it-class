@@ -301,7 +301,7 @@ p
   letter-spacing: 0.02em
   font-size: 25px
 
-.active-task-about-container
+.task-list-page__container
   display: flex
   align-items: center
   border-radius: 15px
@@ -311,9 +311,10 @@ p
   color: #484848
   background-color: white
   transition: 0.3s
-  &:hover
-    background-color: rgba(0, 0, 0, 0.03)
-  & .active-task-about-container__theme-name
+  &.task-list-page__active-container
+    cursor: default
+    pointer-events: none
+  & .task-list-page__container__theme-name
     text-align: center
     width: 350px
     height: 100%
@@ -323,11 +324,14 @@ p
     box-shadow: -1px 0 0px rgba(0,0,0,.1)
     margin: 0
     text-align: center
+    &.task-list-page__container__table th, &.task-list-page__container__table td
+      width: 33%
   &.task-actived
-    background: rgba(114, 238, 138, 0.3)
+    cursor: pointer
+    background: rgba(0, 255, 0, 0.1)
+    pointer-events: auto
     &:hover
-      background: rgba(114, 255, 138, 0.5)
-
+      background: rgba(0, 255, 0, 0.15)
 
 
 
