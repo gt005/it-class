@@ -99,7 +99,7 @@ function changeLastSolutionTaskPage(solutionTime, codeLang, solutionCode) {
                                                     ${solutionTime}
                                                 </span>
                                                 <span class="task-page__last-solutions__table__body__row__lang">
-                                                    ${modeToLang[codeLang]}
+                                                    ${codeLang}
                                                 </span>
                                             </span>
                                         </button>
@@ -216,6 +216,7 @@ function remainderTimeCounter(
             if (function_on_end){
                 function_on_end();
             }
+            clearCurrentInterval();
         } else if (targetSeconds <= 60 && red_color_toggle) {
             if (targetSeconds % 2 === 0) {
                 target.style.color = 'red';
@@ -228,7 +229,7 @@ function remainderTimeCounter(
         }
     }, 1000);
 
-    setTimeout(() => {
+    function clearCurrentInterval () {
         clearInterval(remainderTimeInterval);
-    }, targetSeconds * 1000);
+    }
 }

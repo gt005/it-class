@@ -14,6 +14,7 @@ class ActiveTask(TemplateView):
     template_name = "tacks_education_system/task_page.html"
 
     def post(self, request):
+        print(request.POST.get('codeLang'))
         if request.POST.get('taskSolutionType') == 'code':
             return JsonResponse({
                 'message': ' Прислан код на языке ' + request.POST.get('codeLang'),
@@ -40,5 +41,5 @@ class TasksList(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
         context['level'] = 5
-        context['active_task_period'] = 10
+        context['active_task_period'] = 150 * 60
         return context

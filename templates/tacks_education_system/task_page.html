@@ -39,7 +39,7 @@
                 </div>
                 <div class="col-6 col-lg-4 ml-auto task-page__time-remainder">
                     Осталось времени: <span
-                        id="task-page__time-remainder__time">900</span>
+                        id="task-page__time-remainder__time">9000</span>
                 </div>
             </div>
         </div>
@@ -381,7 +381,7 @@
 
         taskPageSendCodeButton.onclick = () => {
             let codeText = codeEditor.getValue(),
-                codeLang = codeEditor.getOption('mode');
+                codeLang = programmingLangChoose.value;
 
             sendTaskSolution(codeText, codeLang, 'code');
         }
@@ -393,7 +393,7 @@
                 return
             }
             if (file.name.split('.').length === 2 && file.name.split('.')[1] in expansionToMode) {
-                sendTaskSolution(file, expansionToMode[file.name.split('.')[1]], 'file');
+                sendTaskSolution(file, programmingLangChoose.value, 'file');
             } else {
                 showAlertElement("Неверное расширение файла (поддерживаемые: '.py', '.c', '.cpp')");
             }
