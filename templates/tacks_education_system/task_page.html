@@ -284,6 +284,12 @@
 {% block scripts_include %}
 
     <script>
+
+        if (window.navigator.platform == 'iPhone') {
+            let inputFile = document.querySelector('#validatedCustomFile');
+            inputFile.accept = 'all';
+        }
+
         let remainderTime = document.querySelector("#task-page__time-remainder__time"),
             taskPageCodeSection = document.querySelector(".task-page__insert-code"),
             taskPageTimeEndLabel = document.querySelector('.task-page__insert-code__time-end-label'),

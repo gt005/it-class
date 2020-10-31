@@ -5,16 +5,18 @@ import locale
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.generic import ListView, TemplateView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
 
-class ActiveTask(TemplateView):
+class ActiveTask(LoginRequiredMixin, TemplateView):
     template_name = "tacks_education_system/task_page.html"
+    login_url = "/login/"
+    task_pk = "task_pk"
 
-    def post(self, request):
-        print(request.POST.get('codeLang'))
+    def post(self, request, **kwargs):
         if request.POST.get('taskSolutionType') == 'code':
             return JsonResponse({
                 'message': ' Прислан код на языке ' + request.POST.get('codeLang'),
@@ -35,11 +37,12 @@ class ActiveTask(TemplateView):
         return context
 
 
-class TasksList(TemplateView):
+class TasksList(LoginRequiredMixin, TemplateView):
     template_name = "tacks_education_system/tasks_list.html"
+    login_url = "/login/"
 
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
-        context['level'] = 5
+        context['level'] = self.request.user.puples.education_level
         context['active_task_period'] = 150 * 60
         return context

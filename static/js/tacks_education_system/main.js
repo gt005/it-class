@@ -147,7 +147,7 @@ function sendTaskSolution(fileOrCodeText, codeLang, type) {
     }
     data.append('codeLang', codeLang);
 
-    fetch(`${location.origin}/tasks/active_task/`, {
+    fetch(location.href, {
         method: 'POST',
         headers: {"X-CSRFToken": csrfToken},
         body: data

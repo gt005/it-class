@@ -30,6 +30,8 @@ class Puples(models.Model):
     applicant_progress = models.IntegerField(verbose_name="Прогресс", choices=PROGRESS_CHOICES, default=0, blank=True)
     email = models.EmailField(verbose_name="Email", default="")
     phone = models.CharField(max_length=12, verbose_name="Телефон", default="")
+    education_level = models.PositiveIntegerField(
+        verbose_name="Уровень в системе решения задач", default=1)
 
     def __str__(self):
         return self.name

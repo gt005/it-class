@@ -78,14 +78,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link link-navbar
-                            {% block detail_active_active_task %}{% endblock %}"
-                       href="/tasks/">Список задач</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link link-navbar
-                            {% block detail_active_my_works %}{% endblock %}"
-                       href="/tasks/active_task">Мои работы</a>
+                    <a class="nav-link link-navbar {% block detail_active_active_task %}{% endblock %}" href="/tasks/">Список задач</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link link-navbar notification {% block detail_active_tasks_to_check %}{% endblock %}" href="/tasks/active_task">
@@ -93,6 +86,13 @@
                         <span class="badge badge-pill tasks-amount-to-check">2</span>
                     </a>
                 </li>
+                {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link link-navbar {% block tasks_admin %}{% endblock %}" href="/tasks/active_task">
+                            <span>Настройки задач</span>
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
 
             <form class="form-inline my-2 my-lg-0">
