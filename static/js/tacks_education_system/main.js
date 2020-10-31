@@ -153,7 +153,8 @@ function sendTaskSolution(fileOrCodeText, codeLang, type) {
         body: data
     }).then(function (response) {
         if (!response.ok) {
-            showAlertElement('Произошла ошибка, попробуйте перезагрузить страницу');
+            showAlertElement('Произошла ошибка, попробуйте перезагрузить страницу.');
+
             codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
             return false
         }
@@ -168,7 +169,7 @@ function sendTaskSolution(fileOrCodeText, codeLang, type) {
                 codeLang,
                 codeToAddToLastSolution,
             )
-            showAlertElement("Задача отправлена!" + json.message, true);
+            showAlertElement("Задача отправлена!", true);
             codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
         }
     });

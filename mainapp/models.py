@@ -32,6 +32,10 @@ class Puples(models.Model):
     phone = models.CharField(max_length=12, verbose_name="Телефон", default="")
     education_level = models.PositiveIntegerField(
         verbose_name="Уровень в системе решения задач", default=1)
+    language_stack = models.CharField(
+        "Список языков программирования, которыми владеет(через запятую)",
+        max_length=200,
+        blank=True)
 
     def __str__(self):
         return self.name
