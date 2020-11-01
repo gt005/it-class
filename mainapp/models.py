@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from tinymce.models import HTMLField
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Puples(models.Model):
@@ -31,7 +32,9 @@ class Puples(models.Model):
     email = models.EmailField(verbose_name="Email", default="")
     phone = models.CharField(max_length=12, verbose_name="Телефон", default="")
     education_level = models.PositiveIntegerField(
-        verbose_name="Уровень в системе решения задач", default=1)
+        verbose_name="Уровень в системе решения задач", default=1,
+        validators=[MinValueValidator(1)]
+    )
     language_stack = models.CharField(
         "Список языков программирования, которыми владеет(через запятую)",
         max_length=200,

@@ -55,6 +55,12 @@ p {
   margin: 0;
 }
 
+ol, ul, dl {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 .CodeMirror {
   height: 480px;
   -webkit-box-shadow: -1px 0 0 0 #e8e8e8 inset, 0 -1px 0 0 #e8e8e8 inset, -1px -1px 0 0 #e8e8e8, -1px 0 0 0 #e8e8e8, 0 -1px 0 0 #e8e8e8;
@@ -289,7 +295,7 @@ p {
   transition: 0.3s;
 }
 .task-page__last-solutions__card .card-header:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .tasks-list-page__level-block {
@@ -335,7 +341,7 @@ p {
   height: 80px;
 }
 .tasks-list-page__level-block__level-progress .level.current-level span {
-  font-size: 45px;
+  font-size: 40px;
 }
 .tasks-list-page__level-block__level-progress .level.current-level img {
   width: 100%;
@@ -344,7 +350,7 @@ p {
 .tasks-list-page__level-block__level-progress .level span {
   color: #fff;
   font-weight: 400;
-  font-size: 25px;
+  font-size: 23px;
   position: absolute;
 }
 
@@ -400,6 +406,54 @@ p {
   background: rgba(0, 255, 0, 0.15);
 }
 
+.settings_page__other-settings {
+  padding-top: 55px;
+}
+.settings_page__other-settings h4 {
+  font-size: 40px;
+  padding-bottom: 10px;
+}
+
+.settings_page__level-settings .settings_page__level-settings__header {
+  padding-top: 55px;
+  font-size: 30px;
+  font-weight: 500 !important;
+}
+.settings_page__level-settings .settings_page__level-settings__level-more-open-button.collapsed .open-icon-angle {
+  transform: rotate(0deg);
+}
+.settings_page__level-settings .task-page__last-solutions__table__body__row {
+  font-size: 18px;
+}
+.settings_page__level-settings .task-page__last-solutions__table__body__row span {
+  width: max-content;
+}
+.settings_page__level-settings .task-page__last-solutions__table__body__row .description-task {
+  display: flex;
+}
+.settings_page__level-settings .task-page__last-solutions__table__body__row .description-task span {
+  padding-left: 45px;
+}
+.settings_page__level-settings .task-page__last-solutions__table__body__row .open-icon-angle {
+  transition: 0.35s;
+  transform: rotate(180deg);
+}
+
+.settings_page__level-settings__add-level-btn {
+  cursor: pointer;
+  width: 2.5em;
+  height: 2.5em;
+  margin-bottom: 20px;
+}
+.settings_page__level-settings__add-level-btn svg {
+  transition: 0.3s ease-in-out;
+  width: 100%;
+  height: 100%;
+}
+.settings_page__level-settings__add-level-btn svg:hover {
+  transform: rotate(180deg);
+}
+
 @media screen and (max-width: 992px) {
   .task-list-page__container .task-list-page__container__theme-name {
     width: 220px;
@@ -446,6 +500,13 @@ p {
   .task-list-page__container table {
     box-shadow: none;
     width: 100%;
+  }
+
+  .settings_page__level-settings .card-header {
+    padding: 12px 0;
+  }
+  .settings_page__level-settings .task-page__last-solutions__table__body__row .description-task span {
+    padding-left: 20px;
   }
 }
 @media screen and (max-width: 576px) {

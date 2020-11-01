@@ -82,4 +82,3 @@ class CheckedEducationTask(models.Model):
         verbose_name = "Решенная задача"
         verbose_name_plural = "Решенные задачи"
 
-

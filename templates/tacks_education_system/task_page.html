@@ -83,37 +83,57 @@
                         {% endif %}
                     </div>
 
-                    <div class="task-page__task-example">
-                        <h2 class="task-page__task-example__header">
-                            Пример 1
-                            <!-- с помощью цикла или для конкретной порядковой записи свой блок -->
-                        </h2>
-                        <h3>
-                            Ввод
-                        </h3>
-                        <pre class="task-page__task-example__data">2 2</pre>
-                        <h3>
-                            Вывод
-                        </h3>
-                        <pre class="task-page__task-example__data">YES</pre>
-                    </div>
+                    {% if task.example_input_1 %}
+                        <div class="task-page__task-example">
+                            <h2 class="task-page__task-example__header">
+                                Пример 1
+                                <!-- с помощью цикла или для конкретной порядковой записи свой блок -->
+                            </h2>
+                            <h3>
+                                Ввод
+                            </h3>
+                            <pre class="task-page__task-example__data">{{ task.example_input_1 }}</pre>
+                            <h3>
+                                Вывод
+                            </h3>
+                            <pre class="task-page__task-example__data">{{ task.example_output_1 }}</pre>
+                        </div>
+                    {% endif %}
 
-                    <div class="task-page__task-example">
-                        <h2 class="task-page__task-example__header">
-                            Пример 2
-                            <!-- с помощью цикла или для конкретной порядковой записи свой блок -->
-                        </h2>
-                        <h3>
-                            Ввод
-                        </h3>
-                        <pre class="task-page__task-example__data">2 3 213
-123 12 45</pre>
-                        <h3>
-                            Вывод
-                        </h3>
-                        <pre class="task-page__task-example__data">NO</pre>
-                    </div>
 
+                    {% if task.example_input_2 %}
+                        <div class="task-page__task-example">
+                            <h2 class="task-page__task-example__header">
+                                Пример 2
+                                <!-- с помощью цикла или для конкретной порядковой записи свой блок -->
+                            </h2>
+                            <h3>
+                                Ввод
+                            </h3>
+                            <pre class="task-page__task-example__data">{{ task.example_input_2 }}</pre>
+                            <h3>
+                                Вывод
+                            </h3>
+                            <pre class="task-page__task-example__data">{{ task.example_output_2 }}</pre>
+                        </div>
+                    {% endif %}
+
+                    {% if task.example_input_3 %}
+                        <div class="task-page__task-example">
+                            <h2 class="task-page__task-example__header">
+                                Пример 3
+                                <!-- с помощью цикла или для конкретной порядковой записи свой блок -->
+                            </h2>
+                            <h3>
+                                Ввод
+                            </h3>
+                            <pre class="task-page__task-example__data">{{ task.example_input_3 }}</pre>
+                            <h3>
+                                Вывод
+                            </h3>
+                            <pre class="task-page__task-example__data">{{ task.example_output_3 }}</pre>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

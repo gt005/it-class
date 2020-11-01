@@ -1,0 +1,234 @@
+{% extends 'tacks_education_system/tacks_education_system_base_template.html' %}
+{% load static %}
+
+{% block main %}
+
+    <section class="settings_page__other-settings">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="text-center">Настройки</h4>
+                    <ul class="settings_page__other-settings__list">
+                        <li class="element">
+                            <a href="/tasks/system_settings/students/"
+                               class="btn btn-outline-success">Статистика
+                                учеников</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="settings_page__level-settings">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="text-center settings_page__level-settings__header">
+                        Уровни</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 ml-auto">
+                    <div class="settings_page__level-settings__add-level-btn ml-auto"
+                         data-toggle="modal"
+                         data-target="#settings_page__add-new-level">
+                        <svg viewBox="0 0 16 16"
+                             class="bi bi-plus" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="accordion settings_page__level task-page__last-solutions__table__body"
+                         id="accordionExample">
+                        {% for level in object_list %}
+                            <div class="card task-page__last-solutions__card">
+                                <div class="card-header"
+                                     id="level_{{ level.level_number }}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left collapsed settings_page__level-settings__level-more-open-button"
+                                                type="button"
+                                                data-toggle="collapse"
+                                                data-target="#collapse_{{ level.level_number }}"
+                                                data-code=""
+                                                aria-expanded="false"
+                                                aria-controls="collapse_{{ level.level_number }}">
+                                            <span class="task-page__last-solutions__table__body__row">
+                                                <span class="description-task">
+                                                    <span>
+                                                        Уровень {{ level.level_number }}
+                                                    </span>
+                                                    <span>
+                                                        "{{ level.level_theme }}"
+                                                    </span>
+                                                </span>
+                                                 <span class="open-icon-angle">
+                                            <svg width="1em" height="1em"
+                                                 viewBox="0 0 16 16"
+                                                 class="bi bi-caret-down"
+                                                 fill="currentColor"
+                                                 xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd"
+        d="M3.204 5L8 10.481 12.796 5H3.204zm-.753.659l4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>
+</svg>
+                                        </span>
+                                            </span>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapse_{{ level.level_number }}"
+                                     class="collapse"
+                                     aria-labelledby="level_{{ level.level_number }}"
+                                     data-parent="#accordionExample">
+                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
+                                        <pre>rjkl</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+{% endblock %}
+
+{% block modal_windows %}
+    <div class="modal fade" id="settings_page__add-new-level" tabindex="-1"
+         aria-labelledby="settings_page__add-new-levelLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="settings_page__add-new-levelLabel">Добавить
+                        уровень
+                        <strong id="settings_page__add-new-level-number-level">{{ object_list.last.level_number | add:1 }}</strong>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <input type="text" class="form-control"
+                           id="settings_page__add-new-level__theme-input"
+                           value="" required placeholder="Название темы уровня"
+                           maxlength="255">
+                    <div class="invalid-feedback"
+                         id="settings_page__add-new-level__theme-input"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Отмена
+                    </button>
+                    <button type="button" class="btn btn-primary"
+                            id="settings_page__add-new-level__submit">Добавить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts_include %}
+    <script>
+        function sendThemeToCreateLevel(level, newTheme) {
+            let csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value,
+                levelsList = document.querySelector(".settings_page__level.task-page__last-solutions__table__body");
+
+            let levelRow = `<div class="card task-page__last-solutions__card">
+                                <div class="card-header"
+                                     id="level_${level}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left collapsed settings_page__level-settings__level-more-open-button"
+                                                type="button"
+                                                data-toggle="collapse"
+                                                data-target="#collapse_${level}"
+                                                data-code=""
+                                                aria-expanded="false"
+                                                aria-controls="collapse_${level}">
+                                            <span class="task-page__last-solutions__table__body__row">
+                                                <span class="description-task">
+                                                    <span>
+                                                        Уровень ${level}
+                                                    </span>
+                                                    <span>
+                                                        "${newTheme}"
+                                                    </span>
+                                                </span>
+                                                 <span class="open-icon-angle">
+                                            <svg width="1em" height="1em"
+                                                 viewBox="0 0 16 16"
+                                                 class="bi bi-caret-down"
+                                                 fill="currentColor"
+                                                 xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd"
+        d="M3.204 5L8 10.481 12.796 5H3.204zm-.753.659l4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>
+</svg>
+                                        </span>
+                                            </span>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapse_${level}"
+                                     class="collapse"
+                                     aria-labelledby="level_${level}"
+                                     data-parent="#accordionExample">
+                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
+                                        <pre>rjkl</pre>
+                                    </div>
+                                </div>
+                            </div>`
+
+
+            let data = new FormData();
+
+            data.append('level', level);
+            data.append('newTheme', newTheme);
+
+            fetch(location.href, {
+                method: 'POST',
+                headers: {"X-CSRFToken": csrfToken},
+                body: data
+            }).then(function (response) {
+                if (!response.ok) {
+                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+
+                    return false
+                }
+                return response.json();
+            }).then(function (json) {
+                if (json) {
+                    showAlertElement("Уровень успешно добавлен.", success = true);
+                    levelsList.innerHTML += levelRow;
+                    createNewLevelFormNewLevelNumber.textContent++;
+                    createNewLevelFormInput.value = '';
+                    $("[data-dismiss=modal]").trigger({ type: "click" });
+                }
+            });
+
+        }
+
+
+        let createNewLevelFormInput = document.querySelector("#settings_page__add-new-level__theme-input"),
+            createNewLevelFormSubmitButton = document.querySelector('#settings_page__add-new-level__submit'),
+            createNewLevelFormNewLevelNumber = document.querySelector("#settings_page__add-new-level-number-level");
+
+
+        createNewLevelFormSubmitButton.onclick = () => {
+            sendThemeToCreateLevel(createNewLevelFormNewLevelNumber.textContent, createNewLevelFormInput.value);
+        }
+
+    </script>
+{% endblock %}
+
+{% block tasks_settings %}active{% endblock %}
