@@ -59,7 +59,7 @@ class TasksList(LoginRequiredMixin, TemplateView):
         return context
 
 
-class TaskSettingsLevels(views.LoginRequiredMixin,
+class SystemSettings(views.LoginRequiredMixin,
                          views.SuperuserRequiredMixin,
                          ListView):
     template_name = "tacks_education_system/system_settings/settings_main.html"
@@ -104,3 +104,10 @@ class TaskSettingsLevels(views.LoginRequiredMixin,
         })
 
 
+class LevelSettings(views.LoginRequiredMixin,
+                    views.SuperuserRequiredMixin,
+                    ListView):
+    template_name = "tacks_education_system/system_settings/settings_main.html"
+    login_url = "/login/"
+    model = EducationLevel
+    ordering = "level_number"

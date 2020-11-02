@@ -419,7 +419,7 @@ ol, ul, dl {
   font-size: 30px;
   font-weight: 500 !important;
 }
-.settings_page__level-settings .settings_page__level-settings__level-more-open-button.collapsed .open-icon-angle {
+.settings_page__level-settings .settings_page__level-settings__level-more-open-button.collapsed .active-buttons .open-icon-angle svg {
   transform: rotate(0deg);
 }
 .settings_page__level-settings .task-page__last-solutions__table__body__row {
@@ -434,9 +434,13 @@ ol, ul, dl {
 .settings_page__level-settings .task-page__last-solutions__table__body__row .description-task span {
   padding-left: 45px;
 }
-.settings_page__level-settings .task-page__last-solutions__table__body__row .open-icon-angle {
+.settings_page__level-settings .task-page__last-solutions__table__body__row .active-buttons .open-icon-angle svg {
   transition: 0.35s;
   transform: rotate(180deg);
+}
+
+#settings_page__add-new-level__theme-input {
+  margin-top: 15px;
 }
 
 .settings_page__level-settings__add-level-btn {
@@ -506,7 +510,7 @@ ol, ul, dl {
     padding: 12px 0;
   }
   .settings_page__level-settings .task-page__last-solutions__table__body__row .description-task span {
-    padding-left: 20px;
+    padding-left: 5px;
   }
 }
 @media screen and (max-width: 576px) {
