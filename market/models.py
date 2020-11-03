@@ -11,6 +11,7 @@ class MarketProduct(models.Model):
     product_photo = models.ImageField("Фотография товара", upload_to="products_photo/", blank=True)
     remained_amount = models.PositiveIntegerField("Количество оставшегося товара", null=False)
     price = models.PositiveIntegerField("Цена товара", null=False)
+    visibility_to_customers = models.BooleanField("Отображается ли товар покупателям", default=False)
 
     def __str__(self):
         return f"{self.product_name}\t-\tразмер {self.product_size}\t-\tцвет {self.product_color}"
@@ -31,15 +32,26 @@ class MarketProduct(models.Model):
 class BoughtProduct(models.Model):
     """
     Если товар куплен, то он попадает в эту таблицу с привязкой к пользователю, который его купил.
-    Также, купленный товар привязан к основному товару из таблицы MarketProduct, который выставлен на продажу
+    Также, купленный товар привязан к основному товару из таблицы MarketProduct, который выставлен на продажу.
+    При удалении основного товара, сохраняется его имя и
     """
 
     customer = models.ForeignKey(Puples, verbose_name="Покупатель товара", on_delete=models.SET_NULL, null=True)
-    main_product = models.ForeignKey(MarketProduct, verbose_name="Ссылка на основной товар", on_delete=models.CASCADE)
-    connected_event = models.ForeignKey(Events, verbose_name="Ссылка на Event с этой покупкой", on_delete=models.CASCADE, default=None)
+    product_full_name = models.TextField("Полное название из главного товара", max_length=622, default="")
+    product_price = models.PositiveIntegerField("Цена главного товара", null=False, default=0)
+    product_image = models.ImageField("Фотография главного товара", upload_to="products_photo/", blank=True)
+    main_product = models.ForeignKey(MarketProduct, verbose_name="Ссылка на основной товар", on_delete=models.SET_NULL, null=True)
+    connected_event = models.ForeignKey(Events, verbose_name="Ссылка на Student Event с этой покупкой", on_delete=models.SET_NULL, default=None, null=True)
     bought_date = models.DateField("Дата покупки", auto_now_add=True)
     given_date = models.DateField("Дата выдачи товара", null=True)
     given = models.BooleanField("Выдан ли товар покупателю", default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Если еще нет pk, то запись еще не создалась
+            self.product_full_name = str(self.main_product)
+            self.product_image = self.main_product.product_photo
+            self.product_price = self.main_product.price
+        super(BoughtProduct, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.main_product}"

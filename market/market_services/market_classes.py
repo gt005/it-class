@@ -41,7 +41,7 @@ class ShoppingCart(object):
         self._delete_missing_products()
         return [MarketProduct.objects.get(id=int(product)) for product in self.shopping_cart]
 
-    def add(self, product_id: str, amount:int=1) -> str:
+    def add(self, product_id: str, amount: int=1) -> str:
         """
          Добавляет предмет в корзину с заданным количеством.
          :param str product_id: Id продукта из таблицы MarketProduct
@@ -59,7 +59,8 @@ class ShoppingCart(object):
             return "Неверное количество товара"
 
         try:
-            MarketProduct.objects.get(id=int(product_id))
+            if not MarketProduct.objects.get(id=int(product_id)).visibility_to_customers:
+                return "Товар больше не доступен, обновите страницу"
         except ValueError:
             return "Некорректное значение id продукта"
         except ObjectDoesNotExist:
@@ -102,8 +103,13 @@ class ShoppingCart(object):
             return "Не хватает денег на покупку"
 
         for product in self:  # Проверка на наличие каждого товара и в определенном количестве
-            if MarketProduct.objects.get(id=product["product"].id).remained_amount < product["amount"]:
+            product_from_db = MarketProduct.objects.get(id=product["product"].id)
+            if product_from_db.remained_amount < product["amount"]:
+                self._delete_missing_products()
                 return "Какой-то товар закончился или нет столько товара"
+            if not product_from_db.visibility_to_customers:
+                self._delete_missing_products()
+                return "Какой-то товар пока не доступен, перезайдите в корзину"
 
         for product in self:  # Покупка каждого товара
             for amount_of_products in range(product["amount"]):
@@ -124,13 +130,14 @@ class ShoppingCart(object):
 
     def _delete_missing_products(self) -> None:
         """
-        Удаляет продукты из корзины, которых нет в базе данных.
+        Удаляет продукты из корзины, которых нет в базе данных или не должны отображаться для покупателей.
         Такое может произойти, если товар добавлен в корзину, а из бд удалили.
         """
         products_to_delete = []  # Те продукты, которые есть в корзине, но уже удалены из магазина
         for product in self.shopping_cart:
             try:
-                MarketProduct.objects.get(id=int(product))
+                if not MarketProduct.objects.get(id=int(product)).visibility_to_customers:
+                    products_to_delete.append(product)
             except ObjectDoesNotExist:
                 products_to_delete.append(product)
 

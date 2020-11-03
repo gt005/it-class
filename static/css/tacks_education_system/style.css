@@ -224,10 +224,6 @@ ol, ul, dl {
   display: flex;
 }
 
-.task-page__last-solutions {
-  display: none;
-}
-
 .task-page__insert-code__write-code-tab__send-button {
   margin: 25px 0 55px;
 }
@@ -394,7 +390,7 @@ ol, ul, dl {
   text-align: center;
   width: calc(100% - 380px);
 }
-.task-list-page__container table .task-list-page__container__table th, .task-list-page__container table .task-list-page__container__table td {
+.task-list-page__container table.task-list-page__container__table th, .task-list-page__container table.task-list-page__container__table td {
   width: 33%;
 }
 .task-list-page__container.task-actived {

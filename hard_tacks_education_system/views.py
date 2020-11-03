@@ -11,6 +11,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import EducationTask, CheckedEducationTask, EducationLevel
+from .addons_python.functions_for_tasks import save_task_solution
+
 
 locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
@@ -22,29 +24,51 @@ class ActiveTask(LoginRequiredMixin, DetailView):
     pk_url_kwarg = "pk"
 
     def post(self, request, **kwargs):
-        if request.POST.get('taskSolutionType') == 'code':
+        if request.POST.get("taskSolutionType") == "code":
+            result_message, http_code, task_id = save_task_solution(
+                programm_code=request.POST.get("codeText"),
+                programm_code_language=request.POST.get("codeLang"),
+                request=request
+            )
+
+            if task_id is not None:
+                solution_task_from_db = CheckedEducationTask.objects.get(id=task_id)
+
             return JsonResponse({
-                'message': ' Прислан код на языке ' + request.POST.get(
-                    'codeLang'),
-                'solutionTime': time.strftime('%d %b %Y, %H:%M:%S'),
-            })
-        elif request.POST.get('taskSolutionType') == 'file':
-            file_code = request.FILES.get('taskSolutionFile').open().read()
+                "message": result_message,
+                "solutionTime": solution_task_from_db.get_solution_time(),
+                "solutionId": task_id
+            }, status=http_code)
+        elif request.POST.get("taskSolutionType") == "file":
+            try:
+                file_code = request.FILES.get("taskSolutionFile").open().read().decode("utf-8")
+            except TypeError:
+                return JsonResponse({
+                    "message": "Пустой файл",
+                }, status=400)
+
+            result_message, http_code, task_id = save_task_solution(
+                programm_code=file_code,
+                programm_code_language=request.POST.get("codeLang"),
+                request=request
+            )
+            solution_task_from_db = CheckedEducationTask.objects.get(id=task_id)
+
             return JsonResponse({
-                'message': ' Прислан файл с именем ' + str(
-                    request.FILES.get('taskSolutionFile')),
-                'solutionTime': time.strftime('%d %b %Y, %H:%M:%S'),
-                'solutionCode': file_code.decode('utf-8'),
-            })
+                "message": result_message,
+                "solutionTime": solution_task_from_db.get_solution_time(),
+                "solutionCode": file_code,
+                "solutionId": task_id
+            }, status=http_code)
         return HttpResponseBadRequest()
 
     def get_context_data(self, **kwargs):
         context = super(ActiveTask, self).get_context_data(**kwargs)
         context['task'] = kwargs.get('object')
-        context['remainder_time_to_solve_a_task'] = (datetime.datetime(2020,
-                                                                       10, 21,
-                                                                       22, 48,
-                                                                       30) - datetime.datetime.now()).seconds - 1  # Секунда дана как время на загрузку страницы
+        context['solved_tasks_list'] = CheckedEducationTask.objects.filter(
+            original_task=self.request.user.puples.educationtask,
+        ).order_by('-id')
+        context['remainder_time_to_solve_a_task'] = int((self.request.user.puples.educationtask.end_time - datetime.datetime.now(datetime.timezone.utc)).total_seconds()) - 1  # Секунда дана как время на загрузку страницы
         return context
 
 
@@ -55,7 +79,14 @@ class TasksList(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
         context['level'] = self.request.user.puples.education_level
-        context['active_task_period'] = 150 * 60
+        context['active_task'] = self.request.user.puples.educationtask
+        context['active_task_period'] = int((self.request.user.puples.educationtask.start_time - datetime.datetime.now(datetime.timezone.utc)).total_seconds()) - 1  # Секунда дана как время на загрузку страницы
+
+        point_of_start_count_remainder_time = datetime.datetime.now(datetime.timezone.utc)
+        if self.request.user.puples.educationtask.start_time > datetime.datetime.now(datetime.timezone.utc):
+            point_of_start_count_remainder_time = self.request.user.puples.educationtask.start_time
+        context['active_task_period_remainder'] = int((self.request.user.puples.educationtask.end_time - point_of_start_count_remainder_time).total_seconds()) - 1  # Секунда дана как время на загрузку страницы
+
         return context
 
 
@@ -68,6 +99,7 @@ class SystemSettings(views.LoginRequiredMixin,
     ordering = "level_number"
 
     def post(self, request, **kwargs):
+        ''' TODO: Перенести эту функцию в functions_for_tasks.py '''
         for_level = request.POST.get('level')
         level_theme = request.POST.get('newTheme')
         last_exist_level = self.model.objects.all()
@@ -76,7 +108,6 @@ class SystemSettings(views.LoginRequiredMixin,
         else:
             last_exist_level = 0
 
-        print(for_level)
         try:
             for_level = int(for_level)
         except ValueError:
@@ -107,7 +138,7 @@ class SystemSettings(views.LoginRequiredMixin,
 class LevelSettings(views.LoginRequiredMixin,
                     views.SuperuserRequiredMixin,
                     ListView):
-    template_name = "tacks_education_system/system_settings/settings_main.html"
+    template_name = "tacks_education_system/system_settings/level_settings.html"
     login_url = "/login/"
     model = EducationLevel
     ordering = "level_number"

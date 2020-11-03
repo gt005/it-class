@@ -16,6 +16,7 @@ class MainMarketPage(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     """ Страница с каталогом товаров магазина """
     template_name = "market/main_market_page.html"
     model = MarketProduct
+    queryset = MarketProduct.objects.filter(visibility_to_customers=True)
     login_url = "/login/"
 
     def dispatch(self, request, *args, **kwargs):
@@ -85,8 +86,8 @@ class ShoppingCartView(HeaderNotificationsCounter, LoginRequiredMixin, TemplateV
     def get_context_data(self, *args, **kwargs):
         context = super(ShoppingCartView, self).get_context_data(**kwargs)
         context["shopping_cart_items"] = ShoppingCart(request=self.request)
-        context["balance_points_name"] = get_correct_form_of_points_number_name(self.request.user.puples.rate)
         context["total_cart_price_int_number"] = ShoppingCart(request=self.request).get_total_price(add_points_name=False)
+        context["balance_points_name"] = get_correct_form_of_points_number_name(self.request.user.puples.rate)
         return context
 
 

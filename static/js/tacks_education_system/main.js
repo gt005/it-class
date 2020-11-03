@@ -78,22 +78,22 @@ function deleteTaskPageInsertCodeArea() {
 }
 
 
-function changeLastSolutionTaskPage(solutionTime, codeLang, solutionCode) {
+function changeLastSolutionTaskPage(solutionTime, codeLang, solutionCode, solutionId) {
     /* Изменяет таблицу с последним решение,
      если она пустая, то добавляется запись,
       иначе обновляется надписи последней записи
     */
 
     let lastSolutionRow = `<div class="card task-page__last-solutions__card">
-                                <div class="card-header" id="heading${lastSolutionsTaskPageSolutionId}">
+                                <div class="card-header" id="heading${solutionId}">
                                     <h2 class="mb-0">
                                         <button class="btn btn-block text-left collapsed"
                                                 type="button"
                                                 data-toggle="collapse"
-                                                data-target="#collapse${lastSolutionsTaskPageSolutionId}"
+                                                data-target="#collapse${solutionId}"
                                                 data-code=""
                                                 aria-expanded="false"
-                                                aria-controls="collapse${lastSolutionsTaskPageSolutionId}">
+                                                aria-controls="collapse${solutionId}">
                                             <span class="task-page__last-solutions__table__body__row">
                                                 <span class="task-page__last-solutions__table__body__row__time">
                                                     ${solutionTime}
@@ -105,11 +105,11 @@ function changeLastSolutionTaskPage(solutionTime, codeLang, solutionCode) {
                                         </button>
                                     </h2>
                                 </div>
-                                <div id="collapse${lastSolutionsTaskPageSolutionId}" class="collapse"
-                                     aria-labelledby="heading${lastSolutionsTaskPageSolutionId}"
+                                <div id="collapse${solutionId}" class="collapse"
+                                     aria-labelledby="heading${solutionId}"
                                      data-parent="#accordionExample">
                                     <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
-                                        <pre>${solutionCode}</pre>
+                                        <pre id="task-page__last-solutions__number${solutionId}"></pre>
                                     </div>
                                 </div>
                             </div>`
@@ -118,13 +118,14 @@ function changeLastSolutionTaskPage(solutionTime, codeLang, solutionCode) {
         lastSolutionTable = document.querySelector('.task-page__last-solutions__table'),
         lastSolutionTableBody = document.querySelector('.task-page__last-solutions__table__body');
 
-    if (lastSolutionTableBody.textContent === '') {
-        $(lastSolutionSection).fadeIn('slow');
-        $(lastSolutionTable).fadeIn('slow');
-    }
+
+    $(lastSolutionSection).fadeIn('slow');
+    $(lastSolutionTable).fadeIn('slow');
 
     lastSolutionTableBody.innerHTML = lastSolutionRow + lastSolutionTableBody.innerHTML;
-    lastSolutionsTaskPageSolutionId++;
+
+    let codeAreaToInsertCode = document.querySelector('#task-page__last-solutions__number' + solutionId);
+    codeAreaToInsertCode.textContent = solutionCode;
 }
 
 
@@ -168,6 +169,7 @@ function sendTaskSolution(fileOrCodeText, codeLang, type) {
                 json.solutionTime,
                 codeLang,
                 codeToAddToLastSolution,
+                json.solutionId
             )
             showAlertElement("Задача отправлена!", true);
             codeAreaLoader.style = 'opacity: 0;visibility: hidden;';
@@ -178,12 +180,12 @@ function sendTaskSolution(fileOrCodeText, codeLang, type) {
 
 function remainderTimeCounter(
     target, message_on60_seconds,
-    function_on_end=undefined,
+    function_on_end = undefined,
     message_type = false,
     red_color_toggle = true,
     set_red_end_message = true,
     end_message_alert = undefined,
-    end_message_alert_type=false,
+    end_message_alert_type = false,
 ) {
     /* target - Объект с количеством секунд в виде числа.
     *  function_on_end - функция, выполняемая при окончании времени.
@@ -214,7 +216,7 @@ function remainderTimeCounter(
                 showAlertElement(end_message_alert, end_message_alert_type);
             }
 
-            if (function_on_end){
+            if (function_on_end) {
                 function_on_end();
             }
             clearCurrentInterval();
@@ -230,7 +232,7 @@ function remainderTimeCounter(
         }
     }, 1000);
 
-    function clearCurrentInterval () {
+    function clearCurrentInterval() {
         clearInterval(remainderTimeInterval);
     }
 }

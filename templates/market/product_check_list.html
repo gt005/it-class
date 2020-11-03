@@ -58,7 +58,7 @@
             margin: 0;
         }
     }
-    
+
     .dropdown-menu.show {
         display: flex;
         align-items: center;
@@ -86,14 +86,20 @@
             <tbody>
                 {% for product in not_given_product_list %}
                     <tr>
-                        <td><img style="height: 70px;" src="{{ product.main_product.product_photo.url }}" alt="{{ product.main_product.product_name }}"></td>
-                        <td>{{ product.main_product }}</td>
+                        <td><img style="height: 70px;" src="{{ product.product_image.url }}" alt="{{ product.product_full_name }}"></td>
+                        <td>{{ product.product_full_name }}</td>
                         <td>{{ product.bought_date }}</td>
                         {% if request.user.is_superuser %}
                             <td>
+                            {% if product.customer %}
                                 <a style="color: inherit;" href="/statistic/pupil/{{ product.customer.id }}">
                                     {{ product.customer.surname }} {{ product.customer.name }}
                                 </a>
+                            {% else %}
+                                <a style="color: inherit;">
+                                    Пользователь удален
+                                </a>
+                            {% endif %}
                             </td>
                             <td class="d-flex justify-content-center">
                                 <form class="product-check-list-operation-btn" method="post" style="margin-right: 5px">
@@ -150,16 +156,22 @@
             </thead>
             <tbody>
             {% for product in given_product_list %}
-                {% if product.customer.id == user.puples.id or request.user.is_superuser %}
+                {% if product.customer and product.customer.id == user.puples.id or request.user.is_superuser %}
                     <tr>
-                        <td>{{ product.main_product }}</td>
+                        <td>{{ product.product_full_name }}</td>
                         <td>{{ product.bought_date }}</td>
                         <td>{{ product.given_date }}</td>
                         {% if request.user.is_superuser %}
                             <td>
+                            {% if product.customer %}
                                 <a style="color: inherit;" href="/statistic/pupil/{{ product.customer.id }}">
                                     {{ product.customer.surname }} {{ product.customer.name }}
                                 </a>
+                            {% else %}
+                                <a style="color: inherit;">
+                                    Пользователь удален
+                                </a>
+                            {% endif %}
                             </td>
                         {% endif %}
                     </tr>

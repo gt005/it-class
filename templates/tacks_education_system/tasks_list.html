@@ -38,37 +38,42 @@
                     </h4>
                 </div>
                 <div class="col-12">
-                    <a class="task-list-page__container task-list-page__active-container" href="active_task/1">
-                        <div class="task-list-page__container__theme-name">
-                            <span>Задача на тему: “Функции”</span>
-                            <br>
-                            <span>Уровень: 5</span>
-                        </div>
-                        <table class="table table-borderless task-list-page__container__table">
-                            <thead>
-                            <tr>
-                                <th scope="col">Время начала</th>
-                                <th scope="col">Время завершения</th>
-                                <th id="tasks-list-page__active-task__time-to-start-label"
-                                    scope="col">До начала
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td id="tasks-list-page__active-task__start-time">
-                                    28 окт 2020, 15:00:00
-                                </td>
-                                <td id="tasks-list-page__active-task__end-time">
-                                    28 окт 2020, 18:00:00
-                                </td>
-                                <td id="tasks-list-page__active-task__time-amount">
-                                    1000000
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </a>
+                    {% if active_task %}
+                        <a class="task-list-page__container task-list-page__active-container" href="active_task/{{ active_task.id }}">
+                            <div class="task-list-page__container__theme-name">
+                                <span>Задача на тему: “{{ active_task.task_level.level_theme }}”</span>
+                                <br>
+                                <span>Уровень: {{ active_task.task_level.level_number }}</span>
+                            </div>
+                            <table class="table table-borderless task-list-page__container__table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Время начала</th>
+                                    <th scope="col">Время завершения</th>
+                                    <th id="tasks-list-page__active-task__time-to-start-label" scope="col">
+                                        До начала
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td id="tasks-list-page__active-task__start-time">
+                                        {{ active_task.start_time }}
+                                    </td>
+                                    <td id="tasks-list-page__active-task__end-time">
+                                        {{ active_task.end_time }}
+                                    </td>
+                                    <td id="tasks-list-page__active-task__time-amount">
+                                        {{ active_task_period }}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </a>
+                    {% else %}
+                        <h2>Активной задачи пока нет</h2>
+                    {% endif %}
+
 
                 </div>
             </div>
@@ -80,7 +85,7 @@
             <div class="row">
                 <div class="col-lg-4 col-12">
                     <h4 class="tasks-list-page__active-task-header">
-                        Прошлые задачи
+                        Прошлые решения
                     </h4>
                 </div>
                 <div class="col-12">
@@ -161,8 +166,9 @@
         function startCountdownOnActiveTask() {
             taskListActiveTaskStartLabel.textContent = "Началось";
             taskListActiveTaskTimeToStartLabel.textContent = "До конца";
-            reminderTimeTaskListPage.textContent = '{{ active_task_period }}';
+            reminderTimeTaskListPage.textContent = '{{ active_task_period_remainder }}';
             taskListActiveTaskAboutContainer.classList.add('task-actived');
+            // Задача открыта, поставил отсчет до закрытия
             remainderTimeCounter(
                 reminderTimeTaskListPage,
                 "Задача закроется через минуту",
@@ -178,6 +184,7 @@
             );
         }
 
+        // Задача еще не открыта, поставил отсчет до открытия
         remainderTimeCounter(
             reminderTimeTaskListPage,
             "Задача откроется через минуту",

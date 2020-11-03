@@ -69,12 +69,15 @@ def cancel_given_product_to_customer(product_to_cancel_id: int, request) -> None
     Может подтвердить только admin.
     """
     product_to_cancel = BoughtProduct.objects.get(id=product_to_cancel_id)
-    product_to_cancel.main_product.remained_amount += 1
-    product_to_cancel.customer.rate += product_to_cancel.main_product.price
+    if product_to_cancel.main_product is not None:
+        product_to_cancel.main_product.remained_amount += 1
+        product_to_cancel.main_product.save()
 
-    product_to_cancel.main_product.save()
+    product_to_cancel.customer.rate += product_to_cancel.product_price
     product_to_cancel.customer.save()
-    product_to_cancel.connected_event.delete()
+
+    if product_to_cancel.connected_event is not None:
+        product_to_cancel.connected_event.delete()
     product_to_cancel.delete()
 
 

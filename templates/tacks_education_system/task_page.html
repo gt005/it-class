@@ -39,7 +39,7 @@
                 </div>
                 <div class="col-6 col-lg-4 ml-auto task-page__time-remainder">
                     Осталось времени: <span
-                        id="task-page__time-remainder__time">9000</span>
+                        id="task-page__time-remainder__time">{{ remainder_time_to_solve_a_task }}</span>
                 </div>
             </div>
         </div>
@@ -250,7 +250,7 @@
             вышло.</h3>
     </section>
 
-    <section class="task-page__last-solutions">
+    <section class="task-page__last-solutions" style="{% if not solved_tasks_list %}display:none{% endif %}">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-12">
@@ -270,7 +270,42 @@
                         </thead>
                     </table>
                     <div class="accordion task-page__last-solutions__table__body"
-                         id="accordionExample"></div>
+                         id="accordionExample">
+                        {% for solved_task in solved_tasks_list %}
+                            <div class="card task-page__last-solutions__card">
+                                <div class="card-header"
+                                     id="heading{{ solved_task.id }}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left collapsed"
+                                                type="button"
+                                                data-toggle="collapse"
+                                                data-target="#collapse{{ solved_task.id }}"
+                                                data-code=""
+                                                aria-expanded="false"
+                                                aria-controls="collapse{{ solved_task.id }}">
+                                            <span class="task-page__last-solutions__table__body__row">
+                                                <span class="task-page__last-solutions__table__body__row__time">
+                                                    {{ solved_task.get_solution_time }}
+                                                </span>
+                                                <span class="task-page__last-solutions__table__body__row__lang">
+                                                    {{ solved_task.task_programming_language }}
+                                                </span>
+                                            </span>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapse{{ solved_task.id }}"
+                                     class="collapse"
+                                     aria-labelledby="heading{{ solved_task.id }}"
+                                     data-parent="#accordionExample">
+                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
+                                        <pre>{{ solved_task.task_code }}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
                 </div>
             </div>
         </div>

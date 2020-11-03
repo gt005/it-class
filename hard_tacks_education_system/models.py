@@ -2,11 +2,18 @@ from django.db import models
 from tinymce.models import HTMLField
 from mainapp.models import Puples, Events
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
 
 
 class EducationLevel(models.Model):
-    level_number = models.PositiveIntegerField("Уровень группы задач", default=1)
-    level_theme = models.CharField("Тема, которая проходится на уровне", max_length=255)
+    level_number = models.PositiveIntegerField(
+        "Уровень группы задач",
+        default=1
+    )
+    level_theme = models.CharField(
+        "Тема, которая проходится на уровне",
+        max_length=255
+    )
 
     def __str__(self):
         return f"Задачи на тему '{self.level_theme}'. Уровень {self.level_number}"
@@ -21,6 +28,7 @@ class EducationTask(models.Model):
     Задачи для решения.
     Пир(peer) - человек, которому пришла задача на проверку.
     """
+    for_student = models.OneToOneField(Puples, on_delete=models.CASCADE, null=True, default=None, verbose_name="Предназначена для этого ученика")
     start_time = models.DateTimeField(verbose_name="Дата начала(открытие) задачи", auto_now_add=False)
     end_time = models.DateTimeField(verbose_name="Дата конца(закрытия) задачи", auto_now_add=False)
     task_level = models.ForeignKey(EducationLevel, verbose_name="Уровень задачи", default=1, on_delete=models.CASCADE)
@@ -47,23 +55,58 @@ class EducationTask(models.Model):
 
 
 class CheckedEducationTask(models.Model):
-    """ Задача, которую уже отправили на проверку или которая прошла проверку """
-    original_task = models.ForeignKey(EducationTask, verbose_name="Оригинал задачи", on_delete=models.SET_NULL, null=True)
-    solved_user = models.ForeignKey(Puples, verbose_name="Человек, отправивший на проверку", on_delete=models.CASCADE)
-    task_code = models.TextField(verbose_name="Решение задачи в виде кода")
-    first_peer = models.ForeignKey(Puples, verbose_name="Peer 1", related_name="Peer_1", on_delete=models.SET_NULL, null=True)
+    """Задача, которую уже отправили на проверку или которая прошла проверку"""
+    original_task = models.ForeignKey(
+        EducationTask,
+        verbose_name="Оригинал задачи",
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    solved_user = models.ForeignKey(
+        Puples, verbose_name="Человек, отправивший на проверку",
+        on_delete=models.CASCADE
+    )
+    task_code = models.TextField(
+        verbose_name="Решение задачи в виде кода"
+    )
+    solution_time = models.DateTimeField(
+        "Время, когда принято решение",
+        default=timezone.localtime,
+        null=True
+    )
+    task_programming_language = models.CharField(
+        "Язык программирования, на котором написана задача",
+        max_length=32,
+        default="Python 3.7.3"
+    )
+    first_peer = models.ForeignKey(
+        Puples,
+        verbose_name="Peer 1",
+        related_name="Peer_1",
+        on_delete=models.SET_NULL,
+        null=True
+    )
     first_peer_mark = models.PositiveIntegerField(
         verbose_name="Оценка peer 1",
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
-    second_peer = models.ForeignKey(Puples, verbose_name="Peer 2", related_name="Peer_2", on_delete=models.SET_NULL, null=True)
+    second_peer = models.ForeignKey(
+        Puples,
+        verbose_name="Peer 2",
+        related_name="Peer_2",
+        on_delete=models.SET_NULL,
+        null=True
+    )
     second_peer_mark = models.PositiveIntegerField(
         verbose_name="Оценка peer 2",
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
-    contest_token = models.CharField(verbose_name="Токен для Яндекс.Контест", max_length=255)
+    contest_token = models.CharField(
+        verbose_name="Токен для Яндекс.Контест",
+        max_length=255
+    )
     system_mark = models.PositiveIntegerField(
         verbose_name="Оценка Яндекс.Контест",
         null=True,
@@ -74,6 +117,10 @@ class CheckedEducationTask(models.Model):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(300)]
     )
+
+    def get_solution_time(self) -> str:
+        """ Возвращает время в формате без time zone """
+        return self.solution_time.strftime("%d %b %Y, %H:%M:%S")
 
     def __str__(self):
         return f"{self.original_task.task_name}. Уровень {self.original_task.task_level.level_number}"

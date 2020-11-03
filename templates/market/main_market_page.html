@@ -63,17 +63,17 @@
         </div>
         <div class="row flex-wrap">
             {% for product in marketproduct_list %}
-            <div class="col-12 col-md-6 col-lg-4 my-4">
-                <div class="product-card text-center justify-content-center {% if product.remained_amount == 0 or product.price > user.puples.rate %}disabled-card{% endif %}">
-                    <img src="{{ product.product_photo.url }}" alt="{{ product.product_name }}">
-                    <div class="product-card__description">
-                        <h3 class="product-card__description__name">{{ product.product_name }}</h3>
-                        <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Размер:</span> {{ product.product_size }}</p>
-                        <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Цвет:</span> {{ product.product_color }}</p>
-                        <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Осталось:</span> {{ product.remained_amount }} шт.</p>
-                    </div>
+                <div class="col-12 col-md-6 col-lg-4 my-4">
+                    <div class="product-card text-center justify-content-center {% if product.remained_amount == 0 or product.price > user.puples.rate %}disabled-card{% endif %}">
+                        <img src="{{ product.product_photo.url }}" alt="{{ product.product_name }}">
+                        <div class="product-card__description">
+                            <h3 class="product-card__description__name">{{ product.product_name }}</h3>
+                            <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Размер:</span> {{ product.product_size }}</p>
+                            <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Цвет:</span> {{ product.product_color }}</p>
+                            <p style="color: rgb(128, 128, 128); text-align: left"><span style="color: rgb(50, 50, 50);">Осталось:</span> {{ product.remained_amount }} шт.</p>
+                        </div>
 
-                    <p style="font-size: 18px;font-weight: bold;">{{ product.price }} {{ product.plural_amount_name }}</p>
+                        <p style="font-size: 18px;font-weight: bold;">{{ product.price }} {{ product.plural_amount_name }}</p>
 
                         <button data-product-id="{{ product.id }}" {% if product.remained_amount == 0 or user.puples.rate < product.price %}style="visibility: hidden;"{% endif %} onclick="addToCart(this)" class="btn btn-outline-success {% if product in shopping_cart_list %}added-to-card-btn{% endif %}" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 20px">
                            {% if product in shopping_cart_list %}
@@ -83,8 +83,8 @@
                            {% endif %}
                         </button>
 
+                    </div>
                 </div>
-            </div>
             {% empty %}
                 <div class="col-12 text-center">
                     <h3 style="font-weight: 300;">Товаров пока нет</h3>
