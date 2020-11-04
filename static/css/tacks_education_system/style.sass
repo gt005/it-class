@@ -416,7 +416,17 @@ ol, ul, dl
     &:hover
       transform: rotate(180deg)
 
-
+.settings_page__level-change-theme-btn
+  cursor: pointer
+  text-decoration: underline
+  & svg
+    opacity: 0
+    transition: 0.3s
+    position: absolute
+    transform: translate(5px, 20%)
+  &:hover
+    & svg
+      opacity: 1
 
 @media screen and (max-width: 992px)
   .task-list-page__container
@@ -463,6 +473,11 @@ ol, ul, dl
       padding: 12px 0
     & .task-page__last-solutions__table__body__row .description-task span
       padding-left: 5px
+
+  .settings_page__level-change-theme-btn
+    text-decoration: none
+    & svg
+      opacity: 1
 
 
 @media screen and (max-width: 576px)

@@ -454,6 +454,20 @@ ol, ul, dl {
   transform: rotate(180deg);
 }
 
+.settings_page__level-change-theme-btn {
+  cursor: pointer;
+  text-decoration: underline;
+}
+.settings_page__level-change-theme-btn svg {
+  opacity: 0;
+  transition: 0.3s;
+  position: absolute;
+  transform: translate(5px, 20%);
+}
+.settings_page__level-change-theme-btn:hover svg {
+  opacity: 1;
+}
+
 @media screen and (max-width: 992px) {
   .task-list-page__container .task-list-page__container__theme-name {
     width: 220px;
@@ -507,6 +521,13 @@ ol, ul, dl {
   }
   .settings_page__level-settings .task-page__last-solutions__table__body__row .description-task span {
     padding-left: 5px;
+  }
+
+  .settings_page__level-change-theme-btn {
+    text-decoration: none;
+  }
+  .settings_page__level-change-theme-btn svg {
+    opacity: 1;
   }
 }
 @media screen and (max-width: 576px) {

@@ -2,4 +2,105 @@
 {% load static %}
 
 
+{% block main %}
+
+    <section class="settings_page__other-settings">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <a class="task-page__main-back-buttons pr-lg-3"
+                       href="/tasks/system_settings/">
+                        <span class="task-page__main-back-buttons__back-buttons">
+                            <img src="{% static 'images/back_button.svg' %}"
+                                 alt="<">
+                            <img src="{% static 'images/back_button_hover.svg' %}"
+                                 alt="<">
+                        </span>
+                        Все настройки
+                    </a>
+                    <h4 class="text-center">Уровень {{ level_object.level_number }}</h4>
+                    <h3 class="text-center settings_page__level-change-theme-btn" data-toggle="modal"
+                         data-target="#settings_page__level-change-theme">
+                        Тема: "{{ level_object.level_theme }}"
+                            <svg width="0.8em" height="0.8em" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+</svg>
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block modal_windows %}
+    <div class="modal fade" id="settings_page__level-change-theme" tabindex="-1"
+         aria-labelledby="settings_page__level-change-themeLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="settings_page__level-change-themeLabel">
+                        Изменить тему уровня {{ level_object.level_number }}
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <input type="text" class="form-control"
+                           id="settings_page__level-change-theme-input"
+                           value="" required placeholder="Новая тема уровня"
+                           maxlength="255">
+                    <div class="invalid-feedback"
+                         id="settings_page__level-change-theme-input"></div>
+                </div>
+                <div class="modal-footer" style="border: 0">
+                    <button type="button" class="btn btn-outline-danger"
+                            data-dismiss="modal">Отмена
+                    </button>
+                    <button type="button" class="btn btn-outline-success"
+                            id="settings_page__level-change-theme__submit">Изменить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts_include %}
+    <script>
+    function changeLevelTheme () {
+
+        let data = new FormData();
+
+        data.append("newTheme", newTheme)
+
+        fetch(location.href, {
+                method: 'PATCH',
+                headers: {"X-CSRFToken": csrfToken},
+                body: data
+            }).then(function (response) {
+                if (!response.ok) {
+                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+
+                    return false
+                }
+                return response.json();
+            }).then(function (json) {
+                if (json) {
+                    $("[data-dismiss=modal]").trigger({type: "click"});
+                }
+            });
+    }
+
+    let changeLevelThemeSubmitButton = document.querySelector('#settings_page__level-change-theme__submit'),
+        changeLevelThemeInput = document.querySelector('')
+
+    </script>
+{% endblock %}
+
 {% block tasks_settings %}active{% endblock %}

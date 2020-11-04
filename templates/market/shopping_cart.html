@@ -194,7 +194,7 @@
             if (amountNumberInput.valueAsNumber - 1 === 0)
             // Удаление товара из корзины, если количество товара равно нулю
             {
-                let request = sendShoppingCartOperation(location.origin + '/market/shopping-cart_operations/?remove_product=' + totalPriceLabel.dataset.productId);
+                let request = getJsonResponseWithRequestData(location.origin + '/market/shopping-cart_operations/?remove_product=' + totalPriceLabel.dataset.productId);
                 request.onload = function ()
                 {
                      if (request.response.message == "success")

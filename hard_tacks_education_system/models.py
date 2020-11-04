@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from tinymce.models import HTMLField
 from mainapp.models import Puples, Events
@@ -71,8 +73,7 @@ class CheckedEducationTask(models.Model):
     )
     solution_time = models.DateTimeField(
         "Время, когда принято решение",
-        default=timezone.localtime,
-        null=True
+        auto_now_add=True
     )
     task_programming_language = models.CharField(
         "Язык программирования, на котором написана задача",
