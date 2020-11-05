@@ -1,3 +1,5 @@
+django-scheduler
+pandas
 amqp==2.5.2
 app-version==1.0.1
 asgiref==3.2.3

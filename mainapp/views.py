@@ -12,6 +12,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from docxtpl import DocxTemplate
+from .addons_python.stepic_ege import get_stepic_info, get_csv_file_stepic, get_info_for_all_class
+from .addons_python.checker_class_11 import checker
 
 from .addons_python.views_addons_classes import HeaderNotificationsCounter
 from .addons_python.notifications import send_mail_to_applicant, send_telegram
@@ -183,7 +185,12 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
     login_url = '/login/'
 
     def post(self, request, pk):
-
+        if "update_file_csv" in request.POST and request.POST['update_file_csv']:
+            link_stepic = request.POST['update_file_csv']
+            get_csv_file_stepic(link_stepic)
+            return redirect("/statistic/pupil/" + str(pk))
+        else:
+            return redirect("/statistic/pupil/" + str(pk))
         form = CollectData(request.POST)
         if form.is_valid():
             a = Puples.objects.get(user=request.user.id)
@@ -247,8 +254,15 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
             context['app'] = 1
         context['rate_event'] = sum(
             map(lambda x: x.event_rate, Events.objects.filter(events__pk=self.kwargs['pk'], check=True)))
-        context["uuu"] = [9, 2, 45, 3, 4, 3, 2, 11, 2, 3, 2, 3, 30, 10, 4, 2, 2, 3, 4, 5, 6, 7, 8, 32, 3, 4, 5]
-        context["label_chart"] = ['ЕГЭ 1', 'ЕГЭ 2', 'ЕГЭ 3', 'ЕГЭ 4', 'ЕГЭ 5', 'ЕГЭ 6', 'ЕГЭ 7', 'ЕГЭ 8', 'ЕГЭ 9', 'ЕГЭ 10', 'ЕГЭ 11', 'ЕГЭ 12', 'ЕГЭ 13', 'ЕГЭ 14', 'ЕГЭ 15', 'ЕГЭ 16', 'ЕГЭ 17', 'ЕГЭ 18', 'ЕГЭ 19', 'ЕГЭ 20', 'ЕГЭ 21', 'ЕГЭ 22', 'ЕГЭ 23', 'ЕГЭ 24', 'ЕГЭ 25', 'ЕГЭ 26', 'ЕГЭ 27',]
+        puple_info_stepic = get_stepic_info(Puples.objects.get(id=context['pk']).user.id)
+        context["info_all_class"] = get_info_for_all_class()
+        try:
+            context["data_stepic"] = puple_info_stepic[-27:]
+            context["procent_success"] = puple_info_stepic[-29]
+            context["tasks_success"] = puple_info_stepic[-30]
+            context["unsolved_tasks"] = puple_info_stepic[-28] - puple_info_stepic[-30]
+        except:
+            print("empty_list")
         return context
 
 
@@ -422,3 +436,19 @@ class NotificationsView(HeaderNotificationsCounter, LoginRequiredMixin, ListView
             all_mes = str(theme + "\n\n" + text)
             send_telegram(all_mes)
         return redirect("/notifications/")
+
+class CheckClassv1(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
+    template_name = "check_class_v1.html"
+    queryset = Puples.objects.all()
+    login_url = '/login/'
+
+    def post(self, request):
+        print(request.POST)
+
+        if "git" in request.POST and request.POST['git']:
+            git = request.POST['git']
+            user = Puples.objects.get(user=request.user.id)
+            checker(git, user.surname + " " + user.name, user.email)
+            return redirect("/check_class_v1/")
+        else:
+            return redirect("/check_class_v1/")

@@ -14,7 +14,7 @@
       <jdbc-url>jdbc:sqlite:C:\Users\MX\PycharmProjects\it_class1158-master\data.sqlite</jdbc-url>
     </data-source>
     <data-source source="LOCAL" name="db [2]" uuid="a1fa86e2-18e1-4bcd-86a4-a921e4a5d474">
-      <driver-ref>sqlite.xerial</driver-ref>
+      <driver-ref>fc2ea116-90cc-499e-821e-15b9ae3796e7</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/db.sqlite</jdbc-url>
@@ -24,6 +24,28 @@
         </library>
         <library>
           <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/license.txt</url>
+        </library>
+      </libraries>
+    </data-source>
+    <data-source source="LOCAL" name="Django default" uuid="448e840c-2c9e-476f-84b6-c44636b08055">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>$PROJECT_DIR$/itclass/settings.py</remarks>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/db.sqlite</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="data [2]" uuid="813cd701-ab0c-42fd-999b-6c1b8f7d48ce">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/data.sqlite</jdbc-url>
+      <libraries>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/sqlite-jdbc-3.31.1.jar</url>
+        </library>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/license.txt</url>
         </library>
       </libraries>
     </data-source>

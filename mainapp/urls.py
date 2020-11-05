@@ -23,6 +23,7 @@ urlpatterns = [
     path("summer_practice/", views.SummerPracticeView.as_view(), name="summer_practice"),
     path("summer_practice/admin", views.SummerPracticeAdminView.as_view(), name="summer_practice_admin"),
     path("notifications/", views.NotificationsView.as_view(), name="summer_practice_admin"),
+    path("check_class_v1/", views.CheckClassv1.as_view(), name="check_class_v1"),
 
     path("market/", include('market.urls')),
     path("daytask/", include('daytask.urls')),
