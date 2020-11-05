@@ -130,7 +130,6 @@ def checker(link_git, name_student, e_mail):
         global_errors += 1
         list_errors.append(f"1. KO ___{file_name}___")
 
-
     # -------------------------test02--------------------------
     try:
         file_name = all_name_func[1]
@@ -185,7 +184,6 @@ def checker(link_git, name_student, e_mail):
         global_errors += 1
         list_errors.append(f"2. KO ___{file_name}___")
 
-
     # -------------------------test03--------------------------
     try:
         file_name = all_name_func[2]
@@ -228,7 +226,6 @@ def checker(link_git, name_student, e_mail):
         print("\033[31m---------------------TEST-03-FAILED---------------------\033[37m")
         global_errors += 1
         list_errors.append(f"3. KO ___{file_name}___")
-
 
     # -------------------------test04--------------------------
     try:
