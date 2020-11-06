@@ -14,6 +14,7 @@ from django.views.generic.detail import DetailView
 from docxtpl import DocxTemplate
 from .addons_python.stepic_ege import get_stepic_info, get_csv_file_stepic, get_info_for_all_class
 from .addons_python.checker_class_11 import checker
+from .addons_python.list_v1 import checker_list_v1
 
 from .addons_python.views_addons_classes import HeaderNotificationsCounter
 from .addons_python.notifications import send_mail_to_applicant, send_telegram
@@ -452,3 +453,17 @@ class CheckClassv1(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
             return redirect("/check_class_v1/")
         else:
             return redirect("/check_class_v1/")
+
+class CheckListv1(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
+    template_name = "check_list_v1.html"
+    queryset = Puples.objects.all()
+    login_url = '/login/'
+
+    def post(self, request):
+        if "git" in request.POST and request.POST['git']:
+            git = request.POST['git']
+            user = Puples.objects.get(user=request.user.id)
+            checker_list_v1(git, user.surname + " " + user.name, user.email)
+            return redirect("/check_list_v1/")
+        else:
+            return redirect("/check_list_v1/")

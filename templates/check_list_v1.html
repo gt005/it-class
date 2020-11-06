@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block main %}
+    {% load static %}
+    <div class="container py-3">
+        <h2 class="text-left font-weight-light">Проверка заданий 'list_v1'</h2>
+        <hr>
+        <h5 class="font-weight-light">Обратите внимание, что для получения результатов необходимо проверить корректность вашего email в данной системе</h5>
+        <form method="post">{% csrf_token %}
+            <input type="text" class="form-control" name="git" value=""
+                   placeholder="Ссылка на репозиторий git"/>
+            <br>
+            <button class="btn btn-success mb-3">Отправить на проверку</button>
+        </form>
+    <hr>
+        <h2 class="text-left font-weight-light">Задания list_v2</h2>
+        <ol>
+            <li></li>
+        </ol>
+
+
+
+    </div>
+{% endblock %}
+{% block detail_active %} active{% endblock %}
