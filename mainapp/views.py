@@ -14,7 +14,7 @@ from django.views.generic.detail import DetailView
 from docxtpl import DocxTemplate
 from .addons_python.stepic_ege import get_stepic_info, get_csv_file_stepic, get_info_for_all_class
 from .addons_python.checker_class_11 import checker
-from .addons_python.list_v1 import checker_list_v1
+from .addons_python.list_v2 import checker_list_v1
 
 from .addons_python.views_addons_classes import HeaderNotificationsCounter
 from .addons_python.notifications import send_mail_to_applicant, send_telegram
@@ -247,7 +247,9 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
-        context['allevents'] = Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date')
+        context['allevents'] = filter(lambda x: not x.name.startswith("Задача дня"), Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
+        context['alldaytasks'] = filter(lambda x: x.name.startswith("Задача дня"),
+                                      Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
         context['form'] = CollectData()
         if Puples.objects.get(pk=self.kwargs["pk"]).status == "APP":
             context['app'] = ApplicantAction.objects.get(action_app=self.kwargs['pk'])
@@ -276,8 +278,12 @@ class AddEventView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
-        context['allevents'] = Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date')
+        context['allevents'] = filter(lambda x: not x.name.startswith("Задача дня"),
+                                      Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
+
         context['form'] = EventsForm()
+        context['alldaytasks'] = filter(lambda x: x.name.startswith("Задача дня"),
+                                        Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
         context['rate_event'] = sum(
             map(lambda x: x.event_rate, Events.objects.filter(events__pk=self.kwargs['pk'], check=True)))
         return context

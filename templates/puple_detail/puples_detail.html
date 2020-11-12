@@ -82,7 +82,6 @@
                                                  src="{% static '/images/telegram.png' %}">Присоедениться к
                     телеграм
                     каналу</a>
-
             </div>
             <div class="col">
                 <div class="row">
@@ -125,7 +124,29 @@
 
                         {% endfor %}
                     </table>
+                    <hr>
+                    <p class="pt-3 col-12 col-lg-8 font-weight-light text-muted content_toggle_future">
+                        {% if puples.status != "APP" %}Список решенных
+                            задач дня{% endif %}
+                    </p>
+                    <table class="table table-sm text-center my-4 content_block_table_future">
+                        <thead class="thead text-center">
+                        <tr>
+                            <th class="text-left">Дата задачи</th>
+                            <th class="text-left">Название</th>
+                            <th>Баллы</th>
+                        </tr>
+                        </thead>
+                        {% for event in alldaytasks %}
+                            <tr {% if event.check is False %} class="alert-warning"{% endif %}>
+                                <td class="align-left text-left">{{ event.date }} {% if event.check is False %}
+                                    <p class="alert-warning">На модерации</p>{% endif %}</td>
+                                <td class="text-left align-middle">{{ event.name }}</td>
+                                <td class="text-left align-middle text-center">{{ event.event_rate }}</td>
+                            </tr>
 
+                        {% endfor %}
+                    </table>
                     <a class="btn btn-info btn-lg btn-block btn-rounded" href="add_events" role="button">Добавить новое
                         мероприятие</a>
                     <p class="my-3">Количество посещенных мероприятий: {{ events_count }} </p>
@@ -219,7 +240,7 @@
 
                                     // Configuration options go here
                                     options: {
-                                         title: {
+                                        title: {
                                             display: true,
                                             fontSize: 12,
                                             text: 'Решения задач по классу'
