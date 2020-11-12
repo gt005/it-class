@@ -507,5 +507,3 @@ def checker_list_v1(link_git, student_name, e_mail):
 
     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), settings.MEDIA_ROOT + '/checked_work/')
     shutil.rmtree(path)
-
-
