@@ -39,7 +39,7 @@
                 </div>
                 <div class="col-12">
                     {% if active_task %}
-                        <a class="task-list-page__container task-list-page__active-container" href="active_task/{{ active_task.id }}">
+                        <a class="task-list-page__container task-list-page__active-container {% if active_task_period <= 0 %}task-actived{% endif %}" href="active_task/{{ active_task.id }}">
                             <div class="task-list-page__container__theme-name">
                                 <span>Задача на тему: “{{ active_task.task_level.level_theme }}”</span>
                                 <br>
@@ -51,14 +51,22 @@
                                     <th scope="col">Время начала</th>
                                     <th scope="col">Время завершения</th>
                                     <th id="tasks-list-page__active-task__time-to-start-label" scope="col">
-                                        До начала
+                                        {% if active_task_period <= 0 %}
+                                            До конца
+                                        {% else %}
+                                            До начала
+                                        {% endif %}
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
                                     <td id="tasks-list-page__active-task__start-time">
-                                        {{ active_task.start_time }}
+                                        {% if active_task_period <= 0 %}
+                                            Началось
+                                        {% else %}
+                                            {{ active_task.start_time }}
+                                        {% endif %}
                                     </td>
                                     <td id="tasks-list-page__active-task__end-time">
                                         {{ active_task.end_time }}
@@ -184,17 +192,22 @@
             );
         }
 
-        // Задача еще не открыта, поставил отсчет до открытия
-        remainderTimeCounter(
-            reminderTimeTaskListPage,
-            "Задача откроется через минуту",
-            function_on_end = startCountdownOnActiveTask,
-            message_type = true,
-            red_color_toggle = false,
-            set_red_end_message = false,
-            end_message_alert = "Задача открылась, можно начать решать.",
-            end_message_alert_type = true,
+        {% if active_task_period <= 0 %}
+            startCountdownOnActiveTask();
+        {% else %}
+            // Задача еще не открыта, поставил отсчет до открытия
+            remainderTimeCounter(
+                reminderTimeTaskListPage,
+                "Задача откроется через минуту",
+                function_on_end = startCountdownOnActiveTask,
+                message_type = true,
+                red_color_toggle = false,
+                set_red_end_message = false,
+                end_message_alert = "Задача открылась, можно начать решать.",
+                end_message_alert_type = true,
         );
+        {% endif %}
+
     </script>
 
 {% endblock %}

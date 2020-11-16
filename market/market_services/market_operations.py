@@ -36,6 +36,11 @@ def buying_product_from_market(product_id_for_buy: int, request) -> str:
         event_rate=-product_from_db.price,
     )
 
+    new_buy_event.verification_file.save(
+        name=product_from_db.product_photo.name,
+        content=product_from_db.product_photo
+    )
+
     new_buy_event.save()
 
     bough_product = BoughtProduct(

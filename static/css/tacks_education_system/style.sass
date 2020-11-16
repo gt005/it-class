@@ -110,6 +110,7 @@ ol, ul, dl
 .task-page__main-back-buttons
   display: flex
   align-items: center
+  width: fit-content
 
   & .task-page__main-back-buttons__back-buttons img:first-child
     position: relative
@@ -395,6 +396,9 @@ ol, ul, dl
       width: max-content
     & .description-task
       display: flex
+      width: 75%
+      white-space: nowrap
+      overflow: auto
       & span
         padding-left: 45px
     & .active-buttons .open-icon-angle svg
@@ -404,7 +408,8 @@ ol, ul, dl
 #settings_page__add-new-level__theme-input
   margin-top: 15px
 
-.settings_page__level-settings__add-level-btn
+.settings_page__level-settings__add-level-btn,
+.settings_page__level-settings__add-task-btn
   cursor: pointer
   width: 2.5em
   height: 2.5em
@@ -427,6 +432,22 @@ ol, ul, dl
   &:hover
     & svg
       opacity: 1
+
+.settings_page__level-settings__add-level-btn,
+.settings_page__level-settings__add-task-btn
+  height: 2.5em
+  width: 2.5em
+  cursor: pointer
+  margin-bottom: 20px
+
+.settings_page__add-new-task__modal
+  max-width: 75%
+
+.settings_page__level-settings__level-description
+  & .start-date p, & .end-date p
+    font-weight: 600
+    font-size: 1.1em
+
 
 @media screen and (max-width: 992px)
   .task-list-page__container
@@ -489,3 +510,10 @@ ol, ul, dl
     & table
       box-shadow: none
       width: 100%
+
+  .settings_page__add-new-task__modal
+    max-width: 100%
+
+  .task-page__last-solutions__table__body__row
+    & .description-task
+      flex-direction: column

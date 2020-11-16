@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import EducationTask, CheckedEducationTask, EducationLevel
-from .addons_python.functions_for_tasks import save_task_solution, crete_level
+from .addons_python.functions_for_tasks import *
 
 
 locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
@@ -43,7 +43,7 @@ class ActiveTask(LoginRequiredMixin, DetailView):
 class TasksList(LoginRequiredMixin, TemplateView):
     template_name = "tacks_education_system/tasks_list.html"
     login_url = "/login/"
-    # TODO: Удалять все решения задач кроме самого последнего для экономии памяти
+    # TODO: Удалять все решения после закрытие задачи кроме самого последнего для экономии памяти
 
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
@@ -85,17 +85,60 @@ class LevelSettings(views.LoginRequiredMixin,
     login_url = "/login/"
     model = EducationLevel
 
-    def patch(self, request, *args, **kwargs):
-        print(request.kwargs)
+    def get(self, request, *args, **kwargs):
+        if request.GET:
+            return JsonResponse({
+                "task_name": "Путешествие к звездам " + request.GET.get("get_task_description"),
+                "start_time": "11/17/2020 1:12 AM",
+                "end_time": "11/17/2020 1:12 AM",
+                "description_task": '''Узник пытается бежать из замка, который состоит из MN квадратных комнат, расположенных в виде прямоугольника M×N. Между любыми двумя соседними комнатами есть дверь , однако некоторые комнаты закрыты и попасть в них нельзя. В начале узник находится в угловой комнате и для спасения ему надо попасть в противоположную угловую комнату. Времени у него немного, всего он может побывать не более, чем в M+N-1 комнате, включая начальную и конечную комнату на своем пути, то есть с каждым переходом в соседнюю комнату расстояние до выхода из замка должно уменьшаться. От вас требуется найти количество различных маршрутов, ведущих к спасению.''',
+                "input_format": "Первая строчка входных данных содержит натуральные числа M и N, не превосходящих 1000. Далее идет план замка в виде M строчек из N символов в каждой. Один символ соответствует одной комнате: если символ равен 1, то в комнату можно попасть, если он равен 0, то комната закрыта. Первоначальное положение узника – левый нижний угол (первый символ последней строки), выход находится в правом верхнем углу (последний символ первой строки, оба этих символа равны 1).",
+                "output_format": '''Программа должна напечатать количество маршрутов, ведущих узника к выходу и проходящих через M+N-1 комнату, или слово impossible, если таких маршрутов не существует. 
+
+Входные данные подобраны таким образом, что искомое число маршрутов не превосходит 2.000.000.000.''',
+
+            }, status=200)
+        else:
+            return super(LevelSettings, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            level_to_change_number = int(kwargs.get("level_number"))
+            level_object_from_db = EducationLevel.objects.get(
+                level_number=level_to_change_number
+            )
+        except TypeError:
+            return JsonResponse({
+                "message": "Неправильный номер уровня"
+            }, status=415)
+        except ObjectDoesNotExist:
+            return JsonResponse({
+                "message": "Уровень с таким номером не найден"
+            }, status=404)
+
+        if request.POST.get("newTheme"):
+            return change_level_theme(  # returns JsonResponse
+                new_theme=request.POST.get("newTheme"),
+                for_level=level_object_from_db,
+            )
+        elif request.POST.get("createNewTask"):
+            return create_task_and_add_to_db(  # returns JsonResponse
+                post_request_object=request.POST,
+                level_object_from_db=level_object_from_db
+            )
 
     def get_object(self, *args, **kwargs):
         try:
-            return self.model.objects.get(level_number=int(self.kwargs['level_number']))
+            return self.model.objects.get(
+                level_number=int(self.kwargs["level_number"])
+            )
         except (ValueError, ObjectDoesNotExist):
             raise Http404("Такая задача не найдена")
-
 
     def get_context_data(self, **kwargs):
         context = super(LevelSettings, self).get_context_data(**kwargs)
         context["level_object"] = self.object
+        context["tasks_with_this_level"] = EducationTask.objects.filter(
+            task_level=self.object
+        )
         return context

@@ -1,7 +1,7 @@
 {% load crispy_forms_tags %}
 {% block main %}
     {% load static %}
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
     <div class="messages-container" style="position:fixed;width: 85%;top: 4%; left: 7.5%; z-index: 9999">
 
     </div>
@@ -130,6 +130,120 @@
                         мероприятие</a>
                     <p class="my-3">Количество посещенных мероприятий: {{ events_count }} </p>
                     <p class="my-3">Общий рейтинг(автоматический): {{ rate_event }}</p>
+                    {% if data_stepic %}
+                        <hr>
+                        <div class="container row pb-4">
+                            <h3 class="font-weight-light">Подготовка к ЕГЭ (11 класс)</h3>
+                            <canvas id="myChart" class="col-12"></canvas>
+                            <script>
+                                var ctx = document.getElementById('myChart').getContext('2d');
+                                var myRadarChart = new Chart(ctx, {
+                                    type: 'radar',
+                                    data: {
+                                        labels: ['ЕГЭ 1', 'ЕГЭ 2', 'ЕГЭ 3', 'ЕГЭ 4', 'ЕГЭ 5', 'ЕГЭ 6', 'ЕГЭ 7', 'ЕГЭ 8', 'ЕГЭ 9', 'ЕГЭ 10', 'ЕГЭ 11', 'ЕГЭ 12', 'ЕГЭ 13', 'ЕГЭ 14', 'ЕГЭ 15', 'ЕГЭ 16', 'ЕГЭ 17', 'ЕГЭ 18', 'ЕГЭ 19', 'ЕГЭ 20', 'ЕГЭ 21', 'ЕГЭ 22', 'ЕГЭ 23', 'ЕГЭ 24', 'ЕГЭ 25', 'ЕГЭ 26', 'ЕГЭ 27',],
+                                        datasets: [{
+                                            data: {{ data_stepic }},
+                                            backgroundColor: 'rgba(23, 162, 184, 0.2)',
+                                            pointBackgroundColor: 'rgba(23, 162, 184, 1)',
+                                            borderColor: ['rgba(23, 162, 184, 1)',],
+                                            borderWidth: 2
+                                        }]
+                                    },
+                                    options: {
+                                        legend: {
+                                            display: false,
+                                            labels: {
+                                                boxWidth: 0,
+                                            }
+                                        },
+                                        title: {
+                                            display: true,
+                                            fontSize: 12,
+                                            text: 'Диаграмма решенных задач'
+                                        }
+                                    }
+                                });
+                            </script>
+                        </div>
+                        <p class="font-weight-light">Успешно решенных задач: {{ tasks_success }}</p>
+                        <p class="font-weight-light">Процент успешности: {{ procent_success }} %</p>
+                        <p class="font-weight-light">Количество нерешенных задач: {{ unsolved_tasks }} </p>
+
+                        <div class="container row pb-4">
+                            <canvas id="myChart1" class="col-12"></canvas>
+                            <script>
+                                var ctx = document.getElementById('myChart1').getContext('2d');
+                                var chart = new Chart(ctx, {
+                                    // The type of chart we want to create
+                                    type: 'bar',
+
+                                    // The data for our dataset
+                                    data: {
+                                        datasets: [{
+                                            backgroundColor: [
+                                                'rgb(184,106,59)',
+                                                'rgb(180,184,47)',
+                                                'rgb(95,184,37)',
+                                                'rgb(47,184,160)',
+                                                'rgb(45,148,184)',
+                                                'rgb(71,99,184)',
+                                                'rgb(102,74,184)',
+                                                'rgb(169,77,184)',
+                                                'rgb(184,86,129)',
+                                                'rgb(184,114,36)',
+                                                'rgb(184,181,17)',
+                                                'rgb(104,184,5)',
+                                                'rgb(40,184,116)',
+                                                'rgb(184,86,127)',
+                                                'rgb(123,142,184)',
+                                                'rgb(122,184,115)',
+                                                'rgb(184,154,99)',
+                                                'rgb(107,174,184)',
+                                                'rgb(155,184,141)',
+                                                'rgb(98,184,102)',
+                                                'rgb(143,129,184)',
+                                                'rgb(172,157,184)',
+                                                'rgb(107,184,106)',
+                                                'rgb(122,184,110)',
+                                                'rgb(136,184,23)',
+                                                'rgb(30,184,113)',
+                                                'rgb(184,109,55)',
+                                            ],
+                                            data: {{ info_all_class }}
+                                        }],
+
+                                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                                        labels: ['ЕГЭ 1', 'ЕГЭ 2', 'ЕГЭ 3', 'ЕГЭ 4', 'ЕГЭ 5', 'ЕГЭ 6', 'ЕГЭ 7', 'ЕГЭ 8', 'ЕГЭ 9', 'ЕГЭ 10', 'ЕГЭ 11', 'ЕГЭ 12', 'ЕГЭ 13', 'ЕГЭ 14', 'ЕГЭ 15', 'ЕГЭ 16', 'ЕГЭ 17', 'ЕГЭ 18', 'ЕГЭ 19', 'ЕГЭ 20', 'ЕГЭ 21', 'ЕГЭ 22', 'ЕГЭ 23', 'ЕГЭ 24', 'ЕГЭ 25', 'ЕГЭ 26', 'ЕГЭ 27',],
+
+                                    },
+
+                                    // Configuration options go here
+                                    options: {
+                                         title: {
+                                            display: true,
+                                            fontSize: 12,
+                                            text: 'Решения задач по классу'
+                                        },
+                                        legend: {
+                                            display: false,
+                                            labels: {
+                                                boxWidth: 0,
+                                            }
+                                        }
+                                    }
+                                });
+                            </script>
+                        </div>
+                    {% endif %}
+                    {% if user.is_superuser %}
+                        <form method="post">{% csrf_token %}
+                            <input type="text" class="form-control" name="update_file_csv" value=""
+                                   placeholder="Ссылка на stepic"/>
+                            <br>
+                            <button class="btn btn-success mb-3">Обновить информацию пользователей</button>
+                        </form>
+                    {% endif %}
+
                 {% elif puples.status == "APP" and puples.applicant_progress < 100 %}
                     <hr><p class="font-weight-light my-4">Промежуточный результат отборочного
                     этапа: {{ puples.applicant_first_result }}

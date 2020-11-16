@@ -10,7 +10,8 @@ from django.utils import timezone
 class EducationLevel(models.Model):
     level_number = models.PositiveIntegerField(
         "Уровень группы задач",
-        default=1
+        default=1,
+        unique=True
     )
     level_theme = models.CharField(
         "Тема, которая проходится на уровне",
@@ -19,6 +20,9 @@ class EducationLevel(models.Model):
 
     def __str__(self):
         return f"Задачи на тему '{self.level_theme}'. Уровень {self.level_number}"
+
+    def short_name(self):
+        return f"Уровень {self.level_number} - '{self.level_theme}'"
 
     class Meta:
         verbose_name = "Уровень для задач"
@@ -30,7 +34,7 @@ class EducationTask(models.Model):
     Задачи для решения.
     Пир(peer) - человек, которому пришла задача на проверку.
     """
-    for_student = models.OneToOneField(Puples, on_delete=models.CASCADE, null=True, default=None, verbose_name="Предназначена для этого ученика")
+    for_student = models.OneToOneField(Puples, on_delete=models.CASCADE, blank=True, null=True, default=None, verbose_name="Предназначена для этого ученика")
     start_time = models.DateTimeField(verbose_name="Дата начала(открытие) задачи", auto_now_add=False)
     end_time = models.DateTimeField(verbose_name="Дата конца(закрытия) задачи", auto_now_add=False)
     task_level = models.ForeignKey(EducationLevel, verbose_name="Уровень задачи", default=1, on_delete=models.CASCADE)

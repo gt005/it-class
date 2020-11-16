@@ -150,6 +150,7 @@ function sendTaskSolution(fileOrCodeText, codeLang, type) {
 
     fetch(location.href, {
         method: 'POST',
+        mode: 'same-origin',  // Do not send CSRF token to another domain.
         headers: {"X-CSRFToken": csrfToken},
         body: data
     }).then(function (response) {
@@ -199,7 +200,7 @@ function remainderTimeCounter(
     let targetSeconds = target.textContent;
     target.textContent = convertSecondsToHoursAndMinutes(target.textContent);  // Перевод в читаемый вид из секунд сразу после загрузки скрипта
 
-    let remainderTimeInterval = setInterval(() => {
+    function counter () {
         // Счетчик времени на странице с задачей
         targetSeconds--;
         target.textContent = convertSecondsToHoursAndMinutes(targetSeconds);
@@ -230,6 +231,12 @@ function remainderTimeCounter(
         if (targetSeconds == 60) {
             showAlertElement(message_on60_seconds, message_type);
         }
+    }
+
+    counter();
+
+    let remainderTimeInterval = setInterval(() => {
+        counter();
     }, 1000);
 
     function clearCurrentInterval() {

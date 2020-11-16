@@ -214,6 +214,7 @@
 
             fetch(location.href, {
                 method: 'POST',
+                mode: 'same-origin',  // Do not send CSRF token to another domain.
                 headers: {"X-CSRFToken": csrfToken},
                 body: data
             }).then(function (response) {

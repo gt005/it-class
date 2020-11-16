@@ -1,6 +1,28 @@
 {% extends 'tacks_education_system/tacks_education_system_base_template.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
+{% block head_links %}
+    <!-- Font Awesome -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+          crossorigin="anonymous">
+
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
+            integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA="
+            crossorigin="anonymous"></script>
+
+    <!-- Tempus Dominus Bootstrap 4 -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css"
+          integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs="
+          crossorigin="anonymous"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"
+            integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4="
+            crossorigin="anonymous"></script>
+{% endblock %}
 
 {% block main %}
 
@@ -8,7 +30,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <a class="task-page__main-back-buttons pr-lg-3"
+                    <a class="task-page__main-back-buttons pr-lg-3 pb-3"
                        href="/tasks/system_settings/">
                         <span class="task-page__main-back-buttons__back-buttons">
                             <img src="{% static 'images/back_button.svg' %}"
@@ -18,14 +40,124 @@
                         </span>
                         Все настройки
                     </a>
-                    <h4 class="text-center">Уровень {{ level_object.level_number }}</h4>
-                    <h3 class="text-center settings_page__level-change-theme-btn" data-toggle="modal"
-                         data-target="#settings_page__level-change-theme">
-                        Тема: "{{ level_object.level_theme }}"
-                            <svg width="0.8em" height="0.8em" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-</svg>
+                    <h4 class="text-center">
+                        Уровень {{ level_object.level_number }}</h4>
+                    <h3 class="text-center settings_page__level-change-theme-btn"
+                        data-toggle="modal"
+                        data-target="#settings_page__level-change-theme">
+                        Тема: "<span
+                            id="settings_page__level-settings__theme-name-header">{{ level_object.level_theme }}</span>"
+                        <svg width="0.8em" height="0.8em" viewBox="0 0 16 16"
+                             class="bi bi-pencil" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
                     </h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="settings_page__level-settings pt-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 ml-auto">
+                    <div class="settings_page__level-settings__add-task-btn ml-auto"
+                         data-toggle="modal"
+                         data-target="#settings_page__add-new-task">
+                        <svg viewBox="0 0 16 16"
+                             class="bi bi-plus" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="accordion settings_page__level task-page__last-solutions__table__body"
+                         id="accordionExample">
+
+                        {% for task in tasks_with_this_level %}
+                            <div class="card task-page__last-solutions__card settings_page__level-settings__level__task-row">
+                                <div class="card-header"
+                                     id="task_{{ task.id }}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left collapsed settings_page__level-settings__level-more-open-button"
+                                                type="button"
+                                                data-toggle="collapse"
+                                                data-target="#collapse_{{ task.id }}"
+                                                data-code=""
+                                                data-task-id="{{ task.id }}"
+                                                data-is-loaded-description="false"
+                                                aria-expanded="false"
+                                                aria-controls="collapse_{{ task.id }}">
+                                            <span class="task-page__last-solutions__table__body__row">
+                                                <span class="description-task">
+                                                    <span>
+                                                        "{{ task.task_name }}"
+                                                    </span>
+                                                    <span>
+                                                        <a class="settings_page__level-settings__task-student-link"
+                                                           style="text-decoration: underline"
+                                                           href="/statistic/pupil/{{ task.for_student.id }}">
+                                                            {{ task.for_student.name }} {{ task.for_student.surname }}
+                                                        </a>
+                                                    </span>
+                                                </span>
+                                                <span class="active-buttons">
+                                                    <a class="edit-icon pr-2"
+                                                       href="task-settings/{{ task.id }}">
+                                                        <svg width="1em"
+                                                             height="1em"
+                                                             viewBox="0 0 16 16"
+                                                             class="bi bi-pencil"
+                                                             fill="currentColor"
+                                                             xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd"
+        d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+</svg>
+                                                    </a>
+
+                                                    <span class="open-icon-angle">
+                                                        <svg width="1em"
+                                                             height="1em"
+                                                             viewBox="0 0 16 16"
+                                                             class="bi bi-caret-down"
+                                                             fill="currentColor"
+                                                             xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd"
+        d="M3.204 5L8 10.481 12.796 5H3.204zm-.753.659l4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>
+</svg>
+                                                    </span>
+                                                </span>
+
+                                            </span>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapse_{{ task.id }}"
+                                     class="collapse"
+                                     aria-labelledby="task_{{ task.id }}"
+                                     data-parent="#accordionExample">
+                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area settings_page__level-settings__level-description-collapsed-area">
+
+                                        <div class="task-description-loader d-flex align-items-center justify-content-center"
+                                             style="height: 100px;">
+                                            <div class="spinner-border text-info"
+                                                 role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,7 +166,8 @@
 {% endblock %}
 
 {% block modal_windows %}
-    <div class="modal fade" id="settings_page__level-change-theme" tabindex="-1"
+    <div class="modal fade" id="settings_page__level-change-theme"
+         tabindex="-1"
          aria-labelledby="settings_page__level-change-themeLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -63,24 +196,282 @@
                             data-dismiss="modal">Отмена
                     </button>
                     <button type="button" class="btn btn-outline-success"
-                            id="settings_page__level-change-theme__submit">Изменить
+                            id="settings_page__level-change-theme__submit">
+                        Изменить
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="settings_page__add-new-task" tabindex="-1"
+         aria-labelledby="settings_page__add-new-taskLabel"
+         aria-hidden="true">
+        <div class="modal-dialog settings_page__add-new-task__modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="settings_page__add-new-taskLabel">
+                        Добавить задачу на
+                        уровень {{ level_object.level_number }}
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="createNewTaskForms">
+                    {% csrf_token %}
+                    <label for="datetimepickerStartTimeInput"
+                           class=" requiredField">
+                        Время открытия задачи<span
+                            class="asteriskField">*</span>
+                    </label>
+                    <div class="input-group date" id="datetimepickerStartTime"
+                         data-target-input="nearest"
+                         style="margin-bottom: 16px;">
+                        <input type="text" name="start_time"
+                               id="datetimepickerStartTimeInput"
+                               class="form-control datetimepicker-input"
+                               data-target="#datetimepickerStartTime"
+                               required="required">
+                        <div class="input-group-append"
+                             data-target="#datetimepickerStartTime"
+                             data-toggle="datetimepicker">
+                            <div class="input-group-text"><i
+                                    class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+
+                    <label for="datetimepickerEndTimeInput"
+                           class=" requiredField">
+                        Время закрытия задачи<span
+                            class="asteriskField">*</span>
+                    </label>
+                    <div class="input-group date" id="datetimepickerEndTime"
+                         data-target-input="nearest"
+                         style="margin-bottom: 16px;">
+                        <input type="text" name="end_time"
+                               id="datetimepickerEndTimeInput"
+                               class="form-control datetimepicker-input"
+                               data-target="#datetimepickerEndTime"
+                               required="required">
+                        <div class="input-group-append"
+                             data-target="#datetimepickerEndTime"
+                             data-toggle="datetimepicker">
+                            <div class="input-group-text"><i
+                                    class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+
+                    <div id="div_id_task_name" class="form-group"><label
+                            for="id_task_name" class=" requiredField">
+                        Название задания<span class="asteriskField">*</span>
+                    </label>
+                        <div class=""><input type="text" name="task_name"
+                                             maxlength="200"
+                                             class="textinput textInput form-control"
+                                             required="required"
+                                             id="id_task_name">
+                        </div>
+                    </div>
+
+                    <div id="div_id_description_task" class="form-group"><label
+                            for="id_description_task" class=" requiredField">
+                        Условие задачи<span class="asteriskField">*</span>
+                    </label>
+                        <div class="">
+                            <textarea name="description_task"
+                                      cols="40" rows="10"
+                                      class="textarea form-control"
+                                      required="required"
+                                      id="id_description_task"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_id_input_format" class="form-group"><label
+                            for="id_id_input_format" class=" requiredField">
+                        Формат ввода<span class="asteriskField">*</span>
+                    </label>
+                        <div class=""><textarea name="id_input_format"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="id_input_format"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_id_output_format" class="form-group"><label
+                            for="id_output_format" class=" requiredField">
+                        Формат вывода<span class="asteriskField">*</span>
+                    </label>
+                        <div class=""><textarea name="output_format" cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="id_output_format"></textarea>
+                        </div>
+                    </div>
+
+
+                    <p class="pt-2">Фото 1 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_1">
+                        <label class="custom-file-label"
+                               for="id_photo_1">
+                            Выбрать
+                        </label>
+                    </div>
+
+                    <p class="pt-2">Фото 2 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_2">
+                        <label class="custom-file-label"
+                               for="id_photo_2">
+                            Выбрать
+                        </label>
+                    </div>
+
+                    <p class="pt-2">Фото 3 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_3">
+                        <label class="custom-file-label"
+                               for="id_photo_3">
+                            Выбрать
+                        </label>
+                    </div>
+
+                    <div id="div_example_input_1" class="form-group"><label
+                            for="example_input_1">
+                        Пример 1 ввод
+                    </label>
+                        <div class=""><textarea name="example_input_1"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_1"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_1" class="form-group"><label
+                            for="example_output_1">
+                        Пример 1 вывод
+                    </label>
+                        <div class=""><textarea name="example_output_1"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_1"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_input_2" class="form-group"><label
+                            for="example_input_2">
+                        Пример 2 ввод
+                    </label>
+                        <div class=""><textarea name="example_input_2"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_2"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_2" class="form-group"><label
+                            for="example_output_2">
+                        Пример 2 вывод
+                    </label>
+                        <div class=""><textarea name="example_output_2"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_2"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_input_3" class="form-group"><label
+                            for="example_input_3">
+                        Пример 3 ввод
+                    </label>
+                        <div class=""><textarea name="example_input_3"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_3"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_3" class="form-group"><label
+                            for="example_output_3">
+                        Пример 3 вывод
+                    </label>
+                        <div class=""><textarea name="example_output_3"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_3"></textarea>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer" style="border: 0">
+                    <button type="button" class="btn btn-outline-danger"
+                            data-dismiss="modal">Отмена
+                    </button>
+                    <button type="button" class="btn btn-outline-success"
+                            id="settings_page__add-new-task__submit">Добавить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block scripts_include %}
     <script>
-    function changeLevelTheme () {
 
-        let data = new FormData();
+        document.querySelectorAll(".with-file-input").forEach(function (element) {
+            element.querySelector("input[type='file']").onchange = function () {
+                let file = this.files;
+                if (file.length == 0) {
+                    element.querySelector(".custom-file-label").textContent = "Выбрать";
+                } else {
+                    element.querySelector(".custom-file-label").textContent = file[0].name;
+                }
+            };
+        })
 
-        data.append("newTheme", newTheme)
 
-        fetch(location.href, {
-                method: 'PATCH',
+        function getTaskDescriptionAndSetToTaskElement(taskRow) {
+            console.log(taskRow)
+        }
+
+
+        function changeLevelTheme(newTheme) {
+
+            let data = new FormData();
+
+            data.append("newTheme", newTheme.value);
+
+            fetch(location.href, {
+                method: 'POST',
+                mode: 'same-origin',  // Do not send CSRF token to another domain.
                 headers: {"X-CSRFToken": csrfToken},
                 body: data
             }).then(function (response) {
@@ -92,13 +483,231 @@
                 return response.json();
             }).then(function (json) {
                 if (json) {
+                    themeNameHeader.textContent = newTheme.value;
+                    newTheme.value = '';
                     $("[data-dismiss=modal]").trigger({type: "click"});
                 }
             });
-    }
+        }
 
-    let changeLevelThemeSubmitButton = document.querySelector('#settings_page__level-change-theme__submit'),
-        changeLevelThemeInput = document.querySelector('')
+
+        function sendFormToCreateNewTask() {
+            let createNewTaskForms = document.querySelector('#createNewTaskForms');
+
+            // Перечисление всех полей создания новой задаячи
+            let datetimepickerStartTimeInput = createNewTaskForms.querySelector("#datetimepickerStartTimeInput"),
+                datetimepickerEndTimeInput = createNewTaskForms.querySelector("#datetimepickerEndTimeInput"),
+                id_task_name = createNewTaskForms.querySelector("#id_task_name"),
+                id_description_task = createNewTaskForms.querySelector("#id_description_task"),
+                id_input_format = createNewTaskForms.querySelector("#id_input_format"),
+                id_output_format = createNewTaskForms.querySelector("#id_output_format"),
+                id_photo_1 = createNewTaskForms.querySelector("#id_photo_1"),
+                id_photo_2 = createNewTaskForms.querySelector("#id_photo_2"),
+                id_photo_3 = createNewTaskForms.querySelector("#id_photo_3"),
+                example_input_1 = createNewTaskForms.querySelector("#example_input_1"),
+                example_output_1 = createNewTaskForms.querySelector("#example_output_1"),
+                example_input_2 = createNewTaskForms.querySelector("#example_input_2"),
+                example_output_2 = createNewTaskForms.querySelector("#example_output_2"),
+                example_input_3 = createNewTaskForms.querySelector("#example_input_3"),
+                example_output_3 = createNewTaskForms.querySelector("#example_output_3");
+
+            if (!(datetimepickerStartTimeInput.value && datetimepickerEndTimeInput.value &&
+                id_task_name.value && id_description_task.value && id_input_format.value && id_output_format.value)) {
+                showAlertElement("Должны быть заполнены все поля с символом *")
+                return false;
+            }
+
+            let data = new FormData();
+
+            data.append("createNewTask", 'True');
+            data.append("start_time", datetimepickerStartTimeInput.value);
+            data.append("end_time", datetimepickerEndTimeInput.value);
+            data.append("task_name", id_task_name.value);
+            data.append("description_task", id_description_task.value);
+            data.append("input_format", id_input_format.value);
+            data.append("output_format", id_output_format.value);
+            data.append("photo_1", id_photo_1.value);
+            data.append("photo_2", id_photo_2.value);
+            data.append("photo_3", id_photo_3.value);
+            data.append("example_input_1", example_input_1.value);
+            data.append("example_output_1", example_output_1.value);
+            data.append("example_input_2", example_input_2.value);
+            data.append("example_output_2", example_output_2.value);
+            data.append("example_input_3", example_input_3.value);
+            data.append("example_output_3", example_output_3.value);
+
+            fetch(location.href, {
+                method: 'POST',
+                mode: 'same-origin',  // Do not send CSRF token to another domain.
+                headers: {"X-CSRFToken": csrfToken},
+                body: data
+            }).then(function (response) {
+                if (!response.ok) {
+                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+                    return false
+                }
+                return response.json();
+            }).then(function (json) {
+                if (json) {
+                    showAlertElement("Задача успешно добавлена.", success = true);
+                    tasksList.innerHTML += `<div class="card task-page__last-solutions__card">
+                                <div class="card-header"
+                                     id="task_${json.task_id}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left collapsed settings_page__level-settings__level-more-open-button"
+                                                type="button"
+                                                data-toggle="collapse"
+                                                data-target="#collapse_${json.task_id}"
+                                                data-code=""
+                                                aria-expanded="false"
+                                                aria-controls="collapse_${json.task_id}">
+                                            <span class="task-page__last-solutions__table__body__row">
+                                                <span class="description-task">
+                                                    <span>
+                                                        "${id_task_name.value}"
+                                                    </span>
+                                                    <span>
+                                                        <a class="settings_page__level-settings__task-student-link" style="text-decoration: underline"></a>
+                                                    </span>
+                                                </span>
+                                                <span class="active-buttons">
+                                                    <a class="edit-icon pr-2"
+                                                       href="task-settings/${json.task_id}">
+                                                        <svg width="1em"
+                                                             height="1em"
+                                                             viewBox="0 0 16 16"
+                                                             class="bi bi-pencil"
+                                                             fill="currentColor"
+                                                             xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd"
+        d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+</svg>
+                                                    </a>
+
+                                                    <span class="open-icon-angle">
+                                                        <svg width="1em"
+                                                             height="1em"
+                                                             viewBox="0 0 16 16"
+                                                             class="bi bi-caret-down"
+                                                             fill="currentColor"
+                                                             xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd"
+        d="M3.204 5L8 10.481 12.796 5H3.204zm-.753.659l4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>
+</svg>
+                                                    </span>
+                                                </span>
+
+                                            </span>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapse_${json.task_id}"
+                                     class="collapse"
+                                     aria-labelledby="task_${json.task_id}"
+                                     data-parent="#accordionExample">
+                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
+
+                                        <div class="task-description-loader d-flex align-items-center justify-content-center" style="height: 100px;">
+                                            <div class="spinner-border text-info"
+                                                 role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>`
+                    $("[data-dismiss=modal]").trigger({type: "click"});
+                }
+            });
+
+        }
+
+
+        let changeLevelThemeSubmitButton = document.querySelector('#settings_page__level-change-theme__submit'),
+            changeLevelThemeInput = document.querySelector('#settings_page__level-change-theme-input'),
+            csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value,
+            themeNameHeader = document.querySelector('#settings_page__level-settings__theme-name-header'),
+            addNewTaskSubmitButton = document.querySelector('#settings_page__add-new-task__submit'),
+            tasksList = document.querySelector(".task-page__last-solutions__table__body");
+
+        changeLevelThemeSubmitButton.onclick = () => {
+            changeLevelTheme(changeLevelThemeInput);
+        }
+
+        addNewTaskSubmitButton.onclick = () => {
+            sendFormToCreateNewTask();
+        }
+
+        document.querySelectorAll(".settings_page__level-settings__level__task-row").forEach(function (taskRow) {
+            taskRow.querySelector('.settings_page__level-settings__level-more-open-button').onclick = function () {
+
+                let currentButton = this;
+                if (this.ariaExpanded === 'false' && this.dataset.isLoadedDescription === 'false') {  // На развороте элемента списка
+                    fetch(location.href + "?get_task_description=" + this.dataset.taskId, {
+                        method: 'GET',
+                        mode: 'same-origin',  // Do not send CSRF token to another domain.
+                    }).then(function (response) {
+                        if (!response.ok) {
+                            showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+                            return false
+                        }
+                        return response.json();
+                    }).then(function (json) {
+                        if (json) {
+                            currentButton.dataset.isLoadedDescription = "true";
+                            $((taskRow.querySelector(".task-description-loader .spinner-border"))).fadeOut();
+                            $((taskRow.querySelector(".task-description-loader"))).fadeOut();
+                            taskRow.querySelector(".settings_page__level-settings__level-description-collapsed-area").innerHTML = `<div class="settings_page__level-settings__level-description">
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col-md-4 col-12 py-2 d-flex align-items-center justify-content-center">
+                                                        <div class="start-date">
+                                                            <p>Время начала</p>
+                                                            ${json.start_time}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 col-12 py-2 d-flex align-items-center justify-content-center">
+                                                        <div class="end-date">
+                                                            <p>Время окончания</p>
+                                                            ${json.end_time}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 col-12 py-2 d-flex align-items-center justify-content-center">
+                                                        <button type="button" class="btn btn-outline-danger">Удалить задачу</button>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="h3 task-name pt-5 pl-4">
+                                                            ${json.task_name}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 py-3 pl-4">
+                                                        <p class="task-description-paragraph">
+                                                            ${json.description_task}
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-12 py-3 pl-4">
+                                                        <p class="input_format">
+                                                            ${json.input_format}
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-12 py-3 pl-4">
+                                                        <p class="output_format">
+                                                            ${json.output_format}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>`;
+
+                        }
+                    })
+                }
+
+            }
+        })
 
     </script>
 {% endblock %}
