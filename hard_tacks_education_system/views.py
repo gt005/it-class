@@ -47,14 +47,18 @@ class TasksList(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
-        context['level'] = self.request.user.puples.education_level
-        context['active_task'] = self.request.user.puples.educationtask
-        context['active_task_period'] = int((self.request.user.puples.educationtask.start_time - datetime.datetime.now()).total_seconds()) - 1  # Секунда дана как время на загрузку страницы
 
-        point_of_start_count_remainder_time = datetime.datetime.now()
-        if self.request.user.puples.educationtask.start_time > datetime.datetime.now():  # Задача еще не открылась
-            point_of_start_count_remainder_time = self.request.user.puples.educationtask.start_time
-        context['active_task_period_remainder'] = int((self.request.user.puples.educationtask.end_time - point_of_start_count_remainder_time).total_seconds()) - 1  # Секунда дана как время на загрузку страницы
+        try:
+            context['active_task'] = self.request.user.puples.educationtask
+            point_of_start_count_remainder_time = datetime.datetime.now()
+            context['active_task_period'] = int((self.request.user.puples.educationtask.start_time - datetime.datetime.now()).total_seconds()) - 1  # Секунда дана как время на загрузку страницы
+            if self.request.user.puples.educationtask.start_time > datetime.datetime.now():  # Задача еще не открылась
+                point_of_start_count_remainder_time = self.request.user.puples.educationtask.start_time
+            context['active_task_period_remainder'] = int((self.request.user.puples.educationtask.end_time - point_of_start_count_remainder_time).total_seconds()) - 1  # Секунда дана как время на загрузку страницы
+        except:  # Не смог найти RelatedObjectDoesNotExist
+            context['active_task'] = None
+
+        context['level'] = self.request.user.puples.education_level
 
         return context
 
@@ -87,17 +91,52 @@ class LevelSettings(views.LoginRequiredMixin,
 
     def get(self, request, *args, **kwargs):
         if request.GET:
-            return JsonResponse({
-                "task_name": "Путешествие к звездам " + request.GET.get("get_task_description"),
-                "start_time": "11/17/2020 1:12 AM",
-                "end_time": "11/17/2020 1:12 AM",
-                "description_task": '''Узник пытается бежать из замка, который состоит из MN квадратных комнат, расположенных в виде прямоугольника M×N. Между любыми двумя соседними комнатами есть дверь , однако некоторые комнаты закрыты и попасть в них нельзя. В начале узник находится в угловой комнате и для спасения ему надо попасть в противоположную угловую комнату. Времени у него немного, всего он может побывать не более, чем в M+N-1 комнате, включая начальную и конечную комнату на своем пути, то есть с каждым переходом в соседнюю комнату расстояние до выхода из замка должно уменьшаться. От вас требуется найти количество различных маршрутов, ведущих к спасению.''',
-                "input_format": "Первая строчка входных данных содержит натуральные числа M и N, не превосходящих 1000. Далее идет план замка в виде M строчек из N символов в каждой. Один символ соответствует одной комнате: если символ равен 1, то в комнату можно попасть, если он равен 0, то комната закрыта. Первоначальное положение узника – левый нижний угол (первый символ последней строки), выход находится в правом верхнем углу (последний символ первой строки, оба этих символа равны 1).",
-                "output_format": '''Программа должна напечатать количество маршрутов, ведущих узника к выходу и проходящих через M+N-1 комнату, или слово impossible, если таких маршрутов не существует. 
+            try:
+                task_to_get_description = int(request.GET.get("get_task_description"))
+                task_object_from_db = EducationTask.objects.get(
+                    id=task_to_get_description
+                )
+            except TypeError:
+                return JsonResponse({
+                    "message": "Некорректный id задачи"
+                }, status=415)
+            except ObjectDoesNotExist:
+                return JsonResponse({
+                    "message": "Задача не найдена"
+                }, status=404)
 
-Входные данные подобраны таким образом, что искомое число маршрутов не превосходит 2.000.000.000.''',
+            description = {
+                "task_id": task_object_from_db.id,
+                "task_name": task_object_from_db.task_name,
+                "start_time": datetime.datetime.strftime(task_object_from_db.start_time, "%d %B %Y г. %H:%M"),
+                "end_time": datetime.datetime.strftime(task_object_from_db.end_time, "%d %B %Y г. %H:%M"),
+                "description_task": task_object_from_db.description_task,
+                "input_format": task_object_from_db.input_format,
+                "output_format": task_object_from_db.output_format,
+                "example_input_1": task_object_from_db.example_input_1,
+                "example_output_1": task_object_from_db.example_output_1,
+                "example_input_2": task_object_from_db.example_input_2,
+                "example_output_2": task_object_from_db.example_output_2,
+                "example_input_3": task_object_from_db.example_input_3,
+                "example_output_3": task_object_from_db.example_output_3,
+            }
 
-            }, status=200)
+            if task_object_from_db.for_student:
+                description.update(
+                    student_name=f"{task_object_from_db.for_student.name} {task_object_from_db.for_student.surname}"
+                )
+                description.update(
+                    student_id=f"{task_object_from_db.for_student.id}"
+                )
+
+            if task_object_from_db.photo_1:
+                description.update(photo_1=task_object_from_db.photo_1.url)
+            if task_object_from_db.photo_1:
+                description.update(photo_1=task_object_from_db.photo_1.url)
+            if task_object_from_db.photo_1:
+                description.update(photo_1=task_object_from_db.photo_1.url)
+
+            return JsonResponse(description, status=200)
         else:
             return super(LevelSettings, self).get(request, *args, **kwargs)
 
@@ -125,6 +164,10 @@ class LevelSettings(views.LoginRequiredMixin,
             return create_task_and_add_to_db(  # returns JsonResponse
                 post_request_object=request.POST,
                 level_object_from_db=level_object_from_db
+            )
+        elif request.POST.get("deleteTask"):
+            return delete_task_from_db(  # returns JsonResponse
+                task_id=request.POST.get("taskToDeleteId"),
             )
 
     def get_object(self, *args, **kwargs):

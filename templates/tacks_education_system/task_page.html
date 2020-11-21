@@ -1,6 +1,8 @@
 {% extends 'tacks_education_system/tacks_education_system_base_template.html' %}
 {% load static %}
 
+{% block document_title %}{{ task.task_name }}{% endblock %}
+
 {% block head_links %}
     <link rel="stylesheet"
           href="{% static 'css/tacks_education_system/codemirror-5.58.1/lib/codemirror.min.css' %}">

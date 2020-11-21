@@ -2,6 +2,9 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block document_title %}Настройки уровня
+    {{ level_object.level_number }}{% endblock %}
+
 {% block head_links %}
     <!-- Font Awesome -->
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -61,8 +64,23 @@
 
     <section class="settings_page__level-settings pt-4">
         <div class="container">
-            <div class="row">
-                <div class="col-12 ml-auto">
+            <div class="row position-relative">
+
+                <div class="close-block-on-loader"
+                     id="settings_page__level-settings__task__close-tasks">
+                    <div class="spinner-border text-info"
+                         role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="settings_page__level-settings__task-amount-label pl-2">
+                        Задач:
+                        <span>{{ tasks_with_this_level | length }}</span>
+                    </div>
+                </div>
+                <div class="col-3 ml-auto">
                     <div class="settings_page__level-settings__add-task-btn ml-auto"
                          data-toggle="modal"
                          data-target="#settings_page__add-new-task">
@@ -106,8 +124,7 @@
                                                     </span>
                                                 </span>
                                                 <span class="active-buttons">
-                                                    <a class="edit-icon pr-2"
-                                                       href="task-settings/{{ task.id }}">
+                                                    <a class="edit-icon pr-2">
                                                         <svg width="1em"
                                                              height="1em"
                                                              viewBox="0 0 16 16"
@@ -151,7 +168,6 @@
                                         </div>
 
 
-
                                     </div>
                                 </div>
                             </div>
@@ -166,6 +182,8 @@
 {% endblock %}
 
 {% block modal_windows %}
+
+
     <div class="modal fade" id="settings_page__level-change-theme"
          tabindex="-1"
          aria-labelledby="settings_page__level-change-themeLabel"
@@ -441,11 +459,305 @@
         </div>
     </div>
 
+
+    <div class="modal fade" id="settings_page__level-delete-task-submit"
+         tabindex="-1"
+         aria-labelledby="settings_page__level-delete-task-submitLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="settings_page__level-delete-task-submitLabel">
+                        Удалить задачу
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    Удалить задачу "<span
+                        id="settings_page__level-delete-task-submit__task-name"
+                        data-task-id=""></span>"
+                    <br>
+                    <span id="settings_page__level-delete-task-submit__task-student">
+                        Задача для <a style="text-decoration: underline"
+                                      href=""></a>
+                    </span>
+                </div>
+                <div class="modal-footer" style="border: 0">
+                    <button type="button" class="btn btn-outline-success"
+                            data-dismiss="modal">Отмена
+                    </button>
+                    <button type="button" class="btn btn-outline-danger"
+                            id="settings_page__level-delete-task-submit__submit-button">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="settings_page__edit-task" tabindex="-1"
+         aria-labelledby="settings_page__edit-taskLabel"
+         aria-hidden="true">
+        <div class="modal-dialog settings_page__edit-task__modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="settings_page__edit-taskLabel">
+                        Редактировать задачу <span></span>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="editTaskForms">
+                    {% csrf_token %}
+                    <label for="datetimepickerStartTimeInputEdit"
+                           class=" requiredField">
+                        Время открытия задачи<span
+                            class="asteriskField">*</span>
+                    </label>
+                    <div class="input-group date"
+                         id="datetimepickerStartTimeEdit"
+                         data-target-input="nearest"
+                         style="margin-bottom: 16px;">
+                        <input type="text" name="start_time_edit"
+                               id="datetimepickerStartTimeInputEdit"
+                               class="form-control datetimepicker-input"
+                               data-target="#datetimepickerStartTimeEdit"
+                               required="required">
+                        <div class="input-group-append"
+                             data-target="#datetimepickerStartTimeEdit"
+                             data-toggle="datetimepicker">
+                            <div class="input-group-text"><i
+                                    class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+
+                    <label for="datetimepickerEndTimeInputEdit"
+                           class=" requiredField">
+                        Время закрытия задачи<span
+                            class="asteriskField">*</span>
+                    </label>
+                    <div class="input-group date"
+                         id="datetimepickerEndTimeEdit"
+                         data-target-input="nearest"
+                         style="margin-bottom: 16px;">
+                        <input type="text" name="end_time_edit"
+                               id="datetimepickerEndTimeInputEdit"
+                               class="form-control datetimepicker-input"
+                               data-target="#datetimepickerEndTimeEdit"
+                               required="required">
+                        <div class="input-group-append"
+                             data-target="#datetimepickerEndTimeEdit"
+                             data-toggle="datetimepicker">
+                            <div class="input-group-text"><i
+                                    class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+
+                    <div id="div_id_task_name_edit" class="form-group"><label
+                            for="id_task_name" class=" requiredField">
+                        Название задания<span class="asteriskField">*</span>
+                    </label>
+                        <div class=""><input type="text" name="task_name_edit"
+                                             maxlength="200"
+                                             class="textinput textInput form-control"
+                                             required="required"
+                                             id="id_task_name_edit_edit">
+                        </div>
+                    </div>
+
+                    <div id="div_id_description_task_edit" class="form-group">
+                        <label
+                                for="id_description_task_edit"
+                                class=" requiredField">
+                            Условие задачи<span class="asteriskField">*</span>
+                        </label>
+                        <div class="">
+                            <textarea name="description_task_edit"
+                                      cols="40" rows="10"
+                                      class="textarea form-control"
+                                      required="required"
+                                      id="id_description_task_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_id_input_format_edit" class="form-group">
+                        <label
+                                for="id_id_input_format_edit"
+                                class=" requiredField">
+                            Формат ввода<span class="asteriskField">*</span>
+                        </label>
+                        <div class=""><textarea name="id_input_format_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="id_input_format_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_id_output_format_edit" class="form-group">
+                        <label
+                                for="id_output_format_edit"
+                                class=" requiredField">
+                            Формат вывода<span class="asteriskField">*</span>
+                        </label>
+                        <div class=""><textarea name="output_format_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="id_output_format_edit"></textarea>
+                        </div>
+                    </div>
+
+
+                    <p class="pt-2">Фото 1 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_1_edit">
+                        <label class="custom-file-label"
+                               for="id_photo_1_edit">
+                            Выбрать
+                        </label>
+                    </div>
+
+                    <p class="pt-2">Фото 2 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_2_edit">
+                        <label class="custom-file-label"
+                               for="id_photo_2_edit">
+                            Выбрать
+                        </label>
+                    </div>
+
+                    <p class="pt-2">Фото 3 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_3_edit">
+                        <label class="custom-file-label"
+                               for="id_photo_3_edit">
+                            Выбрать
+                        </label>
+                    </div>
+
+                    <div id="div_example_input_1_edit" class="form-group">
+                        <label
+                                for="example_input_1_edit">
+                            Пример 1 ввод
+                        </label>
+                        <div class=""><textarea name="example_input_1_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_1_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_1_edit" class="form-group">
+                        <label
+                                for="example_output_1_edit">
+                            Пример 1 вывод
+                        </label>
+                        <div class=""><textarea name="example_output_1_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_1_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_input_2_edit" class="form-group">
+                        <label
+                                for="example_input_2_edit">
+                            Пример 2 ввод
+                        </label>
+                        <div class=""><textarea name="example_input_2_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_2_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_2_edit" class="form-group">
+                        <label
+                                for="example_output_2_edit">
+                            Пример 2 вывод
+                        </label>
+                        <div class=""><textarea name="example_output_2_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_2_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_input_3_edit" class="form-group">
+                        <label
+                                for="example_input_3_edit">
+                            Пример 3 ввод
+                        </label>
+                        <div class=""><textarea name="example_input_3_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_3_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_3_edit" class="form-group">
+                        <label
+                                for="example_output_3_edit">
+                            Пример 3 вывод
+                        </label>
+                        <div class=""><textarea name="example_output_3_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_3_edit"></textarea>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer" style="border: 0">
+                    <button type="button" class="btn btn-outline-danger"
+                            data-dismiss="modal">Отмена
+                    </button>
+                    <button type="button" class="btn btn-outline-success"
+                            id="settings_page__add-new-task__submit">Изменить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}
 
 {% block scripts_include %}
     <script>
 
+        // Изменение надписи при добавлении файла в input
         document.querySelectorAll(".with-file-input").forEach(function (element) {
             element.querySelector("input[type='file']").onchange = function () {
                 let file = this.files;
@@ -457,12 +769,7 @@
             };
         })
 
-
-        function getTaskDescriptionAndSetToTaskElement(taskRow) {
-            console.log(taskRow)
-        }
-
-
+        // Отправляет тему на сервер и сменяет тему уровня в документе
         function changeLevelTheme(newTheme) {
 
             let data = new FormData();
@@ -490,9 +797,10 @@
             });
         }
 
-
+        // Отправляет форму на создание задач и добавляет эту задачу в список задач
         function sendFormToCreateNewTask() {
-            let createNewTaskForms = document.querySelector('#createNewTaskForms');
+            let createNewTaskForms = document.querySelector('#createNewTaskForms'),
+                amountOfLevelsLabel = document.querySelector('.settings_page__level-settings__task-amount-label span');
 
             // Перечисление всех полей создания новой задаячи
             let datetimepickerStartTimeInput = createNewTaskForms.querySelector("#datetimepickerStartTimeInput"),
@@ -550,7 +858,8 @@
             }).then(function (json) {
                 if (json) {
                     showAlertElement("Задача успешно добавлена.", success = true);
-                    tasksList.innerHTML += `<div class="card task-page__last-solutions__card">
+
+                    tasksList.innerHTML += `<div class="card task-page__last-solutions__card settings_page__level-settings__level__task-row">
                                 <div class="card-header"
                                      id="task_${json.task_id}">
                                     <h2 class="mb-0">
@@ -560,11 +869,13 @@
                                                 data-target="#collapse_${json.task_id}"
                                                 data-code=""
                                                 aria-expanded="false"
+                                                data-code=""
+                                                data-task-id="${json.task_id}"
+                                                data-is-loaded-description="false"
                                                 aria-controls="collapse_${json.task_id}">
                                             <span class="task-page__last-solutions__table__body__row">
                                                 <span class="description-task">
                                                     <span>
-                                                        "${id_task_name.value}"
                                                     </span>
                                                     <span>
                                                         <a class="settings_page__level-settings__task-student-link" style="text-decoration: underline"></a>
@@ -605,60 +916,139 @@
                                      class="collapse"
                                      aria-labelledby="task_${json.task_id}"
                                      data-parent="#accordionExample">
-                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
+                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area settings_page__level-settings__level-description-collapsed-area">
 
-                                        <div class="task-description-loader d-flex align-items-center justify-content-center" style="height: 100px;">
+                                        <div class="task-description-loader d-flex align-items-center justify-content-center"
+                                             style="height: 100px;">
                                             <div class="spinner-border text-info"
                                                  role="status">
                                                 <span class="sr-only">Loading...</span>
                                             </div>
                                         </div>
 
+
                                     </div>
                                 </div>
                             </div>`
+
+                    tasksList.querySelector(`#task_${json.task_id} .description-task span`).textContent = '"' + id_task_name.value + '"';
+
+                    amountOfLevelsLabel.textContent++;
+
+                    activateGettingDescriptionFromServer();
                     $("[data-dismiss=modal]").trigger({type: "click"});
                 }
             });
 
         }
 
+        // Получение описания задачи. Активация кнопок на отправку запроса описания и передача этого описания в документ
+        function activateGettingDescriptionFromServer() {
+            document.querySelectorAll(".settings_page__level-settings__level__task-row").forEach(function (taskRow) {
 
-        let changeLevelThemeSubmitButton = document.querySelector('#settings_page__level-change-theme__submit'),
-            changeLevelThemeInput = document.querySelector('#settings_page__level-change-theme-input'),
-            csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value,
-            themeNameHeader = document.querySelector('#settings_page__level-settings__theme-name-header'),
-            addNewTaskSubmitButton = document.querySelector('#settings_page__add-new-task__submit'),
-            tasksList = document.querySelector(".task-page__last-solutions__table__body");
+                taskRow.querySelector('.task-page__last-solutions__table__body__row .edit-icon').onclick = function () {
+                    taskRow.querySelector('.settings_page__level-settings__level-more-open-button').classList.remove('show');
 
-        changeLevelThemeSubmitButton.onclick = () => {
-            changeLevelTheme(changeLevelThemeInput);
-        }
+                    this.classList.add("opened-in-modal-window");
+                    document.querySelector('#settings_page__level-settings__task__close-tasks').style.display = 'flex';
+                }
 
-        addNewTaskSubmitButton.onclick = () => {
-            sendFormToCreateNewTask();
-        }
+                taskRow.querySelector('.settings_page__level-settings__level-more-open-button').onclick = function () {
+                    if (!taskRow.querySelector('.task-page__last-solutions__table__body__row .edit-icon').classList.contains('opened-in-modal-window')) {
 
-        document.querySelectorAll(".settings_page__level-settings__level__task-row").forEach(function (taskRow) {
-            taskRow.querySelector('.settings_page__level-settings__level-more-open-button').onclick = function () {
+                        let currentButton = this;
 
-                let currentButton = this;
-                if (this.ariaExpanded === 'false' && this.dataset.isLoadedDescription === 'false') {  // На развороте элемента списка
-                    fetch(location.href + "?get_task_description=" + this.dataset.taskId, {
-                        method: 'GET',
-                        mode: 'same-origin',  // Do not send CSRF token to another domain.
-                    }).then(function (response) {
-                        if (!response.ok) {
-                            showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
-                            return false
+                        if (this.ariaExpanded === 'false' && this.dataset.isLoadedDescription === 'false') {  // На развороте элемента списка
+                            fetch(location.href + "?get_task_description=" + this.dataset.taskId, {
+                                method: 'GET',
+                                mode: 'same-origin',  // Do not send CSRF token to another domain.
+                            }).then(function (response) {
+                                if (!response.ok) {
+                                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+                                    return false
+                                }
+                                return response.json();
+                            }).then(function (json) {
+                                if (json) {
+                                    currentButton.dataset.isLoadedDescription = "true";
+                                    $((taskRow.querySelector(".task-description-loader .spinner-border"))).fadeOut();
+                                    $((taskRow.querySelector(".task-description-loader"))).fadeOut();
+
+                                    taskRow.querySelector(".settings_page__level-settings__level-description-collapsed-area").innerHTML = createTaskRowDescriptionInnerHTML(json);
+
+                                    document.querySelector(".settings_page__level-settings__task__task-description__delete-task-button[data-task-id='" + json.task_id + "']").onclick = function () {
+                                        changeLabelsOnDeleteTaskModalWindow(json.task_id, json.task_name, json.student_name, json.student_id);
+                                    }
+
+
+                                }
+                            })
                         }
-                        return response.json();
-                    }).then(function (json) {
-                        if (json) {
-                            currentButton.dataset.isLoadedDescription = "true";
-                            $((taskRow.querySelector(".task-description-loader .spinner-border"))).fadeOut();
-                            $((taskRow.querySelector(".task-description-loader"))).fadeOut();
-                            taskRow.querySelector(".settings_page__level-settings__level-description-collapsed-area").innerHTML = `<div class="settings_page__level-settings__level-description">
+                    }
+
+
+                }
+
+            })
+        }
+
+        // активирует кнопки редактирования задач на получение данных с сервера и отображения модального окна
+
+        // Формирует описание задачи, когда разворачивается
+        function createTaskRowDescriptionInnerHTML(json) {
+
+            // Добавляет существующие элементы (фотографии), если они есть
+            let insertPhotosInnerHTML = "";
+            if (json.photo_1) {
+                insertPhotosInnerHTML += `<img src="${json.photo_1}" alt="${json.task_name}">`;
+            }
+            if (json.photo_2) {
+                insertPhotosInnerHTML += `<img src="${json.photo_2}" alt="${json.task_name}">`;
+            }
+            if (json.photo_3) {
+                insertPhotosInnerHTML += `<img src="${json.photo_3}" alt="${json.task_name}">`;
+            }
+
+            // Добавляет существующие элементы (примеры ввода и вывода), если они есть
+            let insertInputOutputFormats = "";
+            if (json.example_input_1) {
+                insertInputOutputFormats += `<div class="col-12 py-3">
+                                                        <p class="h5 pl-4">1 Пример ввода</p>
+                                                        <pre class="settings_page__level-settings__task-example_input_1 pl-4">${json.example_input_1}</pre>
+                                                    </div>`
+            }
+            if (json.example_output_1) {
+                insertInputOutputFormats += `<div class="col-12 py-3">
+                                                        <p class="h5 pl-4">1 Пример вывода</p>
+                                                        <pre class="settings_page__level-settings__task-example_output_1 pl-4">${json.example_output_1}</pre>
+                                                    </div>`
+            }
+            if (json.example_input_2) {
+                insertInputOutputFormats += `<div class="col-12 py-3">
+                                                        <p class="h5 pl-4">1 Пример ввода</p>
+                                                        <pre class="settings_page__level-settings__task-example_input_1 pl-4">${json.example_input_2}</pre>
+                                                    </div>`
+            }
+            if (json.example_output_2) {
+                insertInputOutputFormats += `<div class="col-12 py-3">
+                                                        <p class="h5 pl-4">1 Пример вывода</p>
+                                                        <pre class="settings_page__level-settings__task-example_output_1 pl-4">${json.example_output_2}</pre>
+                                                    </div>`
+            }
+            if (json.example_input_3) {
+                insertInputOutputFormats += `<div class="col-12 py-3">
+                                                        <p class="h5 pl-4">1 Пример ввода</p>
+                                                        <pre class="settings_page__level-settings__task-example_input_1 pl-4">${json.example_input_3}</pre>
+                                                    </div>`
+            }
+            if (json.example_output_3) {
+                insertInputOutputFormats += `<div class="col-12 py-3">
+                                                        <p class="h5 pl-4">1 Пример вывода</p>
+                                                        <pre class="settings_page__level-settings__task-example_output_1 pl-4">${json.example_output_3}</pre>
+                                                    </div>`
+            }
+
+            let resultString = `<div class="settings_page__level-settings__level-description">
                                             <div class="container">
                                                 <div class="row">
                                                     <div class="col-md-4 col-12 py-2 d-flex align-items-center justify-content-center">
@@ -674,40 +1064,132 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 col-12 py-2 d-flex align-items-center justify-content-center">
-                                                        <button type="button" class="btn btn-outline-danger">Удалить задачу</button>
+                                                        <button type="button"
+                                                                class="btn btn-outline-danger settings_page__level-settings__task__task-description__delete-task-button"
+                                                                data-toggle="modal"
+                                                                data-target="#settings_page__level-delete-task-submit"
+                                                                data-task-id="${json.task_id}"
+                                                                data-task-name="${json.task_name}"
+                                                                data-task-student-name="${json.student_name}"
+                                                                data-task-student-id="${json.student_id}">
+                                                            Удалить задачу
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-12">
-                                                        <div class="h3 task-name pt-5 pl-4">
+                                                        <div class="h3 settings_page__level-settings__task-task-name pt-5 pl-4">
                                                             ${json.task_name}
                                                         </div>
                                                     </div>
                                                     <div class="col-12 py-3 pl-4">
-                                                        <p class="task-description-paragraph">
+                                                        <p class="settings_page__level-settings__task-task-description-paragraph">
                                                             ${json.description_task}
                                                         </p>
                                                     </div>
                                                     <div class="col-12 py-3 pl-4">
-                                                        <p class="input_format">
+                                                        <p class="settings_page__level-settings__task-input_format">
+                                                            <p class="h4 pl-4">Формат ввода</p>
                                                             ${json.input_format}
                                                         </p>
                                                     </div>
                                                     <div class="col-12 py-3 pl-4">
-                                                        <p class="output_format">
+                                                        <p class="settings_page__level-settings__task-output_format">
+                                                            <p class="h4 pl-4">Формат вывода</p>
                                                             ${json.output_format}
                                                         </p>
                                                     </div>
+                                                    <div class="col-12 py-3 pl-4">
+                                                        <div class="settings_page__level-settings__task-photos">${insertPhotosInnerHTML}</div>
+                                                    </div>
+                                                    ${insertInputOutputFormats}
                                                 </div>
                                             </div>
                                         </div>`;
 
-                        }
-                    })
-                }
+            return resultString;
 
+        }
+
+        // Сменяет надписи на модальном окне удаления задачи
+        function changeLabelsOnDeleteTaskModalWindow(taskId, taskName, taskStudentName, taskStudentId) {
+            let modalBodyAboutStudent = document.querySelector("#settings_page__level-delete-task-submit__task-student"),
+                modalBodyAboutStudentLink = modalBodyAboutStudent.querySelector("a"),
+                taskNameLabel = document.querySelector("#settings_page__level-delete-task-submit__task-name");
+
+            if (taskStudentName && taskStudentId) {
+                let studentProfileUrl = `${location.origin}/statistic/pupil/${taskStudentId}/`;
+
+                modalBodyAboutStudentLink.textContent = taskStudentName;
+                modalBodyAboutStudentLink.href = studentProfileUrl;
+            } else {
+                modalBodyAboutStudent.innerHTML = "";
             }
-        })
+
+            taskNameLabel.textContent = taskName;
+            taskNameLabel.dataset.taskId = taskId;
+        }
+
+        // Отправляет задачу на сервер
+        function sendDeleteTaskForm() {
+            let taskNameLabel = document.querySelector("#settings_page__level-delete-task-submit__task-name"),
+                taskToDeleteId = taskNameLabel.dataset.taskId,
+                taskName = taskNameLabel.textContent;
+
+            let data = new FormData();
+
+            data.append('deleteTask', 'true')
+            data.append('taskToDeleteId', taskToDeleteId)
+
+
+            fetch(location.href, {
+                method: 'POST',
+                mode: 'same-origin',  // Do not send CSRF token to another domain.
+                headers: {"X-CSRFToken": csrfToken},
+                body: data
+            }).then(function (response) {
+                if (!response.ok) {
+                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+                    return false
+                }
+                return response.json();
+            }).then(function (json) {
+                if (json) {
+                    showAlertElement(`Задача "${taskName}" успешно удалена.`, success = true);
+
+                    let tasksListRowWithThisTask = document.querySelector(`.settings_page__level-settings__level__task-row #task_${taskToDeleteId}`);
+                    tasksListRowWithThisTask.parentNode.remove();
+
+                    document.querySelector(".settings_page__level-settings__task-amount-label span").textContent--;
+
+                    $("[data-dismiss=modal]").trigger({type: "click"});
+                }
+            });
+        }
+
+
+        let changeLevelThemeSubmitButton = document.querySelector('#settings_page__level-change-theme__submit'),
+            changeLevelThemeInput = document.querySelector('#settings_page__level-change-theme-input'),
+            csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value,
+            themeNameHeader = document.querySelector('#settings_page__level-settings__theme-name-header'),
+            addNewTaskSubmitButton = document.querySelector('#settings_page__add-new-task__submit'),
+            tasksList = document.querySelector(".task-page__last-solutions__table__body"),
+            deleteTaskButtonModalWindow = document.querySelector("#settings_page__level-delete-task-submit__submit-button");
+
+        changeLevelThemeSubmitButton.onclick = () => {
+            changeLevelTheme(changeLevelThemeInput);
+        }
+
+        addNewTaskSubmitButton.onclick = () => {
+            sendFormToCreateNewTask();
+        }
+
+        deleteTaskButtonModalWindow.onclick = () => {
+            sendDeleteTaskForm();
+        }
+
+        activateGettingDescriptionFromServer();
+
 
     </script>
 {% endblock %}

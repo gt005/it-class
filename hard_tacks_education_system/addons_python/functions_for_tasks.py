@@ -1,6 +1,7 @@
 import datetime
 
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 from ..models import EducationTask, CheckedEducationTask, EducationLevel
 
@@ -186,8 +187,7 @@ def create_task_and_add_to_db(
         string_to_convert=post_request_object.get("end_time")
     )
 
-    if start_time <= datetime.datetime.now() or \
-            end_time <= start_time:
+    if end_time <= start_time:
         print("Некорректные даты")
         return JsonResponse({
             "message": "Некорректные даты"
@@ -219,6 +219,36 @@ def create_task_and_add_to_db(
     }, status=200)
 
 
+def try_to_get_object_from_db(database, object_parameters):
+    '''
+    Функция осуществляет поиск по базе данных не вызывая
+    исключений при отсутствии объекта.
+
+    :param database: таблица в базе данных в которой искать (передавать объектом бд)
+    :param object_parameters: список фильтров, по которым искать запись
+    :return: Возвращает запись из таблицы если запись существует, иначе None
+    '''
+    pass
+
+
+def delete_task_from_db(task_id: int) -> JsonResponse:
+    ''' Удаляет задачу из базы данных '''
+    try:
+        EducationTask.objects.get(id=task_id).delete()
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            "message": "Нет такой задачи"
+        }, status=404)
+    except TypeError:
+        return JsonResponse({
+            "message": "Некорректный id"
+        }, status=400)
+
+    return JsonResponse({
+        "message": "Задача успешно удалена"
+    }, status=200)
+
+
 def _get_datetime_time_object_from_string(string_to_convert: str):
     """
     Переводить строку формата 'month/day/year hour:minutes' в объект datetime
@@ -235,3 +265,4 @@ def _get_datetime_time_object_from_string(string_to_convert: str):
         result_time += datetime.timedelta(hours=12)
 
     return result_time
+
