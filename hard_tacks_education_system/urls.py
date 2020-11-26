@@ -7,5 +7,6 @@ urlpatterns = [
     path("active_task/<int:pk>/", views.ActiveTask.as_view()),
     path("system_settings/", views.SystemSettings.as_view()),
     path("system_settings/level-settings/<level_number>", views.LevelSettings.as_view()),
+    path("system_settings/level-settings/edit-task/<edit_task_id>", views.EditLevel.as_view())
 
 ]

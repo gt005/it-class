@@ -184,4 +184,22 @@ class LevelSettings(views.LoginRequiredMixin,
         context["tasks_with_this_level"] = EducationTask.objects.filter(
             task_level=self.object
         )
+        context["task_amount"] = len(context["tasks_with_this_level"])
+        context["students_amount"] = get_amount_of_people_with_level(self.object.level_number)
+        return context
+
+
+class EditLevel(views.LoginRequiredMixin,
+                views.SuperuserRequiredMixin,
+                DetailView):
+    template_name = "tacks_education_system/system_settings/task_edit.html"
+    model = EducationTask
+    login_url = "/login/"
+    pk_url_kwarg = "edit_task_id"
+
+    def get_context_data(self, **kwargs):
+        context = super(EditLevel, self).get_context_data(**kwargs)
+
+        context['task'] = kwargs.get('object')
+
         return context

@@ -1,0 +1,333 @@
+{% extends 'tacks_education_system/tacks_education_system_base_template.html' %}
+{% load static %}
+
+{% block document_title %}Настройки задачи {{ task }}{% endblock %}
+
+{% block head_links %}
+    <!-- Font Awesome -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+          crossorigin="anonymous">
+
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
+            integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA="
+            crossorigin="anonymous"></script>
+
+    <!-- Tempus Dominus Bootstrap 4 -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css"
+          integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs="
+          crossorigin="anonymous"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"
+            integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4="
+            crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block main %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <a class="task-page__main-back-buttons pr-lg-3 py-3 "
+                       href="/tasks/system_settings/level-settings/{{ task.task_level.level_number }}">
+                        <span class="task-page__main-back-buttons__back-buttons">
+                            <img src="{% static 'images/back_button.svg' %}"
+                                 alt="<">
+                            <img src="{% static 'images/back_button_hover.svg' %}"
+                                 alt="<">
+                        </span>
+                        Обратно к уровню {{ task.task_level.level_number }}
+                    </a>
+                    <h4 class="text-center pb-4">
+                        {{ task }}
+                    </h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-12 offset-md-2">
+
+                <form action="POST" id="edit-level-page__form">
+                    {% csrf_token %}
+
+                    <label for="datetimepickerStartTimeInputEdit"
+                           class=" requiredField">
+                        Время открытия задачи<span
+                            class="asteriskField">*</span>
+                    </label>
+                    <div class="input-group date"
+                         id="datetimepickerStartTimeEdit"
+                         data-target-input="nearest"
+                         style="margin-bottom: 16px;">
+                        <input type="text" name="start_time_edit"
+                               id="datetimepickerStartTimeInputEdit"
+                               class="form-control datetimepicker-input"
+                               data-target="#datetimepickerStartTimeEdit"
+                               required="required"
+                               value="{{ task.start_time }}">
+                        <div class="input-group-append"
+                             data-target="#datetimepickerStartTimeEdit"
+                             data-toggle="datetimepicker">
+                            <div class="input-group-text"><i
+                                    class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+
+                    <label for="datetimepickerEndTimeInputEdit"
+                           class=" requiredField">
+                        Время закрытия задачи<span
+                            class="asteriskField">*</span>
+                    </label>
+                    <div class="input-group date"
+                         id="datetimepickerEndTimeEdit"
+                         data-target-input="nearest"
+                         style="margin-bottom: 16px;">
+                        <input type="text" name="end_time_edit"
+                               id="datetimepickerEndTimeInputEdit"
+                               class="form-control datetimepicker-input"
+                               data-target="#datetimepickerEndTimeEdit"
+                               required="required"
+                                value="{{ task.end_time }}">
+                        <div class="input-group-append"
+                             data-target="#datetimepickerEndTimeEdit"
+                             data-toggle="datetimepicker">
+                            <div class="input-group-text"><i
+                                    class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+
+                    <div id="div_id_task_name_edit" class="form-group"><label
+                            for="id_task_name" class=" requiredField">
+                        Название задания<span class="asteriskField">*</span>
+                    </label>
+                        <div class=""><input type="text" name="task_name_edit"
+                                             maxlength="200"
+                                             class="textinput textInput form-control"
+                                             required="required"
+                                             id="id_task_name_edit_edit"
+                                             value="{{ task.task_name }}">
+                        </div>
+                    </div>
+
+                    <div id="div_id_description_task_edit" class="form-group">
+                        <label
+                                for="id_description_task_edit"
+                                class=" requiredField">
+                            Условие задачи<span class="asteriskField">*</span>
+                        </label>
+                        <div class="">
+                            <textarea name="description_task_edit"
+                                      cols="40" rows="10"
+                                      class="textarea form-control"
+                                      required="required"
+                                      id="id_description_task_edit">{{ task.description_task }}</textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_id_input_format_edit" class="form-group">
+                        <label
+                                for="id_id_input_format_edit"
+                                class=" requiredField">
+                            Формат ввода<span class="asteriskField">*</span>
+                        </label>
+                        <div class=""><textarea name="id_input_format_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="id_input_format_edit">{{ task.input_format }}</textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_id_output_format_edit" class="form-group">
+                        <label
+                                for="id_output_format_edit"
+                                class=" requiredField">
+                            Формат вывода<span class="asteriskField">*</span>
+                        </label>
+                        <div class=""><textarea name="output_format_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="id_output_format_edit">{{ task.output_format }}</textarea>
+                        </div>
+                    </div>
+
+
+                    <p class="pt-3">Фото 1 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_1_edit">
+                        <label class="custom-file-label"
+                               for="id_photo_1_edit">
+                            {% if task.photo_1 %}
+                                {{ task.photo_1 }}
+                            {% else %}
+                                Выбрать
+                            {% endif %}
+                        </label>
+                        {% if task.photo_1 %}
+                            <button class="btn btn-outline-danger my-2">
+                                Удалить фото 1
+                            </button>
+                        {% endif %}
+                    </div>
+
+                    <p class="pt-3">Фото 2 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_2_edit"
+                               value="not_change">
+                        <label class="custom-file-label"
+                               for="id_photo_2_edit">
+                            {% if task.photo_2 %}
+                                {{ task.photo_2 }}
+                            {% else %}
+                                Выбрать
+                            {% endif %}
+                        </label>
+                        {% if task.photo_2 %}
+                            <button class="btn btn-outline-danger my-2">
+                                Удалить фото 2
+                            </button>
+                        {% endif %}
+                    </div>
+
+                    <p class="pt-3">Фото 3 для задачи</p>
+                    <div class="custom-file with-file-input my-3">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="id_photo_3_edit">
+                        <label class="custom-file-label"
+                               for="id_photo_3_edit">
+                            {% if task.photo_3 %}
+                                {{ task.photo_3 }}
+                            {% else %}
+                                Выбрать
+                            {% endif %}
+                        </label>
+                        {% if task.photo_3 %}
+                            <button class="btn btn-outline-danger my-2">
+                                Удалить фото 3
+                            </button>
+                        {% endif %}
+                    </div>
+
+                    <div id="div_example_input_1_edit" class="form-group pt-3">
+                        <label
+                                for="example_input_1_edit">
+                            Пример 1 ввод
+                        </label>
+                        <div class=""><textarea name="example_input_1_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_1_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_1_edit" class="form-group">
+                        <label
+                                for="example_output_1_edit">
+                            Пример 1 вывод
+                        </label>
+                        <div class=""><textarea name="example_output_1_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_1_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_input_2_edit" class="form-group">
+                        <label
+                                for="example_input_2_edit">
+                            Пример 2 ввод
+                        </label>
+                        <div class=""><textarea name="example_input_2_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_2_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_2_edit" class="form-group">
+                        <label
+                                for="example_output_2_edit">
+                            Пример 2 вывод
+                        </label>
+                        <div class=""><textarea name="example_output_2_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_2_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_input_3_edit" class="form-group">
+                        <label
+                                for="example_input_3_edit">
+                            Пример 3 ввод
+                        </label>
+                        <div class=""><textarea name="example_input_3_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_input_3_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="div_example_output_3_edit" class="form-group">
+                        <label
+                                for="example_output_3_edit">
+                            Пример 3 вывод
+                        </label>
+                        <div class=""><textarea name="example_output_3_edit"
+                                                cols="40"
+                                                rows="10"
+                                                class="textarea form-control"
+                                                required="required"
+                                                id="example_output_3_edit"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="edit-level-page__form__submit-button-container">
+                        <input type="submit" value="Изменить" class="btn btn-outline-success">
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts_include %}
+    <script>
+
+        // Изменение надписи при добавлении файла в input
+        document.querySelectorAll(".with-file-input").forEach(function (element) {
+            element.querySelector("input[type='file']").onchange = function () {
+                let file = this.files;
+                if (file.length == 0) {
+                    element.querySelector(".custom-file-label").textContent = "Выбрать";
+                } else {
+                    element.querySelector(".custom-file-label").textContent = file[0].name;
+                }
+            };
+        })
+    </script>
+{% endblock %}
+
+{% block tasks_settings %}active{% endblock %}

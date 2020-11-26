@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
 from ..models import EducationTask, CheckedEducationTask, EducationLevel
+from mainapp.models import Puples
 
 
 def crete_level(level_number: int, level_theme: str) -> (str, int):
@@ -229,6 +230,13 @@ def try_to_get_object_from_db(database, object_parameters):
     :return: Возвращает запись из таблицы если запись существует, иначе None
     '''
     pass
+
+
+def get_amount_of_people_with_level(level_number: int):
+    try:
+        return len(Puples.objects.filter(education_level=level_number))
+    except (ObjectDoesNotExist, TypeError, ValueError):
+        return 0
 
 
 def delete_task_from_db(task_id: int) -> JsonResponse:
