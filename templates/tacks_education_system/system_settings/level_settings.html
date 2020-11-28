@@ -58,7 +58,7 @@
                         </svg>
                     </h3>
                     <div class="settings_page__level-settings__task__fullness-of-students pt-5">
-                        <h3>Сколько учеников имеют задачу</h3>
+                        <h3>Сколько учеников имеют задачу (Задачи / Ученики)</h3>
                         <div class="progress" id="settings_page__level-settings__task__fullness-of-students__progress">
                             <div class="progress-bar bg-info" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                         </div>
@@ -175,8 +175,8 @@
                                             </div>
                                         </div>
 
-
                                     </div>
+
                                 </div>
                             </div>
                         {% endfor %}
@@ -640,7 +640,7 @@
                                                 </span>
                                                 <span class="active-buttons">
                                                     <a class="edit-icon pr-2"
-                                                       href="task-settings/${json.task_id}">
+                                                       href="edit-task/${json.task_id}">
                                                         <svg width="1em"
                                                              height="1em"
                                                              viewBox="0 0 16 16"
@@ -692,6 +692,22 @@
 
                     amountOfLevelsLabel.textContent++;
                     setTasksAmountProgressbar();
+
+                    datetimepickerStartTimeInput.value = "";
+                    datetimepickerEndTimeInput.value = "";
+                    id_task_name.value = "";
+                    id_description_task.value = "";
+                    id_input_format.value = "";
+                    id_output_format.value = "";
+                    id_photo_1.value = "";
+                    id_photo_2.value = "";
+                    id_photo_3.value = "";
+                    example_input_1.value = "";
+                    example_output_1.value = "";
+                    example_input_2.value = "";
+                    example_output_2.value = "";
+                    example_input_3.value = "";
+                    example_output_3.value = "";
 
                     activateGettingDescriptionFromServer();
                     $("[data-dismiss=modal]").trigger({type: "click"});
@@ -747,13 +763,13 @@
             // Добавляет существующие элементы (фотографии), если они есть
             let insertPhotosInnerHTML = "";
             if (json.photo_1) {
-                insertPhotosInnerHTML += `<img src="${json.photo_1}" alt="${json.task_name}">`;
+                insertPhotosInnerHTML += `<img src="${json.photo_1}" alt="${json.task_name}" style="max-width: 100%">`;
             }
             if (json.photo_2) {
-                insertPhotosInnerHTML += `<img src="${json.photo_2}" alt="${json.task_name}">`;
+                insertPhotosInnerHTML += `<img src="${json.photo_2}" alt="${json.task_name}" style="max-width: 100%">`;
             }
             if (json.photo_3) {
-                insertPhotosInnerHTML += `<img src="${json.photo_3}" alt="${json.task_name}">`;
+                insertPhotosInnerHTML += `<img src="${json.photo_3}" alt="${json.task_name}" style="max-width: 100%">`;
             }
 
             // Добавляет существующие элементы (примеры ввода и вывода), если они есть
@@ -923,7 +939,16 @@
                 taskAmount = document.querySelector(".settings_page__level-settings__task-amount-label #task-amount"),
                 percents = Math.round(taskAmount.textContent / studentsAmount.textContent * 100);
 
-            if (percents >= 100) {
+            if (studentsAmount.textContent == 0) {
+                if (taskAmount.textContent == 0) {
+                    percents = 0;
+                }
+                else {
+                    percents = 100;
+                }
+            }
+
+            if (percents >= 100 && studentsAmount.textContent != 0) {
                 document.querySelector("#set-tasks-to-students").classList.remove('disabled');
                 document.querySelector("#set-tasks-to-students").title = '';
 

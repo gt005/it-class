@@ -71,7 +71,34 @@ class SystemSettings(views.LoginRequiredMixin,
     model = EducationLevel
     ordering = "level_number"
 
-    def post(self, request, **kwargs):
+    def get(self, request, *args, **kwargs):
+        if request.GET:
+            try:
+                level_to_get_description = int(
+                    request.GET.get("get_level_description")
+                )
+                level_object_from_db = EducationLevel.objects.get(
+                    level_number=level_to_get_description
+                )
+            except TypeError:
+                return JsonResponse({
+                    "message": "Некорректный id задачи"
+                }, status=415)
+            except ObjectDoesNotExist:
+                return JsonResponse({
+                    "message": "Задача не найдена"
+                }, status=404)
+
+            return JsonResponse({
+                "fullness_percents": get_level_fullness_percents(
+                    level_to_get_description
+                ),
+                "success_average_score": 204
+            }, status=200)
+
+        return super(SystemSettings, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         message, http_status_code = crete_level(
             level_number=request.POST.get('level'),
             level_theme=request.POST.get('newTheme')
@@ -131,10 +158,10 @@ class LevelSettings(views.LoginRequiredMixin,
 
             if task_object_from_db.photo_1:
                 description.update(photo_1=task_object_from_db.photo_1.url)
-            if task_object_from_db.photo_1:
-                description.update(photo_1=task_object_from_db.photo_1.url)
-            if task_object_from_db.photo_1:
-                description.update(photo_1=task_object_from_db.photo_1.url)
+            if task_object_from_db.photo_2:
+                description.update(photo_2=task_object_from_db.photo_2.url)
+            if task_object_from_db.photo_3:
+                description.update(photo_3=task_object_from_db.photo_3.url)
 
             return JsonResponse(description, status=200)
         else:
@@ -197,9 +224,10 @@ class EditLevel(views.LoginRequiredMixin,
     login_url = "/login/"
     pk_url_kwarg = "edit_task_id"
 
+    def post(self, request, *args, **kwargs):
+        change_task_data_in_model(request=request)
+
     def get_context_data(self, **kwargs):
         context = super(EditLevel, self).get_context_data(**kwargs)
-
         context['task'] = kwargs.get('object')
-
         return context

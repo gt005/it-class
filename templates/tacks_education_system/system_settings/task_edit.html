@@ -43,13 +43,19 @@
                     <h4 class="text-center pb-4">
                         {{ task }}
                     </h4>
+
+                    {% if task.for_student %}
+                        <h3 class="edit-task-page__for-student text-center pb-3">
+                            Ученик: <a href="/statistic/pupil/{{ task.for_student.id }}" style="text-decoration: underline">{{ task.for_student.name }} {{ task.for_student.surname }}</a>
+                        </h3>
+                    {% endif %}
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-8 col-12 offset-md-2">
 
-                <form action="POST" id="edit-level-page__form">
+                <form method="POST" id="edit-level-page__form">
                     {% csrf_token %}
 
                     <label for="datetimepickerStartTimeInputEdit"
@@ -161,7 +167,10 @@
                     <div class="custom-file with-file-input my-3">
                         <input type="file"
                                class="custom-file-input"
-                               id="id_photo_1_edit">
+                               id="id_photo_1_edit"
+                               value="not_change"
+                               accept="image/*"
+                               name="photo_1">
                         <label class="custom-file-label"
                                for="id_photo_1_edit">
                             {% if task.photo_1 %}
@@ -170,19 +179,19 @@
                                 Выбрать
                             {% endif %}
                         </label>
-                        {% if task.photo_1 %}
-                            <button class="btn btn-outline-danger my-2">
+                            <button class="btn btn-outline-danger delete-photo-button my-2" data-image-number="1" type="button" onclick="deletePhotoInInput(1);" {% if not task.photo_1 %} style="display: none;"{% endif %}>
                                 Удалить фото 1
                             </button>
-                        {% endif %}
                     </div>
 
                     <p class="pt-3">Фото 2 для задачи</p>
                     <div class="custom-file with-file-input my-3">
                         <input type="file"
                                class="custom-file-input"
+                               name="photo_2"
                                id="id_photo_2_edit"
-                               value="not_change">
+                               value="not_change"
+                               accept="image/*">
                         <label class="custom-file-label"
                                for="id_photo_2_edit">
                             {% if task.photo_2 %}
@@ -191,18 +200,19 @@
                                 Выбрать
                             {% endif %}
                         </label>
-                        {% if task.photo_2 %}
-                            <button class="btn btn-outline-danger my-2">
+                            <button class="btn btn-outline-danger delete-photo-button my-2" data-image-number="2" type="button" onclick="deletePhotoInInput(2);"{% if not task.photo_2 %} style="display: none;"{% endif %}>
                                 Удалить фото 2
                             </button>
-                        {% endif %}
                     </div>
 
                     <p class="pt-3">Фото 3 для задачи</p>
                     <div class="custom-file with-file-input my-3">
                         <input type="file"
                                class="custom-file-input"
-                               id="id_photo_3_edit">
+                               name="photo_3"
+                               id="id_photo_3_edit"
+                               value="not_change"
+                               accept="image/*">
                         <label class="custom-file-label"
                                for="id_photo_3_edit">
                             {% if task.photo_3 %}
@@ -211,11 +221,10 @@
                                 Выбрать
                             {% endif %}
                         </label>
-                        {% if task.photo_3 %}
-                            <button class="btn btn-outline-danger my-2">
+
+                            <button class="btn btn-outline-danger delete-photo-button my-2" data-image-number="3" type="button" onclick="deletePhotoInInput(3);"{% if not task.photo_3 %} style="display: none;"{% endif %}>
                                 Удалить фото 3
                             </button>
-                        {% endif %}
                     </div>
 
                     <div id="div_example_input_1_edit" class="form-group pt-3">
@@ -227,7 +236,6 @@
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                required="required"
                                                 id="example_input_1_edit"></textarea>
                         </div>
                     </div>
@@ -241,7 +249,6 @@
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                required="required"
                                                 id="example_output_1_edit"></textarea>
                         </div>
                     </div>
@@ -255,7 +262,6 @@
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                required="required"
                                                 id="example_input_2_edit"></textarea>
                         </div>
                     </div>
@@ -269,7 +275,6 @@
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                required="required"
                                                 id="example_output_2_edit"></textarea>
                         </div>
                     </div>
@@ -283,7 +288,6 @@
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                required="required"
                                                 id="example_input_3_edit"></textarea>
                         </div>
                     </div>
@@ -297,7 +301,6 @@
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                required="required"
                                                 id="example_output_3_edit"></textarea>
                         </div>
                     </div>
@@ -315,18 +318,34 @@
 
 {% block scripts_include %}
     <script>
+        showAlertElement("Страница еще дорабатывается (не работает)")
 
         // Изменение надписи при добавлении файла в input
         document.querySelectorAll(".with-file-input").forEach(function (element) {
             element.querySelector("input[type='file']").onchange = function () {
-                let file = this.files;
+                let file = this.files,
+                    deleteButton = element.querySelector(".delete-photo-button");
+
                 if (file.length == 0) {
                     element.querySelector(".custom-file-label").textContent = "Выбрать";
+                    $(deleteButton).fadeOut();
                 } else {
                     element.querySelector(".custom-file-label").textContent = file[0].name;
+                    $(deleteButton).fadeIn();
                 }
             };
         })
+
+        function deletePhotoInInput(inputNumber) {
+            let imageInput = document.querySelector(`#id_photo_${inputNumber}_edit`),
+                inputLabel = document.querySelector(`label[for='id_photo_${inputNumber}_edit']`),
+                deleteButton = document.querySelector(`button[data-image-number="${inputNumber}"]`);
+
+            imageInput.value = "";
+            inputLabel.textContent = "Выбрать";
+            $(deleteButton).fadeOut();
+
+        }
     </script>
 {% endblock %}
 

@@ -47,7 +47,7 @@
                     <div class="accordion settings_page__level task-page__last-solutions__table__body"
                          id="accordionExample">
                         {% for level in object_list %}
-                            <div class="card task-page__last-solutions__card">
+                            <div class="card task-page__last-solutions__card settings_page__level-row">
                                 <div class="card-header"
                                      id="level_{{ level.level_number }}">
                                     <h2 class="mb-0">
@@ -55,6 +55,8 @@
                                                 type="button"
                                                 data-toggle="collapse"
                                                 data-target="#collapse_{{ level.level_number }}"
+                                                data-level-number="{{ level.level_number }}"
+                                                data-is-loaded-description="false"
                                                 data-code=""
                                                 aria-expanded="false"
                                                 aria-controls="collapse_{{ level.level_number }}">
@@ -94,9 +96,18 @@
                                      class="collapse"
                                      aria-labelledby="level_{{ level.level_number }}"
                                      data-parent="#accordionExample">
-                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
-                                        <pre>rjkl</pre>
+                                     <div class="card-body task-page__last-solutions__table__body__row__show-code-area settings_page__level-settings__level-description-collapsed-area">
+
+                                        <div class="task-description-loader d-flex align-items-center justify-content-center"
+                                             style="height: 100px;">
+                                            <div class="spinner-border text-info"
+                                                 role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+
                                     </div>
+
                                 </div>
                             </div>
                         {% endfor %}
@@ -152,6 +163,7 @@
 
 {% block scripts_include %}
     <script>
+        // Отправить запрос на создание уровня с нужной темой
         function sendThemeToCreateLevel(level, newTheme) {
             let csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value,
                 levelsList = document.querySelector(".settings_page__level.task-page__last-solutions__table__body");
@@ -165,6 +177,7 @@
                                                 data-toggle="collapse"
                                                 data-target="#collapse_${level}"
                                                 data-code=""
+                                                data-level-number="${level}"
                                                 aria-expanded="false"
                                                 aria-controls="collapse_${level}">
                                             <span class="task-page__last-solutions__table__body__row">
@@ -203,8 +216,16 @@
                                      class="collapse"
                                      aria-labelledby="level_${level}"
                                      data-parent="#accordionExample">
-                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area">
-                                        <pre>rjkl</pre>
+                                    <div class="card-body task-page__last-solutions__table__body__row__show-code-area settings_page__level-settings__level-description-collapsed-area">
+
+                                        <div class="task-description-loader d-flex align-items-center justify-content-center"
+                                             style="height: 100px;">
+                                            <div class="spinner-border text-info"
+                                                 role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>`
@@ -232,6 +253,7 @@
                     levelsList.innerHTML += levelRow;
                     createNewLevelFormNewLevelNumber.textContent++;
                     createNewLevelFormInput.value = '';
+                    activateGettingDescriptionFromServer();
                     $("[data-dismiss=modal]").trigger({type: "click"});
                 }
             });
@@ -239,10 +261,70 @@
         }
 
 
+        // Формирует описание уровня в разворачиваемся списке уровней
+        function createLevelRowDescriptionInnerHTML(json) {
+            return `<div class="container">
+                        <div class="row">
+                            <div class="col-12">
+                                Заполненость задачами ${json.fullness_percents}% <br>
+                                (Задачи / Ученики)
+                                <div class="progress" id="settings_page__level-settings__task__fullness-of-students__progress" style="margin-bottom: 20px;">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: ${json.fullness_percents}%;" aria-valuenow="${json.fullness_percents}" aria-valuemin="0" aria-valuemax="100">${json.fullness_percents}%</div>
+                                </div>
+
+                                Средний балл по уровню
+                                <div class="progress" id="settings_page__level-settings__task__fullness-of-students__progress" style="mb-20">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: ${json.success_average_score / 3}%;" aria-valuenow="${json.success_average_score}" aria-valuemin="0" aria-valuemax="300">${json.success_average_score}/300</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+`
+        }
+
+
+        // Запрашивает данные уровня и передает в документ
+        function activateGettingDescriptionFromServer() {
+            document.querySelectorAll(".settings_page__level-row").forEach(function (taskRow) {
+                taskRow.querySelector('.card-header h2 .settings_page__level-settings__level-more-open-button').onclick = function () {
+                    let currentButton = this;
+                    console.log(this)
+                    if (this.ariaExpanded === 'false' && this.dataset.isLoadedDescription === 'false') {  // На развороте элемента списка
+                        fetch(location.href + "?get_level_description=" + this.dataset.levelNumber, {
+                            method: 'GET',
+                            mode: 'same-origin',  // Do not send CSRF token to another domain.
+                        }).then(function (response) {
+                            if (!response.ok) {
+                                showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+                                return false
+                            }
+                            return response.json();
+                        }).then(function (json) {
+                            if (json) {
+                                currentButton.dataset.isLoadedDescription = "true";
+                                $((taskRow.querySelector(".task-description-loader .spinner-border"))).fadeOut();
+                                $((taskRow.querySelector(".task-description-loader"))).fadeOut();
+
+                                taskRow.querySelector(".settings_page__level-settings__level-description-collapsed-area").innerHTML = createLevelRowDescriptionInnerHTML(json);
+
+                            }
+                        })
+                    }
+
+
+
+                }
+
+            })
+        }
+
+
         let createNewLevelFormInput = document.querySelector("#settings_page__add-new-level__theme-input"),
             createNewLevelFormSubmitButton = document.querySelector('#settings_page__add-new-level__submit'),
             createNewLevelFormNewLevelNumber = document.querySelector("#settings_page__add-new-level-number-level"),
             createNewLevelFormInputFeedback = document.querySelector("#settings_page__add-new-level__theme-input-feedback");
+
+        activateGettingDescriptionFromServer();
 
         createNewLevelFormSubmitButton.onclick = () => {
             if (createNewLevelFormInput.value.length < 3 || createNewLevelFormInput.value.length > 255) {

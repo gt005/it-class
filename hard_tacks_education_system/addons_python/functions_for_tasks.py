@@ -7,6 +7,32 @@ from ..models import EducationTask, CheckedEducationTask, EducationLevel
 from mainapp.models import Puples
 
 
+def get_amount_of_people_with_level(level_number: int) -> int:
+    try:
+        return len(Puples.objects.filter(education_level=level_number))
+    except (ObjectDoesNotExist, TypeError, ValueError):
+        return 0
+
+
+def get_level_fullness_percents(level_number: int) -> int:
+    try:
+        task_level = EducationLevel.objects.get(
+            level_number=level_number
+        )
+        tasks_amount = len(EducationTask.objects.filter(
+            task_level=task_level
+        ))
+    except (TypeError, ValueError, ObjectDoesNotExist):
+        return 0
+
+    if tasks_amount != 0:
+        percents = round(tasks_amount / get_amount_of_people_with_level(level_number) * 100)
+        if percents > 100:
+            return 100
+        return percents
+    return 0
+
+
 def crete_level(level_number: int, level_theme: str) -> (str, int):
     """
     Создает уровень с темой.
@@ -232,13 +258,6 @@ def try_to_get_object_from_db(database, object_parameters):
     pass
 
 
-def get_amount_of_people_with_level(level_number: int):
-    try:
-        return len(Puples.objects.filter(education_level=level_number))
-    except (ObjectDoesNotExist, TypeError, ValueError):
-        return 0
-
-
 def delete_task_from_db(task_id: int) -> JsonResponse:
     ''' Удаляет задачу из базы данных '''
     try:
@@ -255,6 +274,15 @@ def delete_task_from_db(task_id: int) -> JsonResponse:
     return JsonResponse({
         "message": "Задача успешно удалена"
     }, status=200)
+
+
+def change_task_data_in_model(request) -> JsonResponse:
+    print(request.POST)
+    print(request.FILES)
+
+    print(request.POST.get('photo_1'))
+    print(request.POST.get('photo_2'))
+    print(request.POST.get('photo_3'))
 
 
 def _get_datetime_time_object_from_string(string_to_convert: str):

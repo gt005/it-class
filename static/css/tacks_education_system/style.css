@@ -85,6 +85,10 @@ ol, ul, dl {
   box-shadow: none;
 }
 
+.custom-file-label {
+  overflow: auto;
+}
+
 .close-block-on-loader {
   display: none;
   justify-content: center;
