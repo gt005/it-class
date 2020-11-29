@@ -19,8 +19,8 @@ from .addons_python.list_v2 import checker_list_v1
 from .addons_python.views_addons_classes import HeaderNotificationsCounter
 from .addons_python.notifications import send_mail_to_applicant, send_telegram
 from .addons_python.views_addons_functions import recount_all_peoples_rating
-from .forms import EventsForm, AddEventForm, ImgChangeForm, CollectData, Notifications
-from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice
+from .forms import EventsForm, AddEventForm, ImgChangeForm, CollectData
+from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice, EventActive
 
 
 class MainView(HeaderNotificationsCounter, ListView):
@@ -246,6 +246,7 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
+        context['active_task'] = EventActive.objects.all()
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
         context['allevents'] = filter(lambda x: not x.name.startswith("Задача дня"), Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
         context['alldaytasks'] = filter(lambda x: x.name.startswith("Задача дня"),

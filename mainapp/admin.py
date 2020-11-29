@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice
+from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice, EventActive
 
 
 class EventsAdmin(admin.ModelAdmin):
@@ -15,6 +15,10 @@ class WorksAdmin(admin.ModelAdmin):
     list_filter = ("date", "name")
     list_display_links = ("name",)
 
+
+class EventActiveAdmin(admin.ModelAdmin):
+    list_display = ("date", "name", "discription")
+    list_filter = ("date", "name", "discription")
 
 class ApplicantActionAdmin(admin.ModelAdmin):
     list_display = ("action_app", "check", "date")
@@ -51,6 +55,7 @@ class PuplesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Puples, PuplesAdmin)
+admin.site.register(EventActive, EventActiveAdmin)
 admin.site.register(SummerPractice)
 admin.site.register(Events, EventsAdmin)
 admin.site.register(Works, WorksAdmin)

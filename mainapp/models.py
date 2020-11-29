@@ -118,3 +118,10 @@ class DaysTask(models.Model):
     class Meta:
         verbose_name = "Задача дня"
         verbose_name_plural = "Задача дня"
+
+
+class EventActive(models.Model):
+    date = models.DateField("Дата", null=True)
+    name = models.CharField("Название мероприятия", max_length=200)
+    discription = models.TextField("Описание мероприятия")
+    link = models.URLField("Ссылка мероприятия", default='')

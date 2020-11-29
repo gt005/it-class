@@ -82,6 +82,20 @@
                                                  src="{% static '/images/telegram.png' %}">Присоедениться к
                     телеграм
                     каналу</a>
+            {% if active_task %}
+             <h5 class="font-weight-light pt-3">Мероприятия:</h5>
+                {% for task in active_task %}
+
+                    <div class="card my-3" style="width: 100%;">
+                        <div class="card-body">
+                            <h5 class="card-title font-weight-light">{{ task.name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted font-weight-light">{{ task.date }}</h6>
+                            <p class="card-text" style="font-size: 9px;">{{ task.discription|truncatewords:30 }}</p>
+                            <a href="{{ task.link }}" class="card-link" style="font-size: 10px">Подробней</a>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% endif %}
             </div>
             <div class="col">
                 <div class="row">
@@ -189,6 +203,19 @@
                         <p class="font-weight-light">Успешно решенных задач: {{ tasks_success }}</p>
                         <p class="font-weight-light">Процент успешности: {{ procent_success }} %</p>
                         <p class="font-weight-light">Количество нерешенных задач: {{ unsolved_tasks }} </p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated {% if procent_success >= 80 %}bg-success{% elif procent_success >= 20 %}bg-warning{% else %}bg-danger{% endif %}"
+                                 role="progressbar" style="width: {{ procent_success }}%;"
+                                 aria-valuenow="{{ procent_success }}"
+                                 aria-valuemin="0" aria-valuemax="100">{{ procent_success }}%
+
+                            </div>
+
+                        </div>
+                        <p style="font-size: 10px; text-align: center;" class="font-weight-light text-muted">Решай
+                            задачи на <a style="color: #008080"
+                                         href="https://stepik.org/lesson/419936/step/1?unit=409514">stepic</a>, чтобы
+                            линия всегда была зеленой </p>
 
                         <div class="container row pb-4">
                             <canvas id="myChart1" class="col-12"></canvas>
