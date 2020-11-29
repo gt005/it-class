@@ -59,6 +59,9 @@ class TasksList(LoginRequiredMixin, TemplateView):
             context['active_task'] = None
 
         context['level'] = self.request.user.puples.education_level
+        context['previous_tasks'] = CheckedEducationTask.objects.filter(
+            solved_user=self.request.user.puples
+        )
 
         return context
 

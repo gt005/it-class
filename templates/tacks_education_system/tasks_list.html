@@ -101,59 +101,40 @@
                 <div class="col-12">
                     <div class="task-list-page__previous-tasks">
 
-                        <a class="task-list-page__container"
-                           href="active_task/4">
-                            <div class="task-list-page__container__theme-name">
-                                <span>Задача на тему: “Кортежи”</span>
-                                <br>
-                                <span>Уровень: 4</span>
-                            </div>
-                            <table class="table table-borderless">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Оценка Peer 1</th>
-                                    <th scope="col">Оценка Peer 2</th>
-                                    <th scope="col">Оценка системы</th>
-                                    <th scope="col">Итог</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>-</td>
-                                    <td>70</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </a>
+                        {% for previous_task in previous_tasks %}
+                            <a class="task-list-page__container"
+                               href="active_task/{{ previous_task.original_task.id }}">
+                                <div class="task-list-page__container__theme-name">
+                                    <span>Задача на тему: “{{ previous_task.original_task.task_level.level_theme }}”</span>
+                                    <br>
+                                    <span>{{ previous_task.original_task.task_name }}</span>
+                                    <br>
+                                    <span>Уровень: {{ previous_task.original_task.task_level.level_number }}</span>
+                                </div>
+                                <table class="table table-borderless">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Оценка Peer 1</th>
+                                        <th scope="col">Оценка Peer 2</th>
+                                        <th scope="col">Оценка системы</th>
+                                        <th scope="col">Итог</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>{% if previous_task.first_peer_mark %}{{ previous_task.first_peer_mark }}{% else %}-{% endif %}</td>
+                                        <td>{% if previous_task.second_peer_mark %}{{ previous_task.second_peer_mark }}{% else %}-{% endif %}</td>
+                                        <td>{% if previous_task.system_mark %}{{ previous_task.system_mark }}{% else %}-{% endif %}</td>
+                                        <td>{% if previous_task.result_summ_mark %}{{ previous_task.result_summ_mark }}{% else %}-{% endif %}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </a>
+                        {% endfor %}
 
-                        <a class="task-list-page__container"
-                           href="active_task/3">
-                            <div class="task-list-page__container__theme-name">
-                                <span>Задача на тему: “Списки”</span>
-                                <br>
-                                <span>Уровень: 3</span>
-                            </div>
-                            <table class="table table-borderless">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Оценка Peer 1</th>
-                                    <th scope="col">Оценка Peer 2</th>
-                                    <th scope="col">Оценка системы</th>
-                                    <th scope="col">Итог</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>66</td>
-                                    <td>70</td>
-                                    <td>57</td>
-                                    <td>193</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </a>
+
+
+
 
                     </div>
                 </div>
