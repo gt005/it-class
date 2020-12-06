@@ -1,3 +1,17 @@
+# TODO: Сделать localStorage в js для хранения прошлых решений,
+#  а так же удаление их. Еще сделать отрисовку не python а js (active task)
+
+# TODO: Сделать изменение задачи на сервере EditLevel
+
+# TODO: Сделать просмотр статистики учеников
+#  Тут же сделать фильтр по ученикам(класс)
+#  Сделать запрос с сервера данных по конкретному ученику
+#  Сделать общий граф успеваемости
+
+# TODO: Сделать алгоритм подбора задач для учеников
+
+# TODO: Сделать страницу с оцениваем задач
+
 import datetime
 import time
 import locale
@@ -9,6 +23,9 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, \
 from django.views.generic import ListView, TemplateView, View, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+
+from mainapp.models import Puples
 
 from .models import EducationTask, CheckedEducationTask, EducationLevel
 from .addons_python.functions_for_tasks import *
@@ -22,9 +39,16 @@ class ActiveTask(LoginRequiredMixin, DetailView):
     model = EducationTask
     login_url = "/login/"
     pk_url_kwarg = "pk"
+    
+    def get(self, request, *args, **kwargs):
+        if self.get_object().for_student != request.user.puples:
+            return HttpResponseNotFound()
+        return super(ActiveTask, self).get(request, *args, **kwargs)
 
     def post(self, request, **kwargs):
-        return save_task_solution(request=request)  # returns JsonResponse
+        if self.get_object().for_student != request.user.puples:
+            return HttpResponseNotFound()
+        return save_task_last_solution(request=request)  # returns JsonResponse
 
     def get_context_data(self, **kwargs):
         context = super(ActiveTask, self).get_context_data(**kwargs)
@@ -43,10 +67,17 @@ class ActiveTask(LoginRequiredMixin, DetailView):
 class TasksList(LoginRequiredMixin, TemplateView):
     template_name = "tacks_education_system/tasks_list.html"
     login_url = "/login/"
-    # TODO: Удалять все решения после закрытие задачи кроме самого последнего для экономии памяти
 
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
+
+        context['level'] = self.request.user.puples.education_level
+        context['previous_tasks'] = CheckedEducationTask.objects.filter(
+            solved_user=self.request.user.puples
+        )
+
+        if not check_existing_active_task(self.request.user.puples):
+            return context
 
         try:
             context['active_task'] = self.request.user.puples.educationtask
@@ -57,11 +88,6 @@ class TasksList(LoginRequiredMixin, TemplateView):
             context['active_task_period_remainder'] = int((self.request.user.puples.educationtask.end_time - point_of_start_count_remainder_time).total_seconds()) - 1  # Секунда дана как время на загрузку страницы
         except:  # Не смог найти RelatedObjectDoesNotExist
             context['active_task'] = None
-
-        context['level'] = self.request.user.puples.education_level
-        context['previous_tasks'] = CheckedEducationTask.objects.filter(
-            solved_user=self.request.user.puples
-        )
 
         return context
 
@@ -234,3 +260,24 @@ class EditLevel(views.LoginRequiredMixin,
         context = super(EditLevel, self).get_context_data(**kwargs)
         context['task'] = kwargs.get('object')
         return context
+
+
+class StudentsStatistic(ListView):
+    template_name = "tacks_education_system/system_settings/students_statistic.html"
+    model = Puples
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(StudentsStatistic, self).get_context_data(*args, **kwargs)
+        context["students_list"] = self.model.objects.filter(
+            Q(status="ST10") | Q(status="ST11")
+        )
+        context["status_choices"] = sorted(list(
+            {people.get_status_display() for people in context["students_list"]}
+        ))
+        return context
+
+
+class TasksEstimate(ListView):
+    template_name = "tacks_education_system/estimate_tasks.html"
+    model = CheckedEducationTask
+

@@ -1,0 +1,165 @@
+{% extends 'tacks_education_system/tacks_education_system_base_template.html' %}
+{% load static %}
+
+{% block document_title %}Статистика учеников{% endblock %}
+
+{% block main %}
+    <h4 class="text-center py-5" style="font-size: 40px;">Ученики</h4>
+
+    <section class="students-statistic__students-list settings_page__level-settings">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-7 col-lg-5">
+                    <div id="class-filter-buttons">
+                        <button data-status-name="all" class="btn btn-outline-secondary btn-sm mt-2 active">Все</button>
+                        {% for status in status_choices %}
+                                <button data-status-name="{{ status }}" class="btn btn-outline-secondary btn-sm mt-2 notifications-filter-btn">{{ status }}</button>
+                        {% endfor %}
+                    </div>
+                    <input type="text" class="form-control mb-4 mt-2" id="studentFindInput" placeholder="Поиск нескольких учеников">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="accordion settings_page__level task-page__last-solutions__table__body"
+                         id="accordionExample">
+
+                        {% for student in students_list %}
+                            <div class="card task-page__last-solutions__card settings_page__level-row student-list-row"
+                                data-class-number="{{ student.get_status_display }}"
+                                data-name-and-surname="{{ student.surname }} {{ student.name }}"
+                            >
+                                <div class="card-header"
+                                     id="level_{{ student.id }}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left collapsed settings_page__level-settings__level-more-open-button"
+                                                type="button"
+                                                data-toggle="collapse"
+                                                data-target="#collapse_{{ student.id }}"
+                                                data-level-number="{{ student.id }}"
+                                                data-is-loaded-description="false"
+                                                data-code=""
+                                                aria-expanded="false"
+                                                aria-controls="collapse_{{ student.id }}">
+                                            <span class="task-page__last-solutions__table__body__row">
+                                                <span class="description-task">
+                                                    <a href="/statistic/pupil/{{ student.id }}" style="text-decoration: underline;">
+                                                        {{ student.surname }} {{ student.name }}
+                                                    </a>
+                                                    <span>
+                                                        {{ student.get_status_display }}
+                                                    </span>
+                                                </span>
+                                                <span class="active-buttons">
+                                                    <span class="open-icon-angle">
+                                                        <svg width="1em" height="1em"
+                                                 viewBox="0 0 16 16"
+                                                 class="bi bi-caret-down"
+                                                 fill="currentColor"
+                                                 xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd"
+        d="M3.204 5L8 10.481 12.796 5H3.204zm-.753.659l4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>
+</svg>
+                                                    </span>
+                                                </span>
+
+                                            </span>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapse_{{ student.id }}"
+                                     class="collapse"
+                                     aria-labelledby="level_{{ student.id }}"
+                                     data-parent="#accordionExample">
+                                     <div class="card-body task-page__last-solutions__table__body__row__show-code-area settings_page__level-settings__level-description-collapsed-area">
+
+                                        <div class="task-description-loader d-flex align-items-center justify-content-center"
+                                             style="height: 100px;">
+                                            <div class="spinner-border text-info"
+                                                 role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+
+{% block scripts_include %}
+    <script>
+
+        function deactivateClassFilterButtons () {
+            document.querySelectorAll("#class-filter-buttons button").forEach(function (button) {
+                        button.classList.remove("active")
+                    });
+        }
+
+        // Активирует кнопки фильтра (фильтрует по классу)
+        function activateClassFilterButtons() {
+            document.querySelectorAll("#class-filter-buttons button").forEach(function (button) {
+                console.log(button);
+                button.onclick = function () {
+                    deactivateClassFilterButtons();
+
+                    if (this.dataset.statusName === "all") {
+                        $(".student-list-row").fadeIn();
+                    } else {
+                        for (row of $(".student-list-row")) {
+                            if (row.dataset.classNumber === this.dataset.statusName) {
+                                $(row).fadeIn();
+                            } else {
+                                $(row).fadeOut();
+                            }
+                        }
+                    }
+
+                    this.classList.add("active");
+                }
+            })
+        }
+
+        document.querySelector("#studentFindInput").oninput = function () {
+            deactivateClassFilterButtons();
+
+            document.querySelector("#class-filter-buttons button[data-status-name='all']").classList.add('active');
+
+            {#$(".student-list-row").fadeIn();#}
+
+            let input = this;
+
+            if (input.value == '') {
+                document.querySelectorAll(".student-list-row").forEach(function (row) {
+                    row.style.display = "block";
+                })
+            } else {
+                document.querySelectorAll(".student-list-row").forEach(function (row) {
+                row.style.display = "none";
+                    console.log(input.value.split(' '));
+                    for (let word of input.value.split(' ')) {
+                    if (word !== '') {
+                        if (row.dataset.nameAndSurname.toLowerCase().indexOf(word.toLowerCase()) != -1) {
+                            row.style.display = "block";
+                        }
+
+                    }
+                }
+            });
+            }
+
+
+        }
+
+        activateClassFilterButtons();
+
+    </script>
+{% endblock %}

@@ -8,6 +8,7 @@ from mainapp.models import Puples
 
 
 def get_amount_of_people_with_level(level_number: int) -> int:
+    """ Возвращает количество учеников у которых определенный уровень """
     try:
         return len(Puples.objects.filter(education_level=level_number))
     except (ObjectDoesNotExist, TypeError, ValueError):
@@ -15,6 +16,7 @@ def get_amount_of_people_with_level(level_number: int) -> int:
 
 
 def get_level_fullness_percents(level_number: int) -> int:
+    """ Возвращает процент заполнености уровня задачами (Задачи / Ученики) """
     try:
         task_level = EducationLevel.objects.get(
             level_number=level_number
@@ -109,9 +111,29 @@ def create_solution_task_db_object(
     return ("Удачно добавлено решение", 200, new_solved_task_object.id)
 
 
-def save_task_solution(request) -> JsonResponse:
+def delete_task_solutions_except_last(
+        last_solution_id: int,
+        user: Puples) -> None:
+    """ Удаляет все решения конкретной задачи, кроме данной """
+    original_task = CheckedEducationTask.objects.get(
+        id=last_solution_id
+    ).original_task
+
+    last_tasks = CheckedEducationTask.objects.filter(
+        original_task=original_task,
+        solved_user=user
+    ).exclude(
+        id=last_solution_id
+    )
+
+    for task_for_delete in last_tasks:
+        task_for_delete.delete()
+
+
+def save_task_last_solution(request) -> JsonResponse:
     """
     Производит проверки на валидность и сохраняет задачу в базе данных.
+    При этом удаляет прошлые решения
     """
     solution_task_time = ''
     existing_programming_languages = {
@@ -136,6 +158,10 @@ def save_task_solution(request) -> JsonResponse:
                 id=task_id
             ).get_solution_time()
 
+        delete_task_solutions_except_last(
+            last_solution_id=task_id,
+            user=request.user.puples
+        )
         return JsonResponse({
             "message": result_message,
             "solutionTime": solution_task_time,
@@ -163,6 +189,10 @@ def save_task_solution(request) -> JsonResponse:
                 id=task_id
             ).get_solution_time()
 
+            delete_task_solutions_except_last(
+                last_solution_id=task_id,
+                user=request.user.puples
+            )
             return JsonResponse({
                 "message": result_message,
                 "solutionTime": solution_task_time,
@@ -246,6 +276,25 @@ def create_task_and_add_to_db(
     }, status=200)
 
 
+def check_existing_active_task(delete_for_user: Puples) -> bool:
+    '''
+    Удаляет активную задачу у ученика(убирает привязку),
+     если время ее сдачи вышло.
+    :param delete_for_user: Для ученика, для которого делать проверку.
+    :return: True, если задача остается и ее не удалило или не существует, иначе False
+    '''
+    try:
+        if datetime.datetime.now() > delete_for_user.educationtask.end_time:
+            delete_for_user.educationtask.for_student = None
+            delete_for_user.educationtask = None
+            delete_for_user.save()
+            delete_for_user.educationtask.save()
+            return False
+        return True
+    except:  # RelatedObjectDoesNotExist
+        return False
+
+
 def try_to_get_object_from_db(database, object_parameters):
     '''
     Функция осуществляет поиск по базе данных не вызывая
@@ -277,12 +326,8 @@ def delete_task_from_db(task_id: int) -> JsonResponse:
 
 
 def change_task_data_in_model(request) -> JsonResponse:
-    print(request.POST)
-    print(request.FILES)
-
-    print(request.POST.get('photo_1'))
-    print(request.POST.get('photo_2'))
-    print(request.POST.get('photo_3'))
+    """ Изменяет данные задачи из формы """
+    pass
 
 
 def _get_datetime_time_object_from_string(string_to_convert: str):
@@ -301,4 +346,3 @@ def _get_datetime_time_object_from_string(string_to_convert: str):
         result_time += datetime.timedelta(hours=12)
 
     return result_time
-
