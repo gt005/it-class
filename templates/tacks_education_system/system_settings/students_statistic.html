@@ -4,7 +4,26 @@
 {% block document_title %}Статистика учеников{% endblock %}
 
 {% block main %}
-    <h4 class="text-center py-5" style="font-size: 40px;">Ученики</h4>
+    <section class="back-button-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <a class="task-page__main-back-buttons pr-lg-3 pb-3"
+                           href="/tasks/system_settings/">
+                            <span class="task-page__main-back-buttons__back-buttons">
+                                <img src="{% static 'images/back_button.svg' %}"
+                                     alt="<">
+                                <img src="{% static 'images/back_button_hover.svg' %}"
+                                     alt="<">
+                            </span>
+                            Все настройки
+                        </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <h4 class="text-center pb-5" style="font-size: 40px;">Ученики</h4>
 
     <section class="students-statistic__students-list settings_page__level-settings">
         <div class="container">

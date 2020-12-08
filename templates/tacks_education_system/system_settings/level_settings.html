@@ -65,7 +65,17 @@
                     </div>
 
                     <div class="settings_page__level-settings__task__settings my-4">
-                        <button id="set-tasks-to-students" type="button" class="btn btn-outline-info {% if task_amount < students_amount %}disabled" title="Для каждого ученика должно быть задание"{% else %}"{% endif %}>Присвоить задачи</button>
+                        <form method="post">
+                            {% csrf_token %}
+                            <button id="set-tasks-to-students"
+                                    type="submit"
+                                    name="distribute_tasks"
+                                    value="true"
+                                    class="btn btn-outline-info {% if task_amount < students_amount %}disabled"
+                                    title="Для каждого ученика должно быть задание"{% else %}"{% endif %}>
+                                Присвоить задачи
+                            </button>
+                        </form>
                     </div>
 
                 </div>
