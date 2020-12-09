@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path("", views.TasksList.as_view()),
+    path("set_student_settings/", views.SetStartStudentSettings.as_view()),
     path("active_task/<int:pk>/", views.ActiveTask.as_view()),
     path("system_settings/", views.SystemSettings.as_view()),
     path("estimate_tasks/", views.TasksEstimate.as_view()),

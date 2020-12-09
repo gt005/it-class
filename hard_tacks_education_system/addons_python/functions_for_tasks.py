@@ -3,6 +3,8 @@ import datetime
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
+from typing import Any, Optional
+
 from ..models import EducationTask, CheckedEducationTask, EducationLevel
 from mainapp.models import Puples
 
@@ -295,16 +297,19 @@ def check_existing_active_task(delete_for_user: Puples) -> bool:
         return False
 
 
-def try_to_get_object_from_db(database, object_parameters):
+def get_object_from_db(database, object_parameters: dict) -> Optional[Any]:
     '''
     Функция осуществляет поиск по базе данных не вызывая
     исключений при отсутствии объекта.
 
     :param database: таблица в базе данных в которой искать (передавать объектом бд)
-    :param object_parameters: список фильтров, по которым искать запись
+    :param object_parameters: словарь фильтров, по которым искать запись
     :return: Возвращает запись из таблицы если запись существует, иначе None
     '''
-    pass
+    try:
+        return database.objects.get(**object_parameters)
+    except ObjectDoesNotExist:
+        return
 
 
 def delete_task_from_db(task_id: int) -> JsonResponse:
@@ -328,6 +333,30 @@ def delete_task_from_db(task_id: int) -> JsonResponse:
 def change_task_data_in_model(request) -> JsonResponse:
     """ Изменяет данные задачи из формы """
     pass
+
+
+def distribute_tasks_among_students(level_number: int) -> bool:
+    '''
+    Распределяет задачи среди учеников данного уровня.
+    Для каждого ученика не может повторяться задача, НО
+    если задач, которые ученик не решал не осталось, то выбирается случацная
+    задача.
+    Распределение будет происходить только если для каждого ученика есть задача.
+    :param level_number: Уровень, для которого распределить задачи.
+    :return: True, если распределение произошло, иначе False.
+    '''
+    if get_level_fullness_percents(level_number) < 100:
+        return False
+
+    level_object_from_db = get_object_from_db(
+        database=EducationLevel,
+        object_parameters={'level_number': level_number}
+    )
+
+    if level_object_from_db is None:
+        return False
+
+    list_of_students = Puples.objects.filter()
 
 
 def _get_datetime_time_object_from_string(string_to_convert: str):

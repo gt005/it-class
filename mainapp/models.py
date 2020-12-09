@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from tinymce.models import HTMLField
 from django.core.validators import MinValueValidator, MaxValueValidator
+from jsonfield import JSONField
 
 
 class Puples(models.Model):
@@ -35,10 +36,11 @@ class Puples(models.Model):
         verbose_name="Уровень в системе решения задач", default=1,
         validators=[MinValueValidator(1)]
     )
-    language_stack = models.CharField(
-        "Список языков программирования, которыми владеет(через запятую)",
+    task_education_addition_data = JSONField(
+        "Дополнительные данные для работы системы задач",
         max_length=200,
-        blank=True)
+        default={"languages": []},
+    )
 
     def __str__(self):
         return self.name

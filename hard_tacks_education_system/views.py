@@ -21,7 +21,7 @@ import locale
 from braces import views
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, \
-    HttpResponseNotFound, Http404
+    HttpResponseNotFound, Http404, HttpResponseForbidden
 from django.views.generic import ListView, TemplateView, View, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
@@ -44,12 +44,12 @@ class ActiveTask(LoginRequiredMixin, DetailView):
     
     def get(self, request, *args, **kwargs):
         if self.get_object().for_student != request.user.puples:
-            return HttpResponseNotFound()
+            return HttpResponseForbidden()
         return super(ActiveTask, self).get(request, *args, **kwargs)
 
     def post(self, request, **kwargs):
         if self.get_object().for_student != request.user.puples:
-            return HttpResponseNotFound()
+            return HttpResponseForbidden()
         return save_task_last_solution(request=request)  # returns JsonResponse
 
     def get_context_data(self, **kwargs):
@@ -283,3 +283,11 @@ class TasksEstimate(ListView):
     template_name = "tacks_education_system/estimate_tasks.html"
     model = CheckedEducationTask
 
+
+class SetStartStudentSettings(View):
+    def get(self, request, *args, **kwargs):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        return JsonResponse({"message": 'wefv'}, status=200)

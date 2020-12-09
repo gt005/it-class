@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 
 from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice
 
@@ -22,10 +23,20 @@ class ApplicantActionAdmin(admin.ModelAdmin):
     list_filter = ("action_app__surname", "date")
 
 
+class PuplesAdminJsonForm(forms.ModelForm):
+    class Meta:
+        model = Puples
+        fields = "__all__"
+        widgets = {
+            'task_education_addition_data': forms.Textarea(attrs={'class': 'json-editor'})
+        }
+
+
 class PuplesAdmin(admin.ModelAdmin):
     list_display = ("surname", "name", "status")
     list_filter = ("surname", "status")
     actions = ["change_class_10", "change_class_11"]
+    form = PuplesAdminJsonForm
 
     def change_class_10(self, request, queryset):
         row_update = queryset.update(status="ST10")
@@ -48,6 +59,20 @@ class PuplesAdmin(admin.ModelAdmin):
 
     change_class_10.short_description = "Перевести ученика в 10 класс"
     change_class_10.allowed_permissions = ("change",)
+
+    class Media:
+        css = {
+            'all': (
+                '/static/css/tacks_education_system/codemirror-5.58.1/lib/codemirror.min.css',
+                '/static/css/tacks_education_system/codemirror-5.58.1/theme/rubyblue.min.css',
+            )
+        }
+        js = (
+            '/static/css/tacks_education_system/codemirror-5.58.1/lib/codemirror.js',
+            '/static/css/tacks_education_system/codemirror-5.58.1/formatting.js',
+            '/static/css/tacks_education_system/codemirror-5.58.1/mode/javascript/javascript.js',
+            '/static/js/codemirror_admin/init.js'
+        )
 
 
 admin.site.register(Puples, PuplesAdmin)

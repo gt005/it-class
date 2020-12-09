@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-12">
                     {% if active_task %}
-                        <a class="task-list-page__container task-list-page__active-container {% if active_task_period <= 0 %}task-actived{% endif %}" href="active_task/{{ active_task.id }}">
+                        <a class="task-list-page__container task-list-page__active-container {% if active_task_period <= 0 %}task-actived{% endif %}" href="{{ active_task.get_absolute_url }}">
                             <div class="task-list-page__container__theme-name">
                                 <span>Задача на тему: “{{ active_task.task_level.level_theme }}”</span>
                                 <br>
@@ -103,7 +103,7 @@
 
                         {% for previous_task in previous_tasks %}
                             <a class="task-list-page__container"
-                               href="active_task/{{ previous_task.original_task.id }}">
+                               href="{{ previous_task.original_task.get_absolute_url }}">
                                 <div class="task-list-page__container__theme-name">
                                     <span>Задача на тему: “{{ previous_task.original_task.task_level.level_theme }}”</span>
                                     <br>

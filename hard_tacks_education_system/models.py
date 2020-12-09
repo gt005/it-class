@@ -55,6 +55,10 @@ class EducationTask(models.Model):
     def __str__(self):
         return f"{self.task_name}. Уровень {self.task_level.level_number}"
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return f"/tasks/active_task/{self.id}/"
+
     class Meta:
         verbose_name = "Задача для решения"
         verbose_name_plural = "Задачи для решения"
@@ -133,4 +137,3 @@ class CheckedEducationTask(models.Model):
     class Meta:
         verbose_name = "Решенная задача"
         verbose_name_plural = "Решенные задачи"
-
