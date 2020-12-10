@@ -31,6 +31,7 @@ from mainapp.models import Puples
 
 from .models import EducationTask, CheckedEducationTask, EducationLevel
 from .addons_python.functions_for_tasks import *
+from itclass.settings import AVAILABLE_LANGUAGES_LIST
 
 
 locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
@@ -264,7 +265,9 @@ class EditLevel(views.LoginRequiredMixin,
         return context
 
 
-class StudentsStatistic(ListView):
+class StudentsStatistic(views.LoginRequiredMixin,
+                        views.SuperuserRequiredMixin,
+                        ListView):
     template_name = "tacks_education_system/system_settings/students_statistic.html"
     model = Puples
     
@@ -279,15 +282,45 @@ class StudentsStatistic(ListView):
         return context
 
 
-class TasksEstimate(ListView):
+class TasksEstimate(views.LoginRequiredMixin,
+                    ListView):
     template_name = "tacks_education_system/estimate_tasks.html"
     model = CheckedEducationTask
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(TasksEstimate, self).get_context_data(*args, **kwargs)
+        context['lang_list'] = AVAILABLE_LANGUAGES_LIST
+        return context
 
-class SetStartStudentSettings(View):
+
+class SetStartStudentSettings(views.LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        pass
+        print(request.GET)
+        if request.GET.get("getLanguagesList"):
+            print()
+        return JsonResponse({"languages": AVAILABLE_LANGUAGES_LIST}, status=200)
 
     def post(self, request, *args, **kwargs):
         print(request.POST)
-        return JsonResponse({"message": 'wefv'}, status=200)
+        if request.POST.get('actionSetProgrammingLanguages') == 'true':
+            languages_list = []
+
+            for language in request.POST:
+                if str(language).startswith('setProgrammingLanguage'):
+                    if request.POST.get(language) in AVAILABLE_LANGUAGES_LIST:
+                        languages_list.append(request.POST.get(language))
+                    else:
+                        return JsonResponse(
+                            {"message": 'wrong language'},
+                            status=400
+                        )
+            if not languages_list:
+                return JsonResponse(
+                    {"message": 'Empty lang set'},
+                    status=400
+                )
+
+            request.user.puples.task_education_addition_data['languages'] = languages_list
+            request.user.puples.save()
+
+            return JsonResponse({"message": 'languages added'}, status=200)

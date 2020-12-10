@@ -57,7 +57,7 @@
     <div class="modal fade" id="welcome-page" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="welcome-pageLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border-radius: 0.4em">
-            <div id="welcome-page__loader" class="task-description-loader d-none align-items-center justify-content-center"
+            <div id="welcome-page__loader" class="task-description-loader d-flex align-items-center justify-content-center"
                  style="position:absolute;height:100%;width:100%;background:rgba(255, 255, 255, 0.8);border-radius:0.4em;z-index:999;">
                 <div class="spinner-border text-info"
                      role="status">
@@ -91,10 +91,9 @@
                             <p>Система должна знать, задачи на каком языке программирования ты сможешь проверять задачи.</p>
 
                             <div id="welcome-page__choose-languages__choose-buttons" class="pt-4">
-                                <button type="button" class="btn btn-outline-info my-1">Python 3</button>
-                                <button type="button" class="btn btn-outline-info my-1">Python</button>
-                                <button type="button" class="btn btn-outline-info my-1">GNU c++17 7.3</button>
-                                <button type="button" class="btn btn-outline-info my-1">GNU C11 7.3</button>
+                                <div class="invalid-feedback" id="welcome-page__choose-languages__choose-buttons__empty-error">
+                                    Нужно отметить хотя бы 1 язык
+                                </div>
                             </div>
                         </article>
 
@@ -131,6 +130,36 @@
         $(window).on('load',function(){
             $('#welcome-page').modal('show');
 
+            fetch(location.origin + '/tasks/set_student_settings/?getLanguagesList', {
+                method: 'GET',
+                mode: 'same-origin',  // Do not send CSRF token to another domain.
+            }).then(function (response) {
+                if (!response.ok) {
+                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+                    return false
+                }
+
+                return response.json();
+            }).then(function (json) {
+                console.log(json)
+                if (json) {
+                    let buttonsContainer = document.querySelector("#welcome-page__choose-languages__choose-buttons");
+
+                    for (let lang of json.languages) {
+                        buttonsContainer.innerHTML = `<button type="button" class="btn btn-outline-info m-1">${lang}</button>` + buttonsContainer.innerHTML
+                    }
+
+                    $('#welcome-page__choose-languages__choose-buttons button').on('click', function () {
+                        this.classList.toggle('active');
+                    })
+
+                    $('#welcome-page__loader').addClass('d-none');
+                    $('#welcome-page__loader').removeClass('d-flex');
+                }
+            });
+
+
+
             $('#welcome-page__system-description__buttons #go-out').on('click', function () {
                 location.href = '/';
             })
@@ -146,22 +175,29 @@
             $('#welcome-page__choose-languages__buttons #go-back').on('click', function () {
                 $('#welcome-page__choose-languages').hide();
                 $('#welcome-page__choose-languages__buttons').hide();
+                $('#welcome-page__choose-languages__choose-buttons__empty-error').hide();
                 $('#welcome-page__system-description').fadeIn();
                 $('#welcome-page__system-description__buttons').fadeIn();
                 $('#welcome-page').animate({scrollTop: 0}, 300);
             })
 
             $('#welcome-page__choose-languages__buttons #next-button').on('click', function () {
-                $('#welcome-page__loader').fadeIn();
-                $('#welcome-page__loader').removeClass('d-none');
-                $('#welcome-page__loader').addClass('d-flex');
-
-
-                let data = new FormData();
 
                 let activeProgrammingLanguages = $('#welcome-page__choose-languages__choose-buttons button.active'),
                     enumerateActiveProgrammingLanguages = 0;
 
+                if (activeProgrammingLanguages.length === 0) {
+                    $('#welcome-page__choose-languages__choose-buttons__empty-error').fadeIn();
+                    return false;
+                }
+
+                $('#welcome-page__loader').fadeIn();
+                $('#welcome-page__loader').removeClass('d-none');
+                $('#welcome-page__loader').addClass('d-flex');
+
+                let data = new FormData();
+
+                data.append("actionSetProgrammingLanguages", 'true');
 
                 for (let index of activeProgrammingLanguages) {
                     data.append("setProgrammingLanguage" + enumerateActiveProgrammingLanguages, activeProgrammingLanguages[enumerateActiveProgrammingLanguages].textContent);
@@ -189,14 +225,10 @@
                         $('#welcome-page__loader').addClass('d-none');
                         $('#welcome-page__loader').removeClass('d-flex');
                         $('#welcome-page__end-of-welcome').fadeIn();
-                }
-            });;
+                    }
+                });
 
 
-            })
-
-            $('#welcome-page__choose-languages__choose-buttons button').on('click', function () {
-                this.classList.toggle('active');
             })
 
         });

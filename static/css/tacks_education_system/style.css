@@ -535,6 +535,26 @@ ol, ul, dl {
   color: #0056b3;
 }
 
+#welcome-page__choose-languages__choose-buttons button, #estimate-tasks__change-languages__buttons button {
+  color: #17a2b8;
+}
+#welcome-page__choose-languages__choose-buttons button.active, #estimate-tasks__change-languages__buttons button.active {
+  color: #fff;
+}
+#welcome-page__choose-languages__choose-buttons button.active:hover, #estimate-tasks__change-languages__buttons button.active:hover {
+  color: #fff;
+  background: #17a2b8;
+}
+#welcome-page__choose-languages__choose-buttons button:hover, #estimate-tasks__change-languages__buttons button:hover {
+  border-color: #17a2b8;
+  color: #17a2b8;
+  background: transparent;
+}
+
+.estimate-tasks__header {
+  padding-top: 55px;
+}
+
 @media screen and (max-width: 992px) {
   .task-list-page__container .task-list-page__container__theme-name {
     width: 220px;

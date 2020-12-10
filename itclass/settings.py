@@ -30,7 +30,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1', '192.168.14.103',
     '0.0.0.0', '172.20.10.2',
     '172.20.10.7', '192.168.1.242',
-    '192.168.73.189'
+    '192.168.73.189', '176.59.51.71'
 ]
 
 # Application definition
@@ -146,4 +146,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 # Настройки системы с задачами (hard_tacks_education_system)
-LANGUAGES_AVAILABLE_LIST = []
+AVAILABLE_LANGUAGES_LIST = (
+    "Python 3.7.3",
+    "Python 2",
+    "GNU c++17 7.3",
+    "GNU C11 7.3",
+)
