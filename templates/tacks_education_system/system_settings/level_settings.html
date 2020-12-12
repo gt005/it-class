@@ -69,7 +69,7 @@
                             {% csrf_token %}
                             <button id="set-tasks-to-students"
                                     type="submit"
-                                    name="distribute_tasks"
+                                    name="setTasksToStudents"
                                     value="true"
                                     class="btn btn-outline-info {% if task_amount < students_amount %}disabled"
                                     title="Для каждого ученика должно быть задание"{% else %}"{% endif %}>
@@ -959,20 +959,45 @@
             }
 
             if (percents >= 100 && studentsAmount.textContent != 0) {
-                document.querySelector("#set-tasks-to-students").classList.remove('disabled');
-                document.querySelector("#set-tasks-to-students").title = '';
+                setTasksToStudentsButton.classList.remove('disabled');
+                setTasksToStudentsButton.title = '';
 
                 percents = 100;
             }
             else {
-                document.querySelector("#set-tasks-to-students").classList.add('disabled');
-                document.querySelector("#set-tasks-to-students").title = 'Для каждого ученика должно быть задание';
+                setTasksToStudentsButton.classList.add('disabled');
+                setTasksToStudentsButton.title = 'Для каждого ученика должно быть задание';
             }
 
             progressBar.style = `width: ${percents}%;`;
             progressBar.textContent = `${percents}%`;
             progressBar.ariaValuenow = percents;
 
+        }
+
+        // Отправляет запрос на присвоение задач ученикам
+        function setTasksToStudents() {
+            let data = new FormData();
+
+            data.append("setTasksToStudents", "true")
+
+            fetch(location.href, {
+                method: 'POST',
+                mode: 'same-origin',  // Do not send CSRF token to another domain.
+                headers: {"X-CSRFToken": csrfToken},
+                body: data
+            }).then(function (response) {
+                if (!response.ok) {
+                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+
+                    return false
+                }
+                return response.json();
+            }).then(function (json) {
+                if (json) {
+
+                }
+            });
         }
 
 
@@ -983,7 +1008,8 @@
             addNewTaskSubmitButton = document.querySelector('#settings_page__add-new-task__submit'),
             tasksList = document.querySelector(".task-page__last-solutions__table__body"),
             deleteTaskButtonModalWindow = document.querySelector("#settings_page__level-delete-task-submit__submit-button"),
-            studentWithCurrentLevelAmount = {{ students_amount }};
+            studentWithCurrentLevelAmount = {{ students_amount }},
+            setTasksToStudentsButton = document.querySelector("#set-tasks-to-students");
 
         changeLevelThemeSubmitButton.onclick = () => {
             changeLevelTheme(changeLevelThemeInput);
@@ -996,6 +1022,10 @@
         deleteTaskButtonModalWindow.onclick = () => {
             sendDeleteTaskForm();
         }
+
+        {#setTasksToStudentsButton.onclick = () => {#}
+        {#    setTasksToStudents();#}
+        //}
 
         setTasksAmountProgressbar();
         activateGettingDescriptionFromServer();

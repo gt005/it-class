@@ -1,7 +1,9 @@
 import datetime
+from random import shuffle
 
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import redirect
 
 from typing import Any, Optional
 
@@ -287,13 +289,16 @@ def check_existing_active_task(delete_for_user: Puples) -> bool:
     '''
     try:
         if datetime.datetime.now() > delete_for_user.educationtask.end_time:
-            delete_for_user.educationtask.for_student = None
-            delete_for_user.educationtask = None
-            delete_for_user.save()
-            delete_for_user.educationtask.save()
+            task = get_object_from_db(
+                database=EducationTask,
+                object_parameters={'for_student': delete_for_user}
+            )
+            task.for_student = None
+            task.save()
             return False
         return True
-    except:  # RelatedObjectDoesNotExist
+    except Exception as expt:  # RelatedObjectDoesNotExist
+        print(expt)
         return False
 
 
@@ -335,7 +340,7 @@ def change_task_data_in_model(request) -> JsonResponse:
     pass
 
 
-def distribute_tasks_among_students(level_number: int) -> bool:
+def distribute_tasks_among_students(level_number: int) -> JsonResponse:
     '''
     Распределяет задачи среди учеников данного уровня.
     Для каждого ученика не может повторяться задача, НО
@@ -346,7 +351,10 @@ def distribute_tasks_among_students(level_number: int) -> bool:
     :return: True, если распределение произошло, иначе False.
     '''
     if get_level_fullness_percents(level_number) < 100:
-        return False
+        return JsonResponse(
+            {"message": "Не для каждого ученика есть задача"},
+            status=400
+        )
 
     level_object_from_db = get_object_from_db(
         database=EducationLevel,
@@ -354,9 +362,60 @@ def distribute_tasks_among_students(level_number: int) -> bool:
     )
 
     if level_object_from_db is None:
-        return False
+        return JsonResponse(
+            {"message": "Уровня не существует"},
+            status=404
+        )
 
-    list_of_students = Puples.objects.filter()
+    list_of_students = list(Puples.objects.filter(
+        education_level=level_object_from_db.level_number
+    ))
+    list_of_tasks = list(EducationTask.objects.filter(
+        task_level=level_object_from_db
+    ))
+    remaining_students = []  # Ученики, которые решили все задачи уровня
+
+    shuffle(list_of_tasks)
+
+    # Обнуление, чтобы не было конфлика pk
+    for task in list_of_tasks:
+        task.for_student = None
+        task.for_student_id = None
+        task.save()
+
+    for student in list_of_students:
+        solved_tasks_for_student = CheckedEducationTask.objects.filter(  # Решенные задачи
+            solved_user=student
+        )
+
+        is_task_found = False  # Если ученик уже прорешал все задачи этого уровня, то ему выдаст оставшуюся задачу в конце
+        for task_index, possible_task in enumerate(list_of_tasks):
+            is_solved_task = False
+
+            # Проверка на то, что ученик еще не решал такую задачу
+            for checked_task in solved_tasks_for_student:
+                if possible_task == checked_task.original_task:
+                    is_solved_task = True  # Нашлась в списке решений
+                    break
+
+            if not is_solved_task:
+                possible_task.for_student = student
+                possible_task.for_student_id = student.id
+                possible_task.save()
+                is_task_found = True
+                list_of_tasks.pop(task_index)
+                break
+
+        if not is_task_found:
+            remaining_students.append(student)
+
+    # Распределение оставшихся студентов
+    for remained_student in remaining_students:
+        list_of_tasks[0].for_student = remained_student
+        list_of_tasks[0].save()
+        list_of_tasks.pop(0)
+
+    return redirect(f"/tasks/system_settings/level-settings/{level_number}")
 
 
 def _get_datetime_time_object_from_string(string_to_convert: str):

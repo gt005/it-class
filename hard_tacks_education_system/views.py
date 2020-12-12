@@ -44,12 +44,20 @@ class ActiveTask(LoginRequiredMixin, DetailView):
     pk_url_kwarg = "pk"
     
     def get(self, request, *args, **kwargs):
-        if self.get_object().for_student != request.user.puples:
+        if self.get_object().for_student != request.user.puples and \
+                get_object_from_db(CheckedEducationTask, {
+                    "solved_user": request.user.puples,
+                    "original_task": self.get_object()
+                }) is None:
             return HttpResponseForbidden()
         return super(ActiveTask, self).get(request, *args, **kwargs)
 
     def post(self, request, **kwargs):
-        if self.get_object().for_student != request.user.puples:
+        if self.get_object().for_student != request.user.puples and \
+                get_object_from_db(CheckedEducationTask, {
+                    "solved_user": request.user.puples,
+                    "original_task": self.get_object()
+                }) is None:
             return HttpResponseForbidden()
         return save_task_last_solution(request=request)  # returns JsonResponse
 
@@ -58,11 +66,12 @@ class ActiveTask(LoginRequiredMixin, DetailView):
         context['task'] = kwargs.get('object')
 
         context['solved_tasks_list'] = CheckedEducationTask.objects.filter(
-            original_task=self.request.user.puples.educationtask,
+            original_task=context['task'],
+            solved_user=self.request.user.puples
         ).order_by('-id')
 
         context['remainder_time_to_solve_a_task'] = int(
-            (self.request.user.puples.educationtask.end_time - datetime.datetime.now()).total_seconds()
+            (context['solved_tasks_list'][0].original_task.end_time - datetime.datetime.now()).total_seconds()
         ) - 1  # Секунда дана как время на загрузку страницы
         return context
 
@@ -227,6 +236,11 @@ class LevelSettings(views.LoginRequiredMixin,
         elif request.POST.get("deleteTask"):
             return delete_task_from_db(  # returns JsonResponse
                 task_id=request.POST.get("taskToDeleteId"),
+            )
+        elif request.POST.get("setTasksToStudents"):
+
+            return distribute_tasks_among_students(  # returns JsonResponse
+                level_number=self.get_object().level_number
             )
 
     def get_object(self, *args, **kwargs):
