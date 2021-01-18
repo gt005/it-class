@@ -495,7 +495,50 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body px-4">
+
+                    <label for="settings_page__set-level-time__start-timeInput"
+                           class=" requiredField">
+                        Время закрытия задач<span
+                            class="asteriskField">*</span>
+                    </label>
+                    <div class="input-group date" id="settings_page__set-level-time__start-time"
+                         data-target-input="nearest"
+                         style="margin-bottom: 16px;">
+                        <input type="text" name="end_time"
+                               id="settings_page__set-level-time__start-timeInput"
+                               class="form-control datetimepicker-input"
+                               data-target="#settings_page__set-level-time__start-time"
+                               required="required">
+                        <div class="input-group-append"
+                             data-target="#settings_page__set-level-time__start-time"
+                             data-toggle="datetimepicker">
+                            <div class="input-group-text"><i
+                                    class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+
+                    <label for="settings_page__set-level-time__end-timeInput"
+                           class=" requiredField">
+                        Время закрытия задач<span
+                            class="asteriskField">*</span>
+                    </label>
+                    <div class="input-group date" id="settings_page__set-level-time__end-time"
+                         data-target-input="nearest"
+                         style="margin-bottom: 16px;">
+                        <input type="text" name="end_time"
+                               id="settings_page__set-level-time__end-timeInput"
+                               class="form-control datetimepicker-input"
+                               data-target="#settings_page__set-level-time__end-time"
+                               required="required">
+                        <div class="input-group-append"
+                             data-target="#settings_page__set-level-time__end-time"
+                             data-toggle="datetimepicker">
+                            <div class="input-group-text"><i
+                                    class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+
 
                 </div>
                 <div class="modal-footer" style="border: 0">
@@ -504,7 +547,7 @@
                     </button>
                     <button type="button" class="btn btn-outline-success"
                             id="settings_page__set-level-time__submit">
-                        Изменить
+                        Задать
                     </button>
                 </div>
             </div>
@@ -565,6 +608,16 @@
         });
 
         $('#datetimepickerEndTime').datetimepicker({
+            format: 'D MMMM YYYY г. H:mm',
+            locale: 'ru'
+        });
+
+        $('#settings_page__set-level-time__start-time').datetimepicker({
+            format: 'D MMMM YYYY г. H:mm',
+            locale: 'ru'
+        });
+
+        $('#settings_page__set-level-time__end-time').datetimepicker({
             format: 'D MMMM YYYY г. H:mm',
             locale: 'ru'
         });
@@ -1025,7 +1078,7 @@
         function setTasksToStudents() {
             let data = new FormData();
 
-            data.append("setTasksToStudents", "true")
+            data.append("setTasksToStudents", "true");
 
             fetch(location.href, {
                 method: 'POST',
@@ -1046,6 +1099,36 @@
             });
         }
 
+        // Отправляет и задает время для задач на уровне
+        function setLevelTime() {
+            let startTime = document.querySelector("#settings_page__set-level-time__start-timeInput").value,
+                endTime = document.querySelector("#settings_page__set-level-time__end-timeInput").value;
+
+            let data = new FormData();
+
+            data.append("setTimeToAllTasks", "true");
+            data.append("startTime", startTime);
+            data.append("endTime", endTime);
+
+            fetch(location.href, {
+                method: 'POST',
+                mode: 'same-origin',  // Do not send CSRF token to another domain.
+                headers: {"X-CSRFToken": csrfToken},
+                body: data
+            }).then(function (response) {
+                if (!response.ok) {
+                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.")
+                    return false
+                }
+                return response.json();
+            }).then(function (json) {
+                if (json) {
+                    showAlertElement("Время установлено", success=true);
+                    $("[data-dismiss=modal]").trigger({type: "click"});
+                }
+            });
+
+        }
 
         let changeLevelThemeSubmitButton = document.querySelector('#settings_page__level-change-theme__submit'),
             changeLevelThemeInput = document.querySelector('#settings_page__level-change-theme-input'),
@@ -1055,7 +1138,8 @@
             tasksList = document.querySelector(".task-page__last-solutions__table__body"),
             deleteTaskButtonModalWindow = document.querySelector("#settings_page__level-delete-task-submit__submit-button"),
             studentWithCurrentLevelAmount = {{ students_amount }},
-            setTasksToStudentsButton = document.querySelector("#set-tasks-to-students");
+            setTasksToStudentsButton = document.querySelector("#set-tasks-to-students"),
+            setLevelTimeSubmit = document.querySelector("#settings_page__set-level-time__submit");
 
         changeLevelThemeSubmitButton.onclick = () => {
             changeLevelTheme(changeLevelThemeInput);
@@ -1067,6 +1151,10 @@
 
         deleteTaskButtonModalWindow.onclick = () => {
             sendDeleteTaskForm();
+        }
+
+        setLevelTimeSubmit.onclick = () => {
+            setLevelTime();
         }
 
         setTasksAmountProgressbar();

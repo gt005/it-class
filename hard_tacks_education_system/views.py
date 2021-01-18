@@ -256,9 +256,14 @@ class LevelSettings(views.LoginRequiredMixin,
                 task_id=request.POST.get("taskToDeleteId"),
             )
         elif request.POST.get("setTasksToStudents"):
-
             return distribute_tasks_among_students(  # returns JsonResponse
                 level_number=self.get_object().level_number
+            )
+        elif request.POST.get("setTimeToAllTasks"):
+            return set_time_to_all_level_tasks(
+                level=level_object_from_db,
+                start_time=request.POST.get("startTime"),
+                end_time=request.POST.get("endTime")
             )
 
     def get_object(self, *args, **kwargs):

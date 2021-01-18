@@ -453,3 +453,32 @@ def distribute_tasks_among_students(level_number: int) -> JsonResponse:
         list_of_tasks.pop(0)
 
     return redirect(f"/tasks/system_settings/level-settings/{level_number}")
+
+
+def set_time_to_all_level_tasks(level: EducationLevel,
+                                start_time: str,
+                                end_time: str) -> JsonResponse:
+    """ Задает время открытия и закрытия задач для всех задач уровня """
+    start_time = datetime.datetime.strptime(start_time, "%d %B %Y г. %H:%M")
+    end_time = datetime.datetime.strptime(end_time, "%d %B %Y г. %H:%M")
+
+    if end_time <= start_time:
+        return JsonResponse(
+            {"message": "Конечное время раньше начального."},
+            status=400
+        )
+
+    level_tasks_list_from_db = EducationTask.objects.filter(
+        task_level=level
+    )
+
+    for task in level_tasks_list_from_db:
+        task.start_time = start_time
+        task.end_time = end_time
+        task.save()
+
+    return JsonResponse(
+            {"message": "Время успешно установлено."},
+            status=200
+        )
+
