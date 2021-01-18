@@ -130,7 +130,7 @@
         $(window).on('load',function(){
             $('#welcome-page').modal('show');
 
-            fetch(location.origin + '/tasks/set_student_settings/?getLanguagesList', {
+            fetch(location.origin + '/tasks/set_student_settings/?getLanguagesList=true', {
                 method: 'GET',
                 mode: 'same-origin',  // Do not send CSRF token to another domain.
             }).then(function (response) {
@@ -259,7 +259,9 @@
                 <li class="nav-item">
                     <a class="nav-link link-navbar notification {% block detail_active_tasks_to_check %}{% endblock %}" href="/tasks/estimate_tasks">
                         <span>Оценить задачи</span>
-                        <span class="badge badge-pill tasks-amount-to-check">2</span>
+                        {% if tasks_amount_to_check != 0 %}
+                            <span class="badge badge-pill tasks-amount-to-check">{{ tasks_amount_to_check }}</span>
+                        {% endif %}
                     </a>
                 </li>
                 {% if user.is_superuser %}

@@ -1,5 +1,5 @@
 import datetime
-from random import shuffle
+from random import shuffle, choice
 
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,6 +9,13 @@ from typing import Any, Optional
 
 from ..models import EducationTask, CheckedEducationTask, EducationLevel
 from mainapp.models import Puples
+
+
+def sort_list_with_none(element: int) -> int:
+    """ Функция-ключ для сортировки чисел с None """
+    if element is None:
+        return 0
+    return element
 
 
 def get_amount_of_people_with_level(level_number: int) -> int:
@@ -239,14 +246,8 @@ def create_task_and_add_to_db(
     :return: JsonResponse
     """
 
-    print(post_request_object.get("task_name"))
-
-    start_time = _get_datetime_time_object_from_string(
-        string_to_convert=post_request_object.get("start_time")
-    )
-    end_time = _get_datetime_time_object_from_string(
-        string_to_convert=post_request_object.get("end_time")
-    )
+    start_time = datetime.datetime.strptime(post_request_object.get("start_time"), "%d %B %Y г. %H:%M")
+    end_time = datetime.datetime.strptime(post_request_object.get("end_time"), "%d %B %Y г. %H:%M")
 
     if end_time <= start_time:
         print("Некорректные даты")
@@ -278,6 +279,42 @@ def create_task_and_add_to_db(
         "message": "Задача успешно создана",
         "task_id": new_task_object.id,
     }, status=200)
+
+
+def direct_levels_tasks_to_estimate(request) -> None:
+    """ Отправляет все задачи уровня, на котором ученик.
+        Отправляет, если все задачи уже нельзя сдавать.
+    """
+    level_object_from_db = get_object_from_db(
+        database=EducationLevel,
+        object_parameters={'level_number': request.user.puples.education_level}
+    )
+
+    list_of_tasks = list(EducationTask.objects.filter(
+        task_level=level_object_from_db
+    ))
+
+    is_all_tasks_closed = True  # Закончилось ли время решения всех задач
+    for task in list_of_tasks:
+        if task.for_student is not None:
+            if datetime.datetime.now() < task.end_time:
+                is_all_tasks_closed = False
+                break
+
+    if is_all_tasks_closed:
+        list_of_students = list(Puples.objects.filter(
+            education_level=level_object_from_db.level_number
+        ))
+        shuffle(list_of_students)
+
+        # Первый peer
+        for i in range(len(list_of_students)):
+            list_of_students[i].first_peer = list_of_students[
+                (i + 1) % len(list_of_students)
+            ]
+            list_of_students[i].first_peer = list_of_students[
+                (i + 3) % len(list_of_students)
+            ]
 
 
 def check_existing_active_task(delete_for_user: Puples) -> bool:
@@ -416,21 +453,3 @@ def distribute_tasks_among_students(level_number: int) -> JsonResponse:
         list_of_tasks.pop(0)
 
     return redirect(f"/tasks/system_settings/level-settings/{level_number}")
-
-
-def _get_datetime_time_object_from_string(string_to_convert: str):
-    """
-    Переводить строку формата 'month/day/year hour:minutes' в объект datetime
-    :param string_to_convert: Строка, из которой сделать объект datetime
-    :return: datetime object
-    """
-
-    result_time = datetime.datetime.strptime(
-        str(string_to_convert[:-3]),
-        "%m/%d/%Y %I:%M"
-    )
-
-    if string_to_convert.endswith('PM'):
-        result_time += datetime.timedelta(hours=12)
-
-    return result_time

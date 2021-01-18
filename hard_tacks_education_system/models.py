@@ -69,7 +69,7 @@ class CheckedEducationTask(models.Model):
     original_task = models.ForeignKey(
         EducationTask,
         verbose_name="Оригинал задачи",
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True
     )
     solved_user = models.ForeignKey(
@@ -93,11 +93,13 @@ class CheckedEducationTask(models.Model):
         verbose_name="Peer 1",
         related_name="Peer_1",
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        blank=True,
     )
     first_peer_mark = models.PositiveIntegerField(
         verbose_name="Оценка peer 1",
         null=True,
+        blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
     second_peer = models.ForeignKey(
@@ -105,25 +107,30 @@ class CheckedEducationTask(models.Model):
         verbose_name="Peer 2",
         related_name="Peer_2",
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        blank=True,
     )
     second_peer_mark = models.PositiveIntegerField(
         verbose_name="Оценка peer 2",
         null=True,
+        blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
     contest_token = models.CharField(
         verbose_name="Токен для Яндекс.Контест",
-        max_length=255
+        max_length=255,
+        blank=True,
     )
     system_mark = models.PositiveIntegerField(
         verbose_name="Оценка Яндекс.Контест",
         null=True,
+        blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
     result_summ_mark = models.PositiveIntegerField(
         verbose_name="Общий итог всех оценок",
         null=True,
+        blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(300)]
     )
 

@@ -30,9 +30,9 @@
             <div class="row">
                 <div class="col-12 col-md-7 col-lg-5">
                     <div id="class-filter-buttons">
-                        <button data-status-name="all" class="btn btn-outline-secondary btn-sm mt-2 active">Все</button>
+                        <button data-status-name="all" class="btn btn-outline-info btn-sm mt-2 active">Все</button>
                         {% for status in status_choices %}
-                                <button data-status-name="{{ status }}" class="btn btn-outline-secondary btn-sm mt-2 notifications-filter-btn">{{ status }}</button>
+                                <button data-status-name="{{ status }}" class="btn btn-outline-info btn-sm mt-2 notifications-filter-btn">{{ status }}</button>
                         {% endfor %}
                     </div>
                     <input type="text" class="form-control mb-4 mt-2" id="studentFindInput" placeholder="Поиск нескольких учеников">

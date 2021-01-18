@@ -2,8 +2,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block document_title %}Настройки уровня
-    {{ level_object.level_number }}{% endblock %}
+{% block document_title %}Настройки уровня {{ level_object.level_number }}{% endblock %}
 
 {% block head_links %}
     <!-- Font Awesome -->
@@ -25,10 +24,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"
             integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4="
             crossorigin="anonymous"></script>
+    <script src="{% static 'js/tacks_education_system/ru.js' %}"></script>
+
 {% endblock %}
 
 {% block main %}
-
     <section class="settings_page__other-settings">
         <div class="container">
             <div class="row">
@@ -76,6 +76,7 @@
                                 Присвоить задачи
                             </button>
                         </form>
+                        <button type="button" class="btn btn-outline-info mt-2" data-toggle="modal" data-target="#settings_page__set-level-time">Задать время</button>
                     </div>
 
                 </div>
@@ -478,6 +479,39 @@
     </div>
 
 
+    <div class="modal fade" id="settings_page__set-level-time"
+         tabindex="-1"
+         aria-labelledby="settings_page__set-level-timeLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="settings_page__set-level-timeLabel">
+                        Задать время открытия и закрытия задач. Уровень {{ level_object.level_number }}
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer" style="border: 0">
+                    <button type="button" class="btn btn-outline-danger"
+                            data-dismiss="modal">Отмена
+                    </button>
+                    <button type="button" class="btn btn-outline-success"
+                            id="settings_page__set-level-time__submit">
+                        Изменить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="modal fade" id="settings_page__level-delete-task-submit"
          tabindex="-1"
          aria-labelledby="settings_page__level-delete-task-submitLabel"
@@ -523,6 +557,18 @@
 
 {% block scripts_include %}
     <script>
+        // https://getdatepicker.com/5-4/Options/
+
+        $('#datetimepickerStartTime').datetimepicker({
+            format: 'D MMMM YYYY г. H:mm',
+            locale: 'ru'
+        });
+
+        $('#datetimepickerEndTime').datetimepicker({
+            format: 'D MMMM YYYY г. H:mm',
+            locale: 'ru'
+        });
+
 
         // Изменение надписи при добавлении файла в input
         document.querySelectorAll(".with-file-input").forEach(function (element) {
@@ -1022,10 +1068,6 @@
         deleteTaskButtonModalWindow.onclick = () => {
             sendDeleteTaskForm();
         }
-
-        {#setTasksToStudentsButton.onclick = () => {#}
-        {#    setTasksToStudents();#}
-        //}
 
         setTasksAmountProgressbar();
         activateGettingDescriptionFromServer();

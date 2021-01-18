@@ -8,11 +8,9 @@
 #  Сделать запрос с сервера данных по конкретному ученику
 #  Сделать общий граф успеваемости
 
-# TODO: Сделать алгоритм подбора задач для учеников
-
 # TODO: Сделать страницу с оцениваем задач
 
-# TODO: Сделать модальное окно выбора языков, если язык не установлен у ученика
+# TODO: Сделать распределение задач на оценку
 
 import datetime
 import time
@@ -63,6 +61,11 @@ class ActiveTask(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ActiveTask, self).get_context_data(**kwargs)
+        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
+            Q(first_peer=self.request.user.puples) |
+            Q(second_peer=self.request.user.puples)
+        ))
+
         context['task'] = kwargs.get('object')
 
         context['solved_tasks_list'] = CheckedEducationTask.objects.filter(
@@ -82,6 +85,11 @@ class TasksList(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
+
+        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
+            Q(first_peer=self.request.user.puples) |
+            Q(second_peer=self.request.user.puples)
+        ))
 
         context['level'] = self.request.user.puples.education_level
         context['previous_tasks'] = CheckedEducationTask.objects.filter(
@@ -148,6 +156,16 @@ class SystemSettings(views.LoginRequiredMixin,
         return JsonResponse({
             "message": message
         }, status=http_status_code)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(SystemSettings, self).get_context_data(*args, **kwargs)
+
+        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
+            Q(first_peer=self.request.user.puples) |
+            Q(second_peer=self.request.user.puples)
+        ))
+
+        return context
 
 
 class LevelSettings(views.LoginRequiredMixin,
@@ -253,6 +271,11 @@ class LevelSettings(views.LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super(LevelSettings, self).get_context_data(**kwargs)
+        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
+            Q(first_peer=self.request.user.puples) |
+            Q(second_peer=self.request.user.puples)
+        ))
+
         context["level_object"] = self.object
         context["tasks_with_this_level"] = EducationTask.objects.filter(
             task_level=self.object
@@ -275,6 +298,12 @@ class EditLevel(views.LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super(EditLevel, self).get_context_data(**kwargs)
+        context["tasks_amount_to_check"] = len(
+            CheckedEducationTask.objects.filter(
+                Q(first_peer=self.request.user.puples) |
+                Q(second_peer=self.request.user.puples)
+            ))
+
         context['task'] = kwargs.get('object')
         return context
 
@@ -284,9 +313,15 @@ class StudentsStatistic(views.LoginRequiredMixin,
                         ListView):
     template_name = "tacks_education_system/system_settings/students_statistic.html"
     model = Puples
+    login_url = "/login/"
     
     def get_context_data(self, *args, **kwargs):
         context = super(StudentsStatistic, self).get_context_data(*args, **kwargs)
+        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
+            Q(first_peer=self.request.user.puples) |
+            Q(second_peer=self.request.user.puples)
+        ))
+
         context["students_list"] = self.model.objects.filter(
             Q(status="ST10") | Q(status="ST11")
         )
@@ -300,22 +335,32 @@ class TasksEstimate(views.LoginRequiredMixin,
                     ListView):
     template_name = "tacks_education_system/estimate_tasks.html"
     model = CheckedEducationTask
+    login_url = "/login/"
+
+    def get(self, request, *args, **kwargs):
+
+        return super(TasksEstimate, self).get(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         context = super(TasksEstimate, self).get_context_data(*args, **kwargs)
+
+        context["estimated_tasks"] = self.model.objects.filter(
+            Q(first_peer=self.request.user.puples) |
+            Q(second_peer=self.request.user.puples)
+        )
+
+        context["tasks_amount_to_check"] = len(context["estimated_tasks"])
+
         context['lang_list'] = AVAILABLE_LANGUAGES_LIST
         return context
 
 
 class SetStartStudentSettings(views.LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        print(request.GET)
         if request.GET.get("getLanguagesList"):
-            print()
-        return JsonResponse({"languages": AVAILABLE_LANGUAGES_LIST}, status=200)
+            return JsonResponse({"languages": AVAILABLE_LANGUAGES_LIST}, status=200)
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
         if request.POST.get('actionSetProgrammingLanguages') == 'true':
             languages_list = []
 

@@ -13,16 +13,17 @@
             </div>
         </div>
     </section>
+
     <section class="estimate-tasks__change-languages pt-5">
         <div class="container">
             <div class="row">
-                <div class="col-12 pb-2">
+                <div class="col-12 pb-2 text-center text-md-left">
                     <h4>Изменить известные языки</h4>
                 </div>
             </div>
             <div class="row">
 
-                <div class="col">
+                <div class="col d-flex d-md-block flex-column align-items-center">
                     <div id="estimate-tasks__change-languages__loader" class="d-none align-items-center justify-content-center"
                         style="position:absolute;height:100%;width:100%;background:rgba(255, 255, 255, 0.8);border-radius:0.4em;z-index:999;">
                         <div class="spinner-border text-info"
@@ -52,6 +53,113 @@
             </div>
         </div>
     </section>
+
+     <section class="estimate-tasks__tasks-section" style="padding-top: 55px">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="text-center" style="font-size: 40px;padding-bottom: 10px;">На оценивании</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    {% for estimated_task in estimated_tasks %}
+                        {% if estimated_task.first_peer_mark is None and estimated_task.first_peer == user.puples or estimated_task.second_peer_mark is None and estimated_task.second_peer == user.puples %}
+                        <a class="task-list-page__container task-list-page__active-container" style="pointer-events: auto;cursor: pointer" href="#">
+                            <div class="task-list-page__container__theme-name">
+                                <span>Задача на тему: “{{ estimated_task.original_task.task_level.level_theme }}”</span>
+                                <br>
+                                <span>{{ estimated_task.original_task.task_name }}</span>
+                                <br>
+                                <span>Уровень: {{ estimated_task.original_task.task_level.level_number }}</span>
+                            </div>
+
+                            <table class="table table-borderless task-list-page__container__table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Твоя оценка</th>
+                                    <th scope="col">Оценка системы</th>
+                                    <th scope="col">Полученные баллы</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                        <td> - </td>
+                                        <td>
+                                            {% if estimated_task.system_mark %}
+                                                {{ estimated_task.system_mark }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            -
+                                        </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+{#                    </div>#}
+
+
+                    <div class="estimate-tasks__tasks-section__estimated-tasks">
+                    {% for estimated_task in estimated_tasks %}
+                        {% if estimated_task.first_peer_mark is not None and estimated_task.first_peer == user.puples or estimated_task.second_peer_mark is not None and estimated_task.second_peer == user.puples %}
+                            <a class="task-list-page__container task-list-page__active-container">
+                            <div class="task-list-page__container__theme-name">
+                                <span>Задача на тему: “{{ estimated_task.original_task.task_level.level_theme }}”</span>
+                                <br>
+                                <span>{{ estimated_task.original_task.task_name }}</span>
+                                <br>
+                                <span>Уровень: {{ estimated_task.original_task.task_level.level_number }}</span>
+                            </div>
+                            <table class="table table-borderless task-list-page__container__table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Твоя оценка</th>
+                                    <th scope="col">Оценка системы</th>
+                                    <th scope="col">Полученные баллы</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    {% if estimated_task.first_peer == user.puples %}
+                                        <td>
+                                            {{ estimated_task.first_peer_mark }}
+                                        </td>
+                                    {% elif estimated_task.second_peer == user.puples %}
+                                        <td>
+                                            {{ estimated_task.second_peer_mark }}
+                                        </td>
+                                    {% endif %}
+
+                                        <td>
+                                            {% if estimated_task.system_mark %}
+                                                {{ estimated_task.system_mark }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            -
+                                        </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </a>
+                        {% endif %}
+                    {% empty %}
+                         <h3 class="text-center">Нет задач на оценивание</h3>
+                    {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
 {% endblock %}
 
 {% block scripts_include %}
@@ -106,7 +214,7 @@
                     $('#estimate-tasks__change-languages__loader').addClass('d-none');
                     $('#estimate-tasks__change-languages__loader').removeClass('d-flex');
                     $('#estimate-tasks__change-languages__submit__empty-error-label').fadeOut();
-                    showAlertElement("Языки успешно сохранены", success=true);
+                    showAlertElement("Набор языков успешно сохранён", success=true);
                 }
             });
 
