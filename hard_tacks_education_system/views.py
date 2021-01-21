@@ -12,6 +12,10 @@
 
 # TODO: Сделать распределение задач на оценку
 
+# TODO: Исправить загрузку фото при создании задач
+
+# TODO: Доделать изменение фотографий при изменении задачи
+
 import datetime
 import time
 import locale
@@ -248,7 +252,7 @@ class LevelSettings(views.LoginRequiredMixin,
             )
         elif request.POST.get("createNewTask"):
             return create_task_and_add_to_db(  # returns JsonResponse
-                post_request_object=request.POST,
+                request_object=request,
                 level_object_from_db=level_object_from_db
             )
         elif request.POST.get("deleteTask"):

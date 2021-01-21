@@ -356,6 +356,7 @@
                     <p class="pt-2">Фото 1 для задачи</p>
                     <div class="custom-file with-file-input my-3">
                         <input type="file"
+                               accept="image/*"
                                class="custom-file-input"
                                id="id_photo_1">
                         <label class="custom-file-label"
@@ -367,6 +368,7 @@
                     <p class="pt-2">Фото 2 для задачи</p>
                     <div class="custom-file with-file-input my-3">
                         <input type="file"
+                               accept="image/*"
                                class="custom-file-input"
                                id="id_photo_2">
                         <label class="custom-file-label"
@@ -378,6 +380,7 @@
                     <p class="pt-2">Фото 3 для задачи</p>
                     <div class="custom-file with-file-input my-3">
                         <input type="file"
+                               accept="image/*"
                                class="custom-file-input"
                                id="id_photo_3">
                         <label class="custom-file-label"
@@ -693,6 +696,8 @@
 
             let data = new FormData();
 
+            console.log(id_photo_1.files[0]);
+
             data.append("createNewTask", 'True');
             data.append("start_time", datetimepickerStartTimeInput.value);
             data.append("end_time", datetimepickerEndTimeInput.value);
@@ -700,15 +705,17 @@
             data.append("description_task", id_description_task.value);
             data.append("input_format", id_input_format.value);
             data.append("output_format", id_output_format.value);
-            data.append("photo_1", id_photo_1.value);
-            data.append("photo_2", id_photo_2.value);
-            data.append("photo_3", id_photo_3.value);
+            data.append("photo_1", id_photo_1.files[0]);
+            data.append("photo_2", id_photo_2.files[0]);
+            data.append("photo_3", id_photo_3.files[0]);
             data.append("example_input_1", example_input_1.value);
             data.append("example_output_1", example_output_1.value);
             data.append("example_input_2", example_input_2.value);
             data.append("example_output_2", example_output_2.value);
             data.append("example_input_3", example_input_3.value);
             data.append("example_output_3", example_output_3.value);
+
+            console.log(data);
 
             fetch(location.href, {
                 method: 'POST',
@@ -808,6 +815,9 @@
                     id_description_task.value = "";
                     id_input_format.value = "";
                     id_output_format.value = "";
+                    document.querySelector("label[for='id_photo_1']").textContent = "Выбрать";
+                    document.querySelector("label[for='id_photo_2']").textContent = "Выбрать"
+                    document.querySelector("label[for='id_photo_3']").textContent = "Выбрать"
                     id_photo_1.value = "";
                     id_photo_2.value = "";
                     id_photo_3.value = "";

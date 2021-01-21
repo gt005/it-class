@@ -40,8 +40,13 @@
                     </a>
                 </div>
                 <div class="col-6 col-lg-4 ml-auto task-page__time-remainder">
-                    Осталось времени: <span
-                        id="task-page__time-remainder__time">{{ remainder_time_to_solve_a_task }}</span>
+                    Осталось времени:
+                    {% if task.for_student == user.puples %}
+                        <span id="task-page__time-remainder__time">{{ remainder_time_to_solve_a_task }}</span>
+                    {% else %}
+                        <span id="task-page__time-remainder__time">0</span>
+
+                    {% endif %}
                 </div>
             </div>
         </div>

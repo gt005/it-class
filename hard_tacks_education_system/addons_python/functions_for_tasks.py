@@ -238,14 +238,14 @@ def change_level_theme(new_theme: str,
 
 
 def create_task_and_add_to_db(
-        post_request_object: dict,
+        request_object,
         level_object_from_db: EducationTask) -> JsonResponse:
     """
     Создает задачу для определенного уровня и добавляет ее в базу данных.
     :param post_request_object: объект post запроса пользователя (dict).
     :return: JsonResponse
     """
-
+    post_request_object = request_object.POST
     start_time = datetime.datetime.strptime(post_request_object.get("start_time"), "%d %B %Y г. %H:%M")
     end_time = datetime.datetime.strptime(post_request_object.get("end_time"), "%d %B %Y г. %H:%M")
 
@@ -263,10 +263,10 @@ def create_task_and_add_to_db(
         description_task=post_request_object.get("description_task"),
         input_format=post_request_object.get("input_format"),
         output_format=post_request_object.get("output_format"),
-        photo_1=post_request_object.get("photo_1"),
-        photo_2=post_request_object.get("photo_2"),
-        photo_3=post_request_object.get("photo_3"),
-        example_input_1=post_request_object.get("photo_1"),
+        photo_1=request_object.FILES.get("photo_1"),
+        photo_2=request_object.FILES.get("photo_2"),
+        photo_3=request_object.FILES.get("photo_3"),
+        example_input_1=post_request_object.get("example_input_1"),
         example_output_1=post_request_object.get("example_output_1"),
         example_input_2=post_request_object.get("example_input_2"),
         example_output_2=post_request_object.get("example_output_2"),

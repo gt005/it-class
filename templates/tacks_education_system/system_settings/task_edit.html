@@ -23,6 +23,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"
             integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4="
             crossorigin="anonymous"></script>
+        <script src="{% static 'js/tacks_education_system/ru.js' %}"></script>
+
 {% endblock %}
 
 {% block main %}
@@ -319,6 +321,16 @@
 {% block scripts_include %}
     <script>
         showAlertElement("Страница еще дорабатывается (не работает)")
+
+        $('#datetimepickerStartTimeEdit').datetimepicker({
+            format: 'D MMMM YYYY г. H:mm',
+            locale: 'ru'
+        });
+
+        $('#datetimepickerEndTimeEdit').datetimepicker({
+            format: 'D MMMM YYYY г. H:mm',
+            locale: 'ru'
+        });
 
         // Изменение надписи при добавлении файла в input
         document.querySelectorAll(".with-file-input").forEach(function (element) {
