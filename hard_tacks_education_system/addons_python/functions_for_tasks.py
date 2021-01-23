@@ -372,9 +372,42 @@ def delete_task_from_db(task_id: int) -> JsonResponse:
     }, status=200)
 
 
-def change_task_data_in_model(request) -> JsonResponse:
+def change_task_data_in_model(
+        request_object, for_task: EducationTask) -> JsonResponse:
     """ Изменяет данные задачи из формы """
-    pass
+
+    post_request_object = request_object.POST
+
+    for_task.task_name = post_request_object.get("task_name_edit")
+    for_task.description_task = post_request_object.get("description_task_edit")
+    for_task.input_format = post_request_object.get("id_input_format_edit")
+    for_task.output_format = post_request_object.get("output_format_edit")
+
+    if request_object.FILES.get("photo_1") is not None:
+        for_task.photo_1 = request_object.FILES.get("photo_1")
+    elif post_request_object.get("is_photo_1_deleted") == "true":
+        for_task.photo_1 = None
+
+    if request_object.FILES.get("photo_2") is not None:
+        for_task.photo_2 = request_object.FILES.get("photo_2")
+    elif post_request_object.get("is_photo_2_deleted") == "true":
+        for_task.photo_2 = None
+
+    if request_object.FILES.get("photo_3") is not None:
+        for_task.photo_3 = request_object.FILES.get("photo_3")
+    elif post_request_object.get("is_photo_3_deleted") == "true":
+        for_task.photo_3 = None
+
+    for_task.example_input_1 = post_request_object.get("example_input_1_edit")
+    for_task.example_output_1 = post_request_object.get("example_output_1_edit")
+    for_task.example_input_2 = post_request_object.get("example_input_2_edit")
+    for_task.example_output_2 = post_request_object.get("example_output_2_edit")
+    for_task.example_input_3 = post_request_object.get("example_input_3_edit")
+    for_task.example_output_3 = post_request_object.get("example_output_3_edit")
+
+    for_task.save()
+
+    return redirect(request_object.build_absolute_uri())
 
 
 def distribute_tasks_among_students(level_number: int) -> JsonResponse:

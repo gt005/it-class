@@ -57,60 +57,21 @@
         <div class="row">
             <div class="col-md-8 col-12 offset-md-2">
 
-                <form method="POST" id="edit-level-page__form">
+                <form method="POST" id="edit-level-page__form" enctype="multipart/form-data" action="">
                     {% csrf_token %}
 
-                    <label for="datetimepickerStartTimeInputEdit"
-                           class=" requiredField">
-                        Время открытия задачи<span
-                            class="asteriskField">*</span>
-                    </label>
-                    <div class="input-group date"
-                         id="datetimepickerStartTimeEdit"
-                         data-target-input="nearest"
-                         style="margin-bottom: 16px;">
-                        <input type="text" name="start_time_edit"
-                               id="datetimepickerStartTimeInputEdit"
-                               class="form-control datetimepicker-input"
-                               data-target="#datetimepickerStartTimeEdit"
-                               required="required"
-                               value="{{ task.start_time }}">
-                        <div class="input-group-append"
-                             data-target="#datetimepickerStartTimeEdit"
-                             data-toggle="datetimepicker">
-                            <div class="input-group-text"><i
-                                    class="fa fa-calendar"></i></div>
-                        </div>
-                    </div>
-
-                    <label for="datetimepickerEndTimeInputEdit"
-                           class=" requiredField">
-                        Время закрытия задачи<span
-                            class="asteriskField">*</span>
-                    </label>
-                    <div class="input-group date"
-                         id="datetimepickerEndTimeEdit"
-                         data-target-input="nearest"
-                         style="margin-bottom: 16px;">
-                        <input type="text" name="end_time_edit"
-                               id="datetimepickerEndTimeInputEdit"
-                               class="form-control datetimepicker-input"
-                               data-target="#datetimepickerEndTimeEdit"
-                               required="required"
-                                value="{{ task.end_time }}">
-                        <div class="input-group-append"
-                             data-target="#datetimepickerEndTimeEdit"
-                             data-toggle="datetimepicker">
-                            <div class="input-group-text"><i
-                                    class="fa fa-calendar"></i></div>
-                        </div>
+                    <div class="edit-level-page__form__configuration-data">
+                        <input type="hidden" id="is_photo_1_deleted" name="is_photo_1_deleted" value="false">
+                        <input type="hidden" id="is_photo_2_deleted" name="is_photo_2_deleted" value="false">
+                        <input type="hidden" id="is_photo_3_deleted" name="is_photo_3_deleted" value="false">
                     </div>
 
                     <div id="div_id_task_name_edit" class="form-group"><label
                             for="id_task_name" class=" requiredField">
                         Название задания<span class="asteriskField">*</span>
                     </label>
-                        <div class=""><input type="text" name="task_name_edit"
+                        <div class="">
+                            <input type="text" name="task_name_edit"
                                              maxlength="200"
                                              class="textinput textInput form-control"
                                              required="required"
@@ -140,7 +101,8 @@
                                 class=" requiredField">
                             Формат ввода<span class="asteriskField">*</span>
                         </label>
-                        <div class=""><textarea name="id_input_format_edit"
+                        <div>
+                            <textarea name="id_input_format_edit"
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
@@ -155,7 +117,8 @@
                                 class=" requiredField">
                             Формат вывода<span class="asteriskField">*</span>
                         </label>
-                        <div class=""><textarea name="output_format_edit"
+                        <div>
+                            <textarea name="output_format_edit"
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
@@ -170,13 +133,12 @@
                         <input type="file"
                                class="custom-file-input"
                                id="id_photo_1_edit"
-                               value="not_change"
                                accept="image/*"
                                name="photo_1">
                         <label class="custom-file-label"
                                for="id_photo_1_edit">
                             {% if task.photo_1 %}
-                                {{ task.photo_1 }}
+                                {{ task.photo_1.name }}
                             {% else %}
                                 Выбрать
                             {% endif %}
@@ -218,7 +180,7 @@
                         <label class="custom-file-label"
                                for="id_photo_3_edit">
                             {% if task.photo_3 %}
-                                {{ task.photo_3 }}
+                                {{ task.photo_3.name }}
                             {% else %}
                                 Выбрать
                             {% endif %}
@@ -234,11 +196,12 @@
                                 for="example_input_1_edit">
                             Пример 1 ввод
                         </label>
-                        <div class=""><textarea name="example_input_1_edit"
+                        <div>
+                            <textarea name="example_input_1_edit"
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                id="example_input_1_edit"></textarea>
+                                                id="example_input_1_edit">{{ task.example_input_1 }}</textarea>
                         </div>
                     </div>
 
@@ -247,11 +210,12 @@
                                 for="example_output_1_edit">
                             Пример 1 вывод
                         </label>
-                        <div class=""><textarea name="example_output_1_edit"
+                        <div>
+                            <textarea name="example_output_1_edit"
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                id="example_output_1_edit"></textarea>
+                                                id="example_output_1_edit">{{ task.example_output_1 }}</textarea>
                         </div>
                     </div>
 
@@ -260,11 +224,12 @@
                                 for="example_input_2_edit">
                             Пример 2 ввод
                         </label>
-                        <div class=""><textarea name="example_input_2_edit"
+                        <div>
+                            <textarea name="example_input_2_edit"
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                id="example_input_2_edit"></textarea>
+                                                id="example_input_2_edit">{{ task.example_input_2 }}</textarea>
                         </div>
                     </div>
 
@@ -273,11 +238,12 @@
                                 for="example_output_2_edit">
                             Пример 2 вывод
                         </label>
-                        <div class=""><textarea name="example_output_2_edit"
+                        <div>
+                            <textarea name="example_output_2_edit"
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                id="example_output_2_edit"></textarea>
+                                                id="example_output_2_edit">{{ task.example_output_2 }}</textarea>
                         </div>
                     </div>
 
@@ -286,11 +252,12 @@
                                 for="example_input_3_edit">
                             Пример 3 ввод
                         </label>
-                        <div class=""><textarea name="example_input_3_edit"
+                        <div>
+                            <textarea name="example_input_3_edit"
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                id="example_input_3_edit"></textarea>
+                                                id="example_input_3_edit">{{ task.example_input_3 }}</textarea>
                         </div>
                     </div>
 
@@ -299,11 +266,12 @@
                                 for="example_output_3_edit">
                             Пример 3 вывод
                         </label>
-                        <div class=""><textarea name="example_output_3_edit"
+                        <div>
+                            <textarea name="example_output_3_edit"
                                                 cols="40"
                                                 rows="10"
                                                 class="textarea form-control"
-                                                id="example_output_3_edit"></textarea>
+                                                id="example_output_3_edit">{{ task.example_output_3 }}</textarea>
                         </div>
                     </div>
 
@@ -320,8 +288,6 @@
 
 {% block scripts_include %}
     <script>
-        showAlertElement("Страница еще дорабатывается (не работает)")
-
         $('#datetimepickerStartTimeEdit').datetimepicker({
             format: 'D MMMM YYYY г. H:mm',
             locale: 'ru'
@@ -334,9 +300,13 @@
 
         // Изменение надписи при добавлении файла в input
         document.querySelectorAll(".with-file-input").forEach(function (element) {
+            let numberOfInput = 1;
             element.querySelector("input[type='file']").onchange = function () {
                 let file = this.files,
-                    deleteButton = element.querySelector(".delete-photo-button");
+                    deleteButton = element.querySelector(".delete-photo-button"),
+                    setDeleteTaskFlagInput = document.querySelector(`#is_photo_${numberOfInput}_deleted`);
+
+                setDeleteTaskFlagInput.value = "true";
 
                 if (file.length == 0) {
                     element.querySelector(".custom-file-label").textContent = "Выбрать";
@@ -346,18 +316,24 @@
                     $(deleteButton).fadeIn();
                 }
             };
+
+            numberOfInput++;
+
         })
 
         function deletePhotoInInput(inputNumber) {
             let imageInput = document.querySelector(`#id_photo_${inputNumber}_edit`),
                 inputLabel = document.querySelector(`label[for='id_photo_${inputNumber}_edit']`),
-                deleteButton = document.querySelector(`button[data-image-number="${inputNumber}"]`);
+                deleteButton = document.querySelector(`button[data-image-number="${inputNumber}"]`),
+                setDeleteTaskFlagInput = document.querySelector(`#is_photo_${inputNumber}_deleted`);
 
+            setDeleteTaskFlagInput.value = "true";
             imageInput.value = "";
             inputLabel.textContent = "Выбрать";
             $(deleteButton).fadeOut();
 
         }
+
     </script>
 {% endblock %}
 

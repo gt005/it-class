@@ -882,13 +882,13 @@
             // Добавляет существующие элементы (фотографии), если они есть
             let insertPhotosInnerHTML = "";
             if (json.photo_1) {
-                insertPhotosInnerHTML += `<img src="${json.photo_1}" alt="${json.task_name}" style="max-width: 100%">`;
+                insertPhotosInnerHTML += `<img src="${json.photo_1}" alt="${json.task_name}" style="max-width: 33%">`;
             }
             if (json.photo_2) {
-                insertPhotosInnerHTML += `<img src="${json.photo_2}" alt="${json.task_name}" style="max-width: 100%">`;
+                insertPhotosInnerHTML += `<img src="${json.photo_2}" alt="${json.task_name}" style="max-width: 33%">`;
             }
             if (json.photo_3) {
-                insertPhotosInnerHTML += `<img src="${json.photo_3}" alt="${json.task_name}" style="max-width: 100%">`;
+                insertPhotosInnerHTML += `<img src="${json.photo_3}" alt="${json.task_name}" style="max-width: 33%">`;
             }
 
             // Добавляет существующие элементы (примеры ввода и вывода), если они есть
@@ -907,25 +907,25 @@
             }
             if (json.example_input_2) {
                 insertInputOutputFormats += `<div class="col-12 py-3">
-                                                        <p class="h5 pl-4">1 Пример ввода</p>
+                                                        <p class="h5 pl-4">2 Пример ввода</p>
                                                         <pre class="settings_page__level-settings__task-example_input_1 pl-4">${json.example_input_2}</pre>
                                                     </div>`
             }
             if (json.example_output_2) {
                 insertInputOutputFormats += `<div class="col-12 py-3">
-                                                        <p class="h5 pl-4">1 Пример вывода</p>
+                                                        <p class="h5 pl-4">2 Пример вывода</p>
                                                         <pre class="settings_page__level-settings__task-example_output_1 pl-4">${json.example_output_2}</pre>
                                                     </div>`
             }
             if (json.example_input_3) {
                 insertInputOutputFormats += `<div class="col-12 py-3">
-                                                        <p class="h5 pl-4">1 Пример ввода</p>
+                                                        <p class="h5 pl-4">3 Пример ввода</p>
                                                         <pre class="settings_page__level-settings__task-example_input_1 pl-4">${json.example_input_3}</pre>
                                                     </div>`
             }
             if (json.example_output_3) {
                 insertInputOutputFormats += `<div class="col-12 py-3">
-                                                        <p class="h5 pl-4">1 Пример вывода</p>
+                                                        <p class="h5 pl-4">3 Пример вывода</p>
                                                         <pre class="settings_page__level-settings__task-example_output_1 pl-4">${json.example_output_3}</pre>
                                                     </div>`
             }

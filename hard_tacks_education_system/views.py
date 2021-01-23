@@ -303,7 +303,24 @@ class EditLevel(views.LoginRequiredMixin,
     pk_url_kwarg = "edit_task_id"
 
     def post(self, request, *args, **kwargs):
-        change_task_data_in_model(request=request)
+        try:
+            task_to_get_description = int(kwargs["edit_task_id"])
+            task_object_from_db = EducationTask.objects.get(
+                id=task_to_get_description
+            )
+        except TypeError:
+            return JsonResponse({
+                "message": "Некорректный id задачи"
+            }, status=415)
+        except ObjectDoesNotExist:
+            return JsonResponse({
+                "message": "Задача не найдена"
+            }, status=404)
+
+        return change_task_data_in_model(
+            request_object=request,
+            for_task=task_object_from_db
+        )
 
     def get_context_data(self, **kwargs):
         context = super(EditLevel, self).get_context_data(**kwargs)
