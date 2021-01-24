@@ -69,9 +69,11 @@
                             <div class="task-list-page__container__theme-name">
                                 <span>Задача на тему: “{{ estimated_task.original_task.task_level.level_theme }}”</span>
                                 <br>
-                                <span>{{ estimated_task.original_task.task_name }}</span>
+                                <span>"{{ estimated_task.original_task.task_name }}"</span>
                                 <br>
                                 <span>Уровень: {{ estimated_task.original_task.task_level.level_number }}</span>
+                                <br>
+                                <span>Решивший ученик: {{ estimated_task.solved_user.surname }} {{ estimated_task.solved_user.name }}</span>
                             </div>
 
                             <table class="table table-borderless task-list-page__container__table">
