@@ -46,6 +46,14 @@ def get_level_fullness_percents(level_number: int) -> int:
     return 0
 
 
+def get_max_student_level() -> int:
+    """ Возвращает самый высокий уровень среди учеников """
+    return max(
+        Puples.objects.all(),
+        key=lambda student: student.education_level
+    ).education_level
+
+
 def crete_level(level_number: int, level_theme: str) -> (str, int):
     """
     Создает уровень с темой.
@@ -246,6 +254,7 @@ def create_task_and_add_to_db(
     :return: JsonResponse
     """
     post_request_object = request_object.POST
+
     start_time = datetime.datetime.strptime(post_request_object.get("start_time"), "%d %B %Y г. %H:%M")
     end_time = datetime.datetime.strptime(post_request_object.get("end_time"), "%d %B %Y г. %H:%M")
 
@@ -281,8 +290,26 @@ def create_task_and_add_to_db(
     }, status=200)
 
 
+def is_all_tasks_ends_on_level(level_number: int) -> bool:
+    """ Возвращает, закрылись ли все задачи уровня """
+    level_object_from_db = get_object_from_db(
+        database=EducationLevel,
+        object_parameters={'level_number': level_number}
+    )
+
+    list_of_tasks = list(EducationTask.objects.filter(
+        task_level=level_object_from_db
+    ))
+
+    for task in list_of_tasks:
+        if task.for_student is not None:
+            if datetime.datetime.now() < task.end_time:
+                return False
+    return True
+
+
 def direct_levels_tasks_to_estimate(request) -> None:
-    """ Отправляет все задачи уровня, на котором ученик.
+    """ Отправляет все задачи на проверку уровня, на котором ученик.
         Отправляет, если все задачи уже нельзя сдавать.
     """
     level_object_from_db = get_object_from_db(
@@ -294,12 +321,8 @@ def direct_levels_tasks_to_estimate(request) -> None:
         task_level=level_object_from_db
     ))
 
-    is_all_tasks_closed = True  # Закончилось ли время решения всех задач
-    for task in list_of_tasks:
-        if task.for_student is not None:
-            if datetime.datetime.now() < task.end_time:
-                is_all_tasks_closed = False
-                break
+    # Закончилось ли время решения всех задач
+    is_all_tasks_closed = is_all_tasks_ends_on_level(request.user.puples.education_level)
 
     if is_all_tasks_closed:
         list_of_students = list(Puples.objects.filter(
@@ -407,7 +430,7 @@ def change_task_data_in_model(
 
     for_task.save()
 
-    return redirect(request_object.build_absolute_uri())
+    return redirect(f"/tasks/system_settings/level-settings/{for_task.task_level.level_number}")
 
 
 def distribute_tasks_among_students(level_number: int) -> JsonResponse:
@@ -514,4 +537,65 @@ def set_time_to_all_level_tasks(level: EducationLevel,
             {"message": "Время успешно установлено."},
             status=200
         )
+
+
+def distribute_tasks_for_estimate() -> None:
+    """ Распределяет задачи на оценку между учениками """
+    max_student_level = get_max_student_level()
+    solved_tasks_list = []
+    all_users_lst = Puples.objects.all()
+    students_list = list(filter(
+        lambda people: not people.user.is_superuser,
+        all_users_lst
+    ))
+    teachers_list = list(filter(
+        lambda people: people.user.is_superuser,
+        all_users_lst
+    ))
+
+    for level_number in range(1, max_student_level + 1):
+        level_object_from_db = get_object_from_db(
+            database=EducationLevel,
+            object_parameters={
+                'level_number': level_number}
+        )
+
+        if not is_all_tasks_ends_on_level(level_number):
+            continue
+
+        solved_tasks_list += list(filter(
+            lambda task: task.original_task.task_level == level_object_from_db,
+            CheckedEducationTask.objects.filter(
+                first_peer=None,
+                second_peer=None
+            )
+        ))
+    for solved_task in solved_tasks_list:
+        # Поиск первого пира
+        shuffle(students_list)
+        for first_peer in students_list:
+            if first_peer != solved_task.solved_user and \
+                    solved_task.task_programming_language in first_peer.task_education_addition_data['known_languages']:
+                solved_task.first_peer = first_peer
+                break
+        # Поиск второго пира
+        for second_peer in students_list:
+            if second_peer != solved_task.solved_user and \
+                    solved_task.task_programming_language in second_peer.task_education_addition_data['known_languages'] and \
+                    second_peer != first_peer:
+                solved_task.second_peer = second_peer
+                break
+
+        if solved_task.first_peer is None:
+            solved_task.first_peer = choice(teachers_list)
+
+        if solved_task.second_peer is None:
+            solved_task.second_peer = choice(teachers_list)
+
+        solved_task.save()
+
+
+
+
+
 

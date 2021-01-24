@@ -150,7 +150,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # (добавить язык в редактор и в выбор файла)
 AVAILABLE_LANGUAGES_LIST = (
     "Python 3.7.3",
-    "Python 2",
     "GNU c++17 7.3",
     "GNU C11 7.3",
 )

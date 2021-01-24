@@ -16,6 +16,8 @@
 
 # TODO: Доделать изменение фотографий при изменении задачи
 
+# Пароли от system_tester_(number) - UYbiwe982
+
 import datetime
 import time
 import locale
@@ -44,7 +46,7 @@ class ActiveTask(LoginRequiredMixin, DetailView):
     model = EducationTask
     login_url = "/login/"
     pk_url_kwarg = "pk"
-    
+
     def get(self, request, *args, **kwargs):
         if self.get_object().for_student != request.user.puples and \
                 get_object_from_db(CheckedEducationTask, {
@@ -78,8 +80,8 @@ class ActiveTask(LoginRequiredMixin, DetailView):
         ).order_by('-id')
 
         context['remainder_time_to_solve_a_task'] = int(
-            (context['solved_tasks_list'][0].original_task.end_time - datetime.datetime.now()).total_seconds()
-        ) - 1  # Секунда дана как время на загрузку страницы
+            (context['task'].end_time - datetime.datetime.now()).total_seconds()) - 1
+        # Секунда дана как время на загрузку страницы
         return context
 
 
@@ -98,7 +100,7 @@ class TasksList(LoginRequiredMixin, TemplateView):
         context['level'] = self.request.user.puples.education_level
         context['previous_tasks'] = CheckedEducationTask.objects.filter(
             solved_user=self.request.user.puples
-        )
+        ).order_by("-solution_time")
 
         if not check_existing_active_task(self.request.user.puples):
             return context
@@ -340,7 +342,7 @@ class StudentsStatistic(views.LoginRequiredMixin,
     template_name = "tacks_education_system/system_settings/students_statistic.html"
     model = Puples
     login_url = "/login/"
-    
+
     def get_context_data(self, *args, **kwargs):
         context = super(StudentsStatistic, self).get_context_data(*args, **kwargs)
         context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
@@ -364,7 +366,7 @@ class TasksEstimate(views.LoginRequiredMixin,
     login_url = "/login/"
 
     def get(self, request, *args, **kwargs):
-
+        distribute_tasks_for_estimate()
         return super(TasksEstimate, self).get(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
@@ -405,7 +407,7 @@ class SetStartStudentSettings(views.LoginRequiredMixin, View):
                     status=400
                 )
 
-            request.user.puples.task_education_addition_data['languages'] = languages_list
+            request.user.puples.task_education_addition_data['known_languages'] = languages_list
             request.user.puples.save()
 
             return JsonResponse({"message": 'languages added'}, status=200)

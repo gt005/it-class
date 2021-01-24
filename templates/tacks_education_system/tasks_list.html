@@ -34,7 +34,7 @@
     <section>
         <div class="container-lg">
             <div class="row">
-                <div class="col-4">
+                <div class="col-12">
                     <h4 class="tasks-list-page__active-task-header">
                         Активная задача
                     </h4>
@@ -95,7 +95,7 @@
     <section>
         <div class="container-lg">
             <div class="row">
-                <div class="col-lg-4 col-12">
+                <div class="col-12">
                     <h4 class="tasks-list-page__active-task-header">
                         Прошлые решения
                     </h4>
@@ -107,6 +107,8 @@
                             <a class="task-list-page__container"
                                href="{{ previous_task.original_task.get_absolute_url }}">
                                 <div class="task-list-page__container__theme-name">
+                                    <span>{{ previous_task.solution_time }}</span>
+                                    <br>
                                     <span>Задача на тему: “{{ previous_task.original_task.task_level.level_theme }}”</span>
                                     <br>
                                     <span>{{ previous_task.original_task.task_name }}</span>

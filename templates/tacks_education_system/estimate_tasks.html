@@ -34,7 +34,7 @@
 
                     <div id="estimate-tasks__change-languages__buttons">
                         {% for lang in lang_list %}
-                            {% if lang in user.puples.task_education_addition_data.languages %}
+                            {% if lang in user.puples.task_education_addition_data.known_languages %}
                                 <button type="button" class="btn btn-outline-info my-1 active">{{lang}}</button>
                             {% else %}
                                 <button type="button" class="btn btn-outline-info my-1">{{lang}}</button>

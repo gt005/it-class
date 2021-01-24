@@ -1,4 +1,3 @@
-@charset "UTF-8";
 * {
   margin: 0;
   padding: 0;
@@ -132,7 +131,7 @@ ol, ul, dl {
   transform: translate(-5px, -10px);
   background-color: #FF4700;
   color: #fff;
-  padding: 3px 6чpx;
+  padding: 3px 6px;
 }
 
 .task-page__back-button-row {

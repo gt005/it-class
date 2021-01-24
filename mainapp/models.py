@@ -34,7 +34,7 @@ class Puples(models.Model):
     phone = models.CharField(max_length=12, verbose_name="Телефон", default="")
     education_level = models.PositiveIntegerField(
         verbose_name="Уровень в системе решения задач", default=1,
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(1), MaxValueValidator(998)],
     )
     task_education_addition_data = JSONField(
         "Дополнительные данные для работы системы задач",
