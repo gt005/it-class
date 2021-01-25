@@ -559,6 +559,22 @@ ol, ul, dl {
   padding-top: 55px;
 }
 
+.estimate-tasks__tasks-section__task.task-list-page__container:hover {
+  background: #fff !important;
+}
+
+#estimate-modal-form {
+  padding: 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 18px;
+}
+#estimate-modal-form .estimate-modal-form__input-number__header {
+  font-size: 20px;
+}
+
 @media screen and (max-width: 992px) {
   .task-list-page__container .task-list-page__container__theme-name {
     width: 220px;
