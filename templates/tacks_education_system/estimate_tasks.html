@@ -65,7 +65,13 @@
                 <div class="col-12">
                     {% for estimated_task in estimated_tasks %}
                         {% if estimated_task.first_peer_mark is None and estimated_task.first_peer == user.puples or estimated_task.second_peer_mark is None and estimated_task.second_peer == user.puples %}
-                        <div class="task-list-page__container task-list-page__active-container estimate-tasks__tasks-section__task" style="pointer-events: auto;">
+                        <button data-toggle="modal"
+                                data-task-name="{{ estimated_task.original_task.task_name }}"
+                                data-task-id="{{ estimated_task.id }}"
+                                data-student-name="{{ estimated_task.solved_user.surname }} {{ estimated_task.solved_user.name }}"
+                                data-target="#setEstimateScoreModal"
+                                class="task-list-page__container task-list-page__active-container estimate-tasks__tasks-section__task"
+                                style="pointer-events: auto; cursor: pointer">
                             <div class="task-list-page__container__theme-name">
                                 <span>Задача на тему: “{{ estimated_task.original_task.task_level.level_theme }}”</span>
                                 <br>
@@ -76,16 +82,7 @@
                                 <span>Решивший ученик: {{ estimated_task.solved_user.surname }} {{ estimated_task.solved_user.name }}</span>
                             </div>
 
-                            <span class="estimate-tasks__tasks-section__estimate-btn-container">
-                                <button class="estimate-tasks__tasks-section__estimate-btn btn btn-outline-success"
-                                        data-toggle="modal"
-                                        data-task-name="{{ estimated_task.original_task.task_name }}"
-                                        data-student-name="{{ estimated_task.solved_user.surname }} {{ estimated_task.solved_user.name }}"
-                                        data-target="#setEstimateScoreModal"
-                                >Оценить</button>
-                            </span>
-
-                        </div>
+                        </button>
                         {% endif %}
                     {% endfor %}
 
@@ -100,6 +97,8 @@
                                 <span>"{{ estimated_task.original_task.task_name }}"</span>
                                 <br>
                                 <span>Уровень: {{ estimated_task.original_task.task_level.level_number }}</span>
+                                <br>
+                                <span>Решивший ученик: {{ estimated_task.solved_user.surname }} {{ estimated_task.solved_user.name }}</span>
                             </div>
                             <table class="table table-borderless task-list-page__container__table">
                                 <thead>
@@ -179,7 +178,7 @@
     <div class="modal fade" id="setEstimateScoreModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header" style="border: none">
             <h5 class="modal-title" id="exampleModalLabel">Отправить оценку</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
@@ -188,6 +187,8 @@
           <div class="modal-body" style="min-height: 150px">
               <form method="post" id="estimate-modal-form" class="position-relative">
                   {% csrf_token %}
+                  <input type="hidden" name="task_id" value="">
+
                   <div class="estimate-modal-form__input-form">
                       <label for="estimate-modal-form__input-number" class="estimate-modal-form__input-label">
                       <span class="estimate-modal-form__input-number__header">
@@ -198,13 +199,13 @@
                       <br>
                       <span id="estimate-modal-form__input-label__student-name"></span>
                       </label>
-                    <input type="number" id="estimate-modal-form__input-number" class="form-control" min="0" max="100" value="0">
+                    <input type="number" name="task_score" id="estimate-modal-form__input-number" class="form-control" min="0" max="100" value="0">
                   </div>
 
                   <div class="estimate-modal-form__submit-page position-absolute">
-                      <h3>Оценку больше нельзя будет исправить</h3>
+                      <h3 class="pb-3">Оценку больше нельзя будет изменить</h3>
                       <div class="estimate-modal-form__submit-page__label"></div>
-                      <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Отмена</button>
+                      <button type="button" class="btn btn-outline-danger estimate-modal-form__submit-page__dismiss-submit-button">Отмена</button>
                       <input type="submit" class="estimate-modal-form__submit-page__submit-button btn btn-outline-success" value="Отправить">
                   </div>
               </form>
@@ -226,7 +227,8 @@
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         let estimateInput = document.querySelector("#estimate-modal-form__input-number"),
             estimateForm = document.querySelector("#estimate-modal-form"),
-            estimateFormNextPageButton = document.querySelector(".estimate-modal__submit-page-button");
+            estimateFormNextPageButton = document.querySelector(".estimate-modal__submit-page-button"),
+            estimateFormTaskIdInput = document.querySelector("#estimate-modal-form input[name=\"task_id\"]");
 
 
         $('#estimate-tasks__change-languages__buttons button').on('click', function () {
@@ -282,13 +284,20 @@
 
         })
 
-        $(".estimate-tasks__tasks-section__estimate-btn").on('click', function () {
+        $(".estimate-tasks__tasks-section__task").on('click', function () {
             document.querySelector("#estimate-modal-form__input-label__task-name").textContent = 'Задача: "' + this.dataset.taskName + '"';
             document.querySelector("#estimate-modal-form__input-label__student-name").textContent = "Ученик: " + this.dataset.studentName;
+            estimateFormTaskIdInput.value = this.dataset.taskId;
             estimateInput.value = 0;
             $("#estimate-modal__footer-buttons").fadeIn();
             $(".estimate-modal-form__input-form").fadeIn();
             $(".estimate-modal-form__submit-page").fadeOut("fast");
+        })
+{}
+        $(".estimate-modal-form__submit-page__dismiss-submit-button").on("click", function () {
+            $("#estimate-modal__footer-buttons").fadeIn();
+            $(".estimate-modal-form__input-form").fadeIn();
+            $(".estimate-modal-form__submit-page").fadeOut("fast")
         })
 
         estimateForm.addEventListener('keydown', function(event) {
@@ -307,7 +316,7 @@
 
         estimateFormNextPageButton.onclick = function () {
             $(".estimate-modal-form__input-form").fadeOut("fast");
-            $("#estimate-modal__footer-buttons").fadeOut();
+            $("#estimate-modal__footer-buttons").fadeOut("fast");
             $(".estimate-modal-form__submit-page").fadeIn();
         }
 

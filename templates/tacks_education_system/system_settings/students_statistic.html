@@ -4,6 +4,7 @@
 {% block document_title %}Статистика учеников{% endblock %}
 
 {% block main %}
+    {% csrf_token %}
     <section class="back-button-section">
         <div class="container">
             <div class="row">
@@ -45,9 +46,10 @@
 
                         {% for student in students_list %}
                             <div class="card task-page__last-solutions__card settings_page__level-row student-list-row"
+                                data-student-level="{{ student.education_level }}"
+                                data-student-id="{{ student.id }}"
                                 data-class-number="{{ student.get_status_display }}"
-                                data-name-and-surname="{{ student.surname }} {{ student.name }}"
-                            >
+                                data-name-and-surname="{{ student.surname }} {{ student.name }}">
                                 <div class="card-header"
                                      id="level_{{ student.id }}">
                                     <h2 class="mb-0">
@@ -95,12 +97,22 @@
                                         <div class="task-description-loader d-flex align-items-center justify-content-center"
                                              style="height: 100px;">
 
-                                            <div class="spinner-border text-info"
-                                                 role="status">
-                                                <span class="sr-only">Loading...</span>
+{#                                            <div class="spinner-border text-info"#}
+{#                                                 role="status">#}
+{#                                                <span class="sr-only">Loading...</span>#}
+{#                                            </div>#}
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col-12 text-center">
+                                                        <h4>Уровень</h4>
+                                                        <div class="student-data__level">
+                                                            <img src="{% static 'images/task-list-page-done-level.svg' %}" alt="done">
+                                                            <span class="student-data__level__level-number"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            Загрузка еще не реализована
                                         </div>
 
                                     </div>
@@ -120,6 +132,8 @@
 {% block scripts_include %}
     <script>
 
+        const csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
+
         function deactivateClassFilterButtons () {
             document.querySelectorAll("#class-filter-buttons button").forEach(function (button) {
                         button.classList.remove("active")
@@ -129,7 +143,6 @@
         // Активирует кнопки фильтра (фильтрует по классу)
         function activateClassFilterButtons() {
             document.querySelectorAll("#class-filter-buttons button").forEach(function (button) {
-                console.log(button);
                 button.onclick = function () {
                     deactivateClassFilterButtons();
 
@@ -166,7 +179,6 @@
             } else {
                 document.querySelectorAll(".student-list-row").forEach(function (row) {
                 row.style.display = "none";
-                    console.log(input.value.split(' '));
                     for (let word of input.value.split(' ')) {
                     if (word !== '') {
                         if (row.dataset.nameAndSurname.toLowerCase().indexOf(word.toLowerCase()) != -1) {
@@ -183,5 +195,39 @@
 
         activateClassFilterButtons();
 
+
+        $(".student-list-row").on("show.bs.collapse", function () {
+
+            const studentLevel = this.dataset.studentLevel,
+                  studentId = this.dataset.studentId;
+
+            let levelLabel = this.querySelector(".student-data__level__level-number");
+
+            let data = new FormData();
+
+            data.append("get_data_from_user_id", studentId);
+
+            fetch(location.href, {
+                method: 'POST',
+                mode: 'same-origin',  // Do not send CSRF token to another domain.
+                headers: {"X-CSRFToken": csrfToken},
+                body: data
+            }).then(function (response) {
+                if (!response.ok) {
+                    showAlertElement("Произошла ошибка, попробуйте перезагрузить страницу и попробовать снова.");
+
+                    return false
+                }
+                return response.json();
+            }).then(function (json) {
+                if (json) {
+                    levelLabel.textContent = studentLevel;
+                    console.log(json.tasksList);;
+                }
+            });
+        })
+
     </script>
 {% endblock %}
+
+{% block tasks_settings %}active{% endblock %}

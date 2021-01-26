@@ -67,10 +67,13 @@ class ActiveTask(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ActiveTask, self).get_context_data(**kwargs)
-        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
-            Q(first_peer=self.request.user.puples) |
-            Q(second_peer=self.request.user.puples)
-        ))
+        context["tasks_amount_to_check"] = len(list(filter(
+            lambda task: task.result_summ_mark is None,
+            CheckedEducationTask.objects.filter(
+                Q(first_peer=self.request.user.puples) |
+                Q(second_peer=self.request.user.puples)
+            )
+        )))
 
         context['task'] = kwargs.get('object')
 
@@ -92,10 +95,13 @@ class TasksList(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TasksList, self).get_context_data(**kwargs)
 
-        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
-            Q(first_peer=self.request.user.puples) |
-            Q(second_peer=self.request.user.puples)
-        ))
+        context["tasks_amount_to_check"] = len(list(filter(
+            lambda task: task.result_summ_mark is None,
+            CheckedEducationTask.objects.filter(
+                Q(first_peer=self.request.user.puples) |
+                Q(second_peer=self.request.user.puples)
+            )
+        )))
 
         context['level'] = self.request.user.puples.education_level
         context['previous_tasks'] = CheckedEducationTask.objects.filter(
@@ -166,10 +172,13 @@ class SystemSettings(views.LoginRequiredMixin,
     def get_context_data(self, *args, **kwargs):
         context = super(SystemSettings, self).get_context_data(*args, **kwargs)
 
-        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
-            Q(first_peer=self.request.user.puples) |
-            Q(second_peer=self.request.user.puples)
-        ))
+        context["tasks_amount_to_check"] = len(list(filter(
+            lambda task: task.result_summ_mark is None,
+            CheckedEducationTask.objects.filter(
+                Q(first_peer=self.request.user.puples) |
+                Q(second_peer=self.request.user.puples)
+            )
+        )))
 
         return context
 
@@ -282,10 +291,13 @@ class LevelSettings(views.LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super(LevelSettings, self).get_context_data(**kwargs)
-        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
-            Q(first_peer=self.request.user.puples) |
-            Q(second_peer=self.request.user.puples)
-        ))
+        context["tasks_amount_to_check"] = len(list(filter(
+            lambda task: task.result_summ_mark is None,
+            CheckedEducationTask.objects.filter(
+                Q(first_peer=self.request.user.puples) |
+                Q(second_peer=self.request.user.puples)
+            )
+        )))
 
         context["level_object"] = self.object
         context["tasks_with_this_level"] = EducationTask.objects.filter(
@@ -326,11 +338,14 @@ class EditLevel(views.LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super(EditLevel, self).get_context_data(**kwargs)
-        context["tasks_amount_to_check"] = len(
+
+        context["tasks_amount_to_check"] = len(list(filter(
+            lambda task: task.result_summ_mark is None,
             CheckedEducationTask.objects.filter(
                 Q(first_peer=self.request.user.puples) |
                 Q(second_peer=self.request.user.puples)
-            ))
+            )
+        )))
 
         context['task'] = kwargs.get('object')
         return context
@@ -343,12 +358,21 @@ class StudentsStatistic(views.LoginRequiredMixin,
     model = Puples
     login_url = "/login/"
 
+    def post(self, request, *args, **kwargs):
+        if request.POST.get("get_data_from_user_id"):
+            return get_student_statistic(
+                request_object=request
+            )  # returns JsonResponse
+
     def get_context_data(self, *args, **kwargs):
         context = super(StudentsStatistic, self).get_context_data(*args, **kwargs)
-        context["tasks_amount_to_check"] = len(CheckedEducationTask.objects.filter(
-            Q(first_peer=self.request.user.puples) |
-            Q(second_peer=self.request.user.puples)
-        ))
+        context["tasks_amount_to_check"] = len(list(filter(
+            lambda task: task.result_summ_mark is None,
+            CheckedEducationTask.objects.filter(
+                Q(first_peer=self.request.user.puples) |
+                Q(second_peer=self.request.user.puples)
+            )
+        )))
 
         context["students_list"] = self.model.objects.filter(
             Q(status="ST10") | Q(status="ST11")
@@ -369,6 +393,12 @@ class TasksEstimate(views.LoginRequiredMixin,
         distribute_tasks_for_estimate()
         return super(TasksEstimate, self).get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+
+        set_estimate_rate(request_object=request)
+
+        return redirect("/tasks/estimate_tasks/")
+
     def get_context_data(self, *args, **kwargs):
         context = super(TasksEstimate, self).get_context_data(*args, **kwargs)
 
@@ -377,7 +407,13 @@ class TasksEstimate(views.LoginRequiredMixin,
             Q(second_peer=self.request.user.puples)
         )
 
-        context["tasks_amount_to_check"] = len(context["estimated_tasks"])
+        context["tasks_amount_to_check"] = len(list(filter(
+            lambda task: task.result_summ_mark is None,
+            CheckedEducationTask.objects.filter(
+                Q(first_peer=self.request.user.puples) |
+                Q(second_peer=self.request.user.puples)
+            )
+        )))
 
         context['lang_list'] = AVAILABLE_LANGUAGES_LIST
         return context

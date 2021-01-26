@@ -504,8 +504,10 @@ ol, ul, dl
   padding-top: 55px
 
 .estimate-tasks__tasks-section__task.task-list-page__container
-  &:hover
-    background: #fff !important
+  pointer-events: auto
+  border: none
+  cursor: pointer
+  outline: none
 
 #estimate-modal-form
   padding: 30px
@@ -516,6 +518,17 @@ ol, ul, dl
   font-size: 18px
   & .estimate-modal-form__input-number__header
     font-size: 20px
+
+.student-data__level
+  display: flex
+  position: relative
+  justify-content: center
+  align-items: center
+  .student-data__level__level-number
+    position: absolute
+    font-size: 23px
+    color: #fff
+
 
 @media screen and (max-width: 992px)
   .task-list-page__container

@@ -38,8 +38,10 @@ def get_level_fullness_percents(level_number: int) -> int:
     except (TypeError, ValueError, ObjectDoesNotExist):
         return 0
 
-    if tasks_amount != 0:
-        percents = round(tasks_amount / get_amount_of_people_with_level(level_number) * 100)
+    people_amount_with_current_level = get_amount_of_people_with_level(level_number)
+
+    if people_amount_with_current_level != 0:
+        percents = round(tasks_amount / people_amount_with_current_level * 100)
         if percents > 100:
             return 100
         return percents
@@ -595,7 +597,49 @@ def distribute_tasks_for_estimate() -> None:
         solved_task.save()
 
 
+def set_estimate_rate(request_object) -> None:
+    """ Задает оценку задачи от пира """
+    task_to_set_estimate: CheckedEducationTask = CheckedEducationTask.objects.filter(
+        id=int(request_object.POST.get("task_id"))
+    )
+
+    if task_to_set_estimate:
+        task_to_set_estimate = task_to_set_estimate[0]
+
+    print()
+    print(task_to_set_estimate.first_peer_mark, task_to_set_estimate.second_peer_mark)
+    print()
+
+    if task_to_set_estimate.first_peer == request_object.user.puples:
+        task_to_set_estimate.first_peer_mark = request_object.POST.get("task_score")
+    if task_to_set_estimate.second_peer == request_object.user.puples:
+        task_to_set_estimate.second_peer_mark = request_object.POST.get("task_score")
+
+    if task_to_set_estimate.first_peer_mark is not None and \
+            task_to_set_estimate.second_peer_mark is not None:
+        print("Вызов функции отправки в Яндекс Контест")
+
+    task_to_set_estimate.save()
 
 
+def get_student_statistic(request_object) -> JsonResponse:
+    """ Возвращает набор статистики для страницы Students Statistic для учителя """
+    student_from_db = get_object_from_db(
+        database=Puples,
+        object_parameters={
+            "id": request_object.POST.get("get_data_from_user_id")
+        }
+    )
 
+    if student_from_db is None:
+        return JsonResponse({
+            "message": "Ученик не найден"
+        }, status=404)
 
+    return JsonResponse({
+        "tasksList": list(map(
+            lambda task: str(task),
+            CheckedEducationTask.objects.filter(
+            solved_user=student_from_db
+        )))
+    }, status=200)

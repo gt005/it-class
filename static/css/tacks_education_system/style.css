@@ -559,8 +559,11 @@ ol, ul, dl {
   padding-top: 55px;
 }
 
-.estimate-tasks__tasks-section__task.task-list-page__container:hover {
-  background: #fff !important;
+.estimate-tasks__tasks-section__task.task-list-page__container {
+  pointer-events: auto;
+  border: none;
+  cursor: pointer;
+  outline: none;
 }
 
 #estimate-modal-form {
@@ -573,6 +576,18 @@ ol, ul, dl {
 }
 #estimate-modal-form .estimate-modal-form__input-number__header {
   font-size: 20px;
+}
+
+.student-data__level {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+}
+.student-data__level .student-data__level__level-number {
+  position: absolute;
+  font-size: 23px;
+  color: #fff;
 }
 
 @media screen and (max-width: 992px) {
