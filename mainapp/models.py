@@ -124,4 +124,7 @@ class EventActive(models.Model):
     date = models.DateField("Дата", null=True)
     name = models.CharField("Название мероприятия", max_length=200)
     discription = models.TextField("Описание мероприятия")
+    event_for_all = models.BooleanField(verbose_name="Показывать мероприятие всем", default=True, blank=False)
+    
     link = models.URLField("Ссылка мероприятия", default='')
+

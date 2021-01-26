@@ -246,7 +246,8 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
-        context['active_task'] = EventActive.objects.all()
+        context['active_task'] = list(filter(lambda x: x.date >= datetime.datetime.now().date(), EventActive.objects.all().order_by('date')))[:5]
+        print(context['active_task'])
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
         context['allevents'] = filter(lambda x: not x.name.startswith("Задача дня"), Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
         context['alldaytasks'] = filter(lambda x: x.name.startswith("Задача дня"),
