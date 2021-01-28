@@ -564,6 +564,14 @@ ol, ul, dl {
   border: none;
   cursor: pointer;
   outline: none;
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  min-height: 175px;
+  background: linear-gradient(135deg, #fff 50%, rgba(0, 255, 0, 0.38) 120%);
+}
+.estimate-tasks__tasks-section__task.task-list-page__container:hover {
+  background: linear-gradient(135deg, white 0%, rgba(0, 255, 0, 0.05) 0%, rgba(0, 255, 0, 0.38) 91%);
 }
 
 #estimate-modal-form {
@@ -587,6 +595,14 @@ ol, ul, dl {
 .student-data__level .student-data__level__level-number {
   position: absolute;
   font-size: 23px;
+  color: #fff;
+}
+
+.estimate-tasks__tasks-section__task__background__level-number {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 125px;
+  padding-right: 50px;
   color: #fff;
 }
 
@@ -650,6 +666,15 @@ ol, ul, dl {
   }
   .settings_page__level-change-theme-btn svg {
     opacity: 1;
+  }
+
+  .estimate-tasks__tasks-section__task.task-list-page__container {
+    align-items: flex-end;
+  }
+
+  .estimate-tasks__tasks-section__task__background__level-number {
+    line-height: 125px;
+    padding-right: 16px;
   }
 }
 @media screen and (max-width: 576px) {

@@ -222,7 +222,6 @@ ol, ul, dl
 
 //.task-page__last-solutions
   //display: none
-
 .task-page__insert-code__write-code-tab__send-button
   margin: 25px 0 55px
 
@@ -508,6 +507,13 @@ ol, ul, dl
   border: none
   cursor: pointer
   outline: none
+  display: flex
+  justify-content: space-between
+  overflow: hidden
+  min-height: 175px
+  background: linear-gradient(135deg,#fff 50%,rgba(0,255,0,.38) 120%)
+  &:hover
+    background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(0,255,0,0.05) 0%, rgba(0,255,0,0.38) 91%)
 
 #estimate-modal-form
   padding: 30px
@@ -529,6 +535,12 @@ ol, ul, dl
     font-size: 23px
     color: #fff
 
+.estimate-tasks__tasks-section__task__background__level-number
+  display: flex
+  justify-content: flex-end
+  font-size: 125px
+  padding-right: 50px
+  color: #fff
 
 @media screen and (max-width: 992px)
   .task-list-page__container
@@ -580,6 +592,13 @@ ol, ul, dl
     text-decoration: none
     & svg
       opacity: 1
+
+  .estimate-tasks__tasks-section__task.task-list-page__container
+    align-items: flex-end
+
+  .estimate-tasks__tasks-section__task__background__level-number
+    line-height: 125px
+    padding-right: 16px
 
 
 @media screen and (max-width: 576px)
