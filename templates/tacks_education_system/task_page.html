@@ -362,19 +362,6 @@
 
         let codeEditor = CodeMirror(document.querySelector("#task-page__insert-code__write-code-tab__code-editor"), {
             // Объект поля с вводом кода
-            value: "class test(object):\n" +
-                "    ''' Строка документации '''\n" +
-                "    def __init__(self, mixin=\"Hello\"):\n" +
-                "        self.mixin = mixin\n" +
-                "        \n" +
-                "    @property\n" +
-                "    def mixin_getter(self):\n" +
-                "        return self.mixin\n" +
-                "    \n" +
-                "def maximum(a, b):\n" +
-                "    if a >= b:\n" +
-                "        return a\n" +
-                "    return b",
             mode: 'python',
             lineNumbers: true,
             dragDrop: true,
