@@ -154,7 +154,9 @@ class SystemSettings(views.LoginRequiredMixin,
                 "fullness_percents": get_level_fullness_percents(
                     level_to_get_description
                 ),
-                "success_average_score": 204
+                "success_average_score": get_level_average_score(
+                    level_object_from_db
+                )
             }, status=200)
 
         return super(SystemSettings, self).get(request, *args, **kwargs)

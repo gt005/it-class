@@ -263,7 +263,15 @@
 
         // Формирует описание уровня в разворачиваемся списке уровней
         function createLevelRowDescriptionInnerHTML(json) {
-            return `<div class="container">
+            let average_score;
+
+            if (json.success_average_score === -1) {
+                average_score = 0;
+            } else {
+                average_score = ~~(json.success_average_score);
+            }
+
+            let resultString = `<div class="container">
                         <div class="row">
                             <div class="col-12">
                                 Заполненость задачами ${json.fullness_percents}% <br>
@@ -271,15 +279,23 @@
                                 <div class="progress" id="settings_page__level-settings__task__fullness-of-students__progress" style="margin-bottom: 20px;">
                                     <div class="progress-bar bg-info" role="progressbar" style="width: ${json.fullness_percents}%;" aria-valuenow="${json.fullness_percents}" aria-valuemin="0" aria-valuemax="100">${json.fullness_percents}%</div>
                                 </div>
-
-                                Средний балл по уровню
-                                <div class="progress" id="settings_page__level-settings__task__fullness-of-students__progress" style="mb-20">
-                                    <div class="progress-bar bg-info" role="progressbar" style="width: ${json.success_average_score / 3}%;" aria-valuenow="${json.success_average_score}" aria-valuemin="0" aria-valuemax="300">${json.success_average_score}/300</div>
+                                Средний балл по уровню`
+            if (average_score !== 0) {
+                resultString += `<div class="progress" id="settings_page__level-settings__task__fullness-of-students__progress" style="mb-20">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: ${average_score / 3}%;" aria-valuenow="${average_score}" aria-valuemin="0" aria-valuemax="300">${average_score}/300</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-`
+                    </div>`
+            } else {
+                resultString += `<p class="text-center">Еще нет решений</p>
+                            </div>
+                        </div>
+                    </div>`
+            }
+
+            return resultString;
+
         }
 
 
@@ -288,7 +304,7 @@
             document.querySelectorAll(".settings_page__level-row").forEach(function (taskRow) {
                 taskRow.querySelector('.card-header h2 .settings_page__level-settings__level-more-open-button').onclick = function () {
                     let currentButton = this;
-                    console.log(this)
+
                     if (this.ariaExpanded === 'false' && this.dataset.isLoadedDescription === 'false') {  // На развороте элемента списка
                         fetch(location.href + "?get_level_description=" + this.dataset.levelNumber, {
                             method: 'GET',

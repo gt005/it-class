@@ -48,6 +48,25 @@ def get_level_fullness_percents(level_number: int) -> int:
     return 0
 
 
+def get_level_average_score(level_object_from_db: EducationLevel) -> int:
+    ''' Возвращает средний балл по уровню от 0 до 300 '''
+    all_solved_tasks = CheckedEducationTask.objects.all()
+
+    tasks_score_sum = 0
+    tasks_amount = 0
+
+    for solved_task in all_solved_tasks:
+        if solved_task.original_task.task_level == level_object_from_db and \
+                solved_task.result_summ_mark is not None:
+            tasks_amount += 1
+            tasks_score_sum += solved_task.result_summ_mark
+
+    if tasks_amount != 0:
+        return int(tasks_score_sum / tasks_amount)
+    else:
+        return -1
+
+
 def get_max_student_level() -> int:
     """ Возвращает самый высокий уровень среди учеников """
     return max(
@@ -643,3 +662,5 @@ def get_student_statistic(request_object) -> JsonResponse:
             solved_user=student_from_db
         )))
     }, status=200)
+
+
