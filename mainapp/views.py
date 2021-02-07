@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidde
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView
 from django.views.generic.detail import DetailView
 from docxtpl import DocxTemplate
 from .addons_python.stepic_ege import get_stepic_info, get_csv_file_stepic, get_info_for_all_class
@@ -475,3 +475,8 @@ class CheckListv1(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
             return redirect("/check_list_v1/")
         else:
             return redirect("/check_list_v1/")
+
+
+class SchoolSite(ListView):
+    template_name = "school_site/index.html"
+    queryset = SummerPractice.objects.all()

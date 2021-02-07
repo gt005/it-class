@@ -25,6 +25,7 @@ urlpatterns = [
     path("notifications/", views.NotificationsView.as_view(), name="summer_practice_admin"),
     path("check_class_v1/", views.CheckClassv1.as_view(), name="check_class_v1"),
     path("check_list_v1/", views.CheckListv1.as_view(), name="check_list_v1"),
+    path("school_site/", views.SchoolSite.as_view(), name="school_site"),
 
     path("market/", include('market.urls')),
     path("daytask/", include('daytask.urls')),
