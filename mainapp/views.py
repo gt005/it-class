@@ -477,6 +477,6 @@ class CheckListv1(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
             return redirect("/check_list_v1/")
 
 
-class SchoolSite(ListView):
-    template_name = "school_site/index.html"
+class ItWeek2021(ListView):
+    template_name = "it_week2021/index.html"
     queryset = SummerPractice.objects.all()

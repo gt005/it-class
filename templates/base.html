@@ -2,25 +2,7 @@
 <html lang="ru">
 {% load static %}
 <head>
-{{ form.media }}
-{#    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/favicon/apple-icon-57x57.png' %}">#}
-{#    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/favicon/apple-icon-60x60.png' %}">#}
-{#    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'images/favicon/apple-icon-72x72.png' %}">#}
-{#    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'images/favicon/apple-icon-76x76.png' %}">#}
-{#    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'images/favicon/apple-icon-114x114.png' %}">#}
-{#    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'images/favicon/apple-icon-120x120.png' %}">#}
-{#    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'images/favicon/apple-icon-144x144.png' %}">#}
-{#    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/favicon/apple-icon-152x152.png' %}">#}
-{#    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-icon-180x180.png' %}">#}
-{#    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon/android-icon-192x192.png' %}">#}
-{#    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">#}
-{#    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/favicon/favicon-96x96.png' %}">#}
-{#    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}">#}
-{#    <link rel="manifest" href="{% static 'images/favicon/manifest.json' %}">#}
-{#    <meta name="msapplication-TileColor" content="#ffffff">#}
-{#    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">#}
-{#    <meta name="theme-color" content="#ffffff">#}
-
+    {{ form.media }}
 
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
@@ -165,6 +147,29 @@
             </form>
         </div>
     </nav>
+<a href="https://it-class1158.ru/it_week2021/" style="text-decoration: none">
+    <div class="container-fluid bg-dark">
+        <style>@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+
+h5 {
+  font-family: 'Roboto Slab', serif;
+  text-align: center;
+  font-size: 20px;
+  font-weight: normal;
+  color: transparent;
+  text-shadow: 0 0 1px #eee, 3px 5px 1px #008080, -5px -2px 1px #005977;
+  animation: glitch 4s ease-in-out infinite alternate;
+}
+@keyframes glitch {
+  0%,40%,44%,58%,61%,65%,69%,73%,100% {transform:skewX(0deg);}
+  41% {transform: skewX(10deg);}
+  42% {transform: skewX(-10deg);}
+}
+        </style>
+        <h5 class="font-weight-light text-center py-2 text-white">НЕДЕЛЯ ИНФОРМАТИКИ 15.02.2021 -
+            19.05.2021</h5>
+    </div>
+</a>
     {% block main %}
     {% endblock %}
     <footer id="sticky-footer" class="py-4 bg-dark text-white-50 mt-5">
