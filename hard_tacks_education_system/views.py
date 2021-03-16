@@ -378,7 +378,7 @@ class StudentsStatistic(views.LoginRequiredMixin,
 
         context["students_list"] = self.model.objects.filter(
             Q(status="ST10") | Q(status="ST11")
-        )
+        ).order_by('surname', 'name')
         context["status_choices"] = sorted(list(
             {people.get_status_display() for people in context["students_list"]}
         ))

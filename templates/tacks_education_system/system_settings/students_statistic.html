@@ -41,8 +41,33 @@
             </div>
             <div class="row">
                 <div class="col-12">
+                    <div class="students-statistic__students-list__sorted-container my-3">
+                        <select class="custom-select"
+                                id="student_sorted_by"
+                                style="cursor:pointer;">
+                            <option selected="selected" value="name_increment">
+                               Имя А→Я
+                            </option>
+
+                            <option value="name_decrease">
+                               Имя Я→А
+                            </option>
+
+                            <option value="level_increment">
+                                Уровень ↓ (Возрастание)
+                            </option>
+
+                            <option value="level_decrease">
+                                Уровень ↑ (Убывание)
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
                     <div class="accordion settings_page__level task-page__last-solutions__table__body"
-                         id="accordionExample">
+                         id="studentList">
 
                         {% for student in students_list %}
                             <div class="card task-page__last-solutions__card settings_page__level-row student-list-row"
@@ -91,27 +116,19 @@
                                 <div id="collapse_{{ student.id }}"
                                      class="collapse"
                                      aria-labelledby="level_{{ student.id }}"
-                                     data-parent="#accordionExample">
+                                     data-parent="#studentList">
                                      <div class="card-body task-page__last-solutions__table__body__row__show-code-area settings_page__level-settings__level-description-collapsed-area">
 
                                         <div class="task-description-loader d-flex align-items-center justify-content-center"
-                                             style="height: 100px;">
+                                             style="height: 100px;"
+                                             id="studentStatisticDescription"
+                                             data-student-id="{{ student.id }}">
 
-{#                                            <div class="spinner-border text-info"#}
-{#                                                 role="status">#}
-{#                                                <span class="sr-only">Loading...</span>#}
-{#                                            </div>#}
-                                            <div class="container">
-                                                <div class="row">
-                                                    <div class="col-12 text-center">
-                                                        <h4>Уровень</h4>
-                                                        <div class="student-data__level">
-                                                            <img src="{% static 'images/task-list-page-done-level.svg' %}" alt="done">
-                                                            <span class="student-data__level__level-number"></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            <div class="spinner-border text-info"
+                                                 role="status">
+                                                <span class="sr-only">Loading...</span>
                                             </div>
+
 
                                         </div>
 
@@ -163,6 +180,43 @@
             })
         }
 
+        $('#student_sorted_by').on('change', function () {
+
+            let all_students = [],
+                studentList = document.querySelector('#studentList'),
+                selectElement = document.querySelector('#student_sorted_by');
+
+            $(studentList).fadeOut();
+
+            for (let student of document.querySelectorAll("#studentList .student-list-row"))
+            {
+                all_students.push(student);
+            }
+
+            setTimeout(() => {
+                all_students = all_students.sort(function (a, b) {
+                    if (selectElement.value === 'level_increment') {
+                        return a.dataset.studentLevel < b.dataset.studentLevel ? -1 : a.dataset.studentLevel > b.dataset.studentLevel ? 1 : 0
+                    } else if (selectElement.value === 'level_decrease') {
+                        return a.dataset.studentLevel > b.dataset.studentLevel ? -1 : a.dataset.studentLevel < b.dataset.studentLevel ? 1 : 0
+                    } else if (selectElement.value === 'name_decrease') {
+                        return a.dataset.nameAndSurname > b.dataset.nameAndSurname ? -1 : a.dataset.nameAndSurname < b.dataset.nameAndSurname ? 1 : 0
+                    } else if (selectElement.value === 'name_increment') {
+                        return a.dataset.nameAndSurname < b.dataset.nameAndSurname ? -1 : a.dataset.nameAndSurname > b.dataset.nameAndSurname ? 1 : 0
+                    }
+                })
+
+                $(studentList).innerHTML = '';
+
+                all_students.forEach(function (student)
+                {
+                    studentList.appendChild(student);
+                });
+                $(studentList).fadeIn();
+            }, 300)
+
+        })
+
         document.querySelector("#studentFindInput").oninput = function () {
             deactivateClassFilterButtons();
 
@@ -195,13 +249,10 @@
 
         activateClassFilterButtons();
 
-
         $(".student-list-row").on("show.bs.collapse", function () {
 
             const studentLevel = this.dataset.studentLevel,
                   studentId = this.dataset.studentId;
-
-            let levelLabel = this.querySelector(".student-data__level__level-number");
 
             let data = new FormData();
 
@@ -221,8 +272,18 @@
                 return response.json();
             }).then(function (json) {
                 if (json) {
-                    levelLabel.textContent = studentLevel;
-                    console.log(json.tasksList);;
+                    let statisticHTML = `<div class="container">
+                                                <div class="row">
+                                                    <div class="col-12 text-center">
+                                                        <h4>Уровень</h4>
+                                                        <div class="student-data__level">
+                                                            <img src="{% static 'images/task-list-page-done-level.svg' %}" alt="done">
+                                                            <span class="student-data__level__level-number">${studentLevel}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>`
+                    document.querySelector(`#studentStatisticDescription[data-student-id='${studentId}']`).innerHTML = statisticHTML;
                 }
             });
         })

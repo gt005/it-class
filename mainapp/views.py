@@ -12,7 +12,6 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from docxtpl import DocxTemplate
-from .addons_python.stepic_ege import get_stepic_info, get_csv_file_stepic, get_info_for_all_class
 
 from .addons_python.views_addons_classes import HeaderNotificationsCounter
 from .addons_python.notifications import send_mail_to_applicant, send_telegram
@@ -184,12 +183,7 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
     login_url = '/login/'
 
     def post(self, request, pk):
-        if "update_file_csv" in request.POST and request.POST['update_file_csv']:
-            link_stepic = request.POST['update_file_csv']
-            get_csv_file_stepic(link_stepic)
-            return redirect("/statistic/pupil/" + str(pk))
-        else:
-            return redirect("/statistic/pupil/" + str(pk))
+
         form = CollectData(request.POST)
         if form.is_valid():
             a = Puples.objects.get(user=request.user.id)
@@ -244,11 +238,8 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
-        context['active_task'] = EventActive.objects.all()
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
-        context['allevents'] = filter(lambda x: not x.name.startswith("Задача дня"), Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
-        context['alldaytasks'] = filter(lambda x: x.name.startswith("Задача дня"),
-                                      Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
+        context['allevents'] = Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date')
         context['form'] = CollectData()
         if Puples.objects.get(pk=self.kwargs["pk"]).status == "APP":
             context['app'] = ApplicantAction.objects.get(action_app=self.kwargs['pk'])
@@ -256,15 +247,6 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
             context['app'] = 1
         context['rate_event'] = sum(
             map(lambda x: x.event_rate, Events.objects.filter(events__pk=self.kwargs['pk'], check=True)))
-        puple_info_stepic = get_stepic_info(Puples.objects.get(id=context['pk']).user.id)
-        context["info_all_class"] = get_info_for_all_class()
-        try:
-            context["data_stepic"] = puple_info_stepic[-27:]
-            context["procent_success"] = puple_info_stepic[-29]
-            context["tasks_success"] = puple_info_stepic[-30]
-            context["unsolved_tasks"] = puple_info_stepic[-28] - puple_info_stepic[-30]
-        except:
-            print("empty_list")
         return context
 
 

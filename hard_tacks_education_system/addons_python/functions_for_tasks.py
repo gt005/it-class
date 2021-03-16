@@ -662,5 +662,3 @@ def get_student_statistic(request_object) -> JsonResponse:
             solved_user=student_from_db
         )))
     }, status=200)
-
-

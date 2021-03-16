@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
     '0.0.0.0', '172.20.10.2',
     '172.20.10.7', '192.168.1.242',
     '192.168.73.189', '176.59.51.71',
-    '192.168.12.146'
+    '192.168.12.146', '192.168.12.150'
 ]
 
 # Application definition
@@ -65,12 +65,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'itclass.urls'
-
-EMAIL_HOST = 'mail.it-class1158.site'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "admin@it-class1158.site"
-EMAIL_HOST_PASSWORD = "wsx123451"
-EMAIL_USE_SSL = True
 
 TEMPLATES = [
     {

@@ -39,7 +39,7 @@ class Puples(models.Model):
     task_education_addition_data = JSONField(
         "Дополнительные данные для работы системы задач",
         max_length=200,
-        default={"languages": []},
+        default={"known_languages": []},
     )
 
     def __str__(self):

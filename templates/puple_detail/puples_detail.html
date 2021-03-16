@@ -17,7 +17,6 @@
                 {% if puples.image.url == "/media/puples_photo/user-2.png" %}
                     <p class="font-weight-light text-danger bg-light mt-3">Добавьте фотографию профиля</p>{% endif %}
                 <div class="row py-2">
-                    <!--                <div class="col-12 text-left"><a class="text-dark disabled" href="#">редактировать фотографию</a></div>-->
                     <div class="col-12"><a href="/statistic/pupil/{{ puples.pk }}/img-change/"
                                            class="btn btn-block btn-info btn-sm" role="button">
                         {% if puples.image.url != "/media/puples_photo/user-2.png" %}Изменить{% else %}
@@ -76,7 +75,7 @@
                     </div>
                 </div>
 
-                <a href="https://t.me/joinchat/AAAAAFJI5PL5wZKFKSr4Fw" class="navbar-brand text-muted font-weight-light"
+                <a href="#" class="navbar-brand text-muted font-weight-light"
                    style="font-size: 12px;"><img class="img-fluid mr-2"
                                                  style="width: 18px; height:18px;"
                                                  src="{% static '/images/telegram.png' %}">Присоедениться к
