@@ -20,7 +20,7 @@ class Puples(models.Model):
     )
     name = models.CharField("Имя", null=True, max_length=50)
     surname = models.CharField("Фамилия", null=True, max_length=100)
-    rate = models.PositiveIntegerField("Рейтинг ученика", default=0)
+    rate = models.IntegerField("Рейтинг ученика", default=0)
     image = models.ImageField("Фотография профиля", blank=True, upload_to="puples_photo",
                               default="puples_photo/user-2.png")
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, default='',
@@ -125,6 +125,9 @@ class EventActive(models.Model):
     name = models.CharField("Название мероприятия", max_length=200)
     discription = models.TextField("Описание мероприятия")
     event_for_all = models.BooleanField(verbose_name="Показывать мероприятие всем", default=True, blank=False)
-    
     link = models.URLField("Ссылка мероприятия", default='')
+
+    class Meta:
+        verbose_name = "Активные мероприятия"
+        verbose_name_plural = "Активные мероприятия"
 
