@@ -21,7 +21,11 @@ from .addons_python.notifications import send_mail_to_applicant, send_telegram
 from .addons_python.views_addons_functions import recount_all_peoples_rating
 from .forms import EventsForm, AddEventForm, ImgChangeForm, CollectData
 from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice, EventActive
+from django.views.generic.base import TemplateView, View
+from django.shortcuts import render
 
+def test(request):
+    return render(request, 'test/index.html', {})
 
 class MainView(HeaderNotificationsCounter, ListView):
     puple = Puples
@@ -186,23 +190,25 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
     login_url = '/login/'
 
     def post(self, request, pk):
+        form = CollectData(request.POST)
         if "update_file_csv" in request.POST and request.POST['update_file_csv']:
             link_stepic = request.POST['update_file_csv']
             get_csv_file_stepic(link_stepic)
             return redirect("/statistic/pupil/" + str(pk))
         else:
-            return redirect("/statistic/pupil/" + str(pk))
-        form = CollectData(request.POST)
-        if form.is_valid():
-            a = Puples.objects.get(user=request.user.id)
-            form = CollectData(request.POST, instance=a)
-            form.save()
-            return redirect("/statistic/pupil/" + str(pk))
-        else:
-            a = ApplicantAction.objects.get(action_app=pk)
-            a.check = True
-            a.save()
-            return redirect("/statistic/pupil/" + str(pk))
+            if form.is_valid():
+                print('ok')
+                a = Puples.objects.get(user=request.user.id)
+                form = CollectData(request.POST, instance=a)
+                form.save()
+
+                return redirect("/statistic/pupil/" + str(pk))
+            else:
+                a = ApplicantAction.objects.get(action_app=pk)
+                a.check = True
+                a.save()
+                return redirect("/statistic/pupil/" + str(pk))
+        return redirect("/statistic/pupil/" + str(pk))
 
     def get(self, request, pk):
         if request.user.is_superuser or request.user.puples.pk == pk:

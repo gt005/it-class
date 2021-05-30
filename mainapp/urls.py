@@ -28,4 +28,6 @@ urlpatterns = [
     path("it_week2021/", views.ItWeek2021.as_view(), name="it_week2021"),
     path("market/", include('market.urls')),
     path("daytask/", include('daytask.urls')),
+    path("test_ib/", views.test, name="test_ib"),
+
 ]

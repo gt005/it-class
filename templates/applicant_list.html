@@ -12,6 +12,7 @@
                     <th class="py-3">Баллы</th>
                     {% if user.is_superuser %}
                         <th class="text-center py-3">Подтверждение</th>
+                        <th class="text-center py-3">Последний вход</th>
                         <th class="text-center py-3">Дата</th>
                         <th class="text-center py-3">Время</th>
                     {% endif %}
@@ -36,6 +37,7 @@
                                          src="{% static '/images/interface-2.png' %}">{% else %}
                                     <img class="img-fluid" style="width: 25px;"
                                          src="{% static '/images/signs.png' %}">{% endif %}</td>
+                                <td class="align-middle">{{ puple.user.last_login }}</td>
                                 <td class="align-middle">{{ app.date }}</td>
                                 <td class="align-middle">{{ app.time }}</td>
                             </tr>
