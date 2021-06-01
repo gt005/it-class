@@ -1,1 +1,3 @@
-System for attracting students to additional educational activities in the framework of the it class project
+Логин пароль от суперпользователя со всем функционалом
+ibkov
+wsx123451
