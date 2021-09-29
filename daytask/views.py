@@ -43,12 +43,14 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
         now_task = Tasks.objects.get(date=dt.datetime.now().date(), status_task=self.request.user.puples.status)
         self.made_tries = len(list(filter(lambda x: x == self.request.user.id,
                                           [i[0] for i in self.tries_list_with_time(now_task.tries_list)])))
-        if request.POST["result"] == now_task.result and self.made_tries < now_task.tries:
+        print(now_task.tries, self.made_tries )
+        if request.POST["result"] == now_task.result and self.made_tries < now_task.tries and len(now_task.id_puple_correct_answers.split()) < now_task.count_answer:
             Events.objects.create(name=f"Задача дня \"{now_task.name}\"", date=dt.date.today(),
                                   organization="ГБОУ Школа 1158",
                                   events=Puples.objects.get(user=request.user.id),
                                   event_rate=now_task.score // (len(now_task.id_puple_correct_answers.split()) + 1),
                                   check=True, verification_file="123.jpg")
+            print(1111)
             now_task.id_puple_correct_answers += " " + str(Puples.objects.get(user=request.user.id).user.id) + " "
             now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(
                 dt.datetime.now().strftime("%H:%M:%S")) + " "

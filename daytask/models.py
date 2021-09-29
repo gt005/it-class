@@ -15,7 +15,7 @@ class Tasks(models.Model):
     count_answer = models.IntegerField(default=2,
                                        verbose_name="Количество человек, которые могут решить задачу")
     score = models.IntegerField("Максимальный балл за задачу", default=5)
-    tries = models.IntegerField(default=-1, verbose_name="Количество попыток ответа на каждого ученика (-1 - бесконечно)")
+    tries = models.IntegerField(default=0, verbose_name="Количество попыток ответа на каждого ученика")
     tries_list = models.CharField(default="", verbose_name="ID учеников, совершившие попытку",
                                                 max_length=200,
                                                 blank=True)

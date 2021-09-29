@@ -7,6 +7,7 @@ from .views import PostDetailView, AddEventView, WorksView, ApplicantListView
 urlpatterns = [
     path("", views.MainView.as_view()),
     path("rate/", views.PuplesView.as_view()),
+    path("rate/<str:class>", views.PuplesView.as_view()),
     path("check_list/", views.CheckList.as_view(), name="check_list"),
     path("documents_to_10_class/", views.PhotoGalleryView.as_view(), name="photo_gallery"),
     path("<int:pk>/", PostDetailView.as_view(), name="puples"),

@@ -2,10 +2,18 @@
 {% load static %}
 {% block main %}
     {% if user.username != "" %}
-        <table class="table table-sm text-center {% if user.is_superuser %}table-hover table-responsive-sm table-responsive-md{% endif %}">
+        <table class="table table-sm text-center {% if user.is_superuser %} table-hover table-responsive-sm table-responsive-md{% endif %}">
             <thead class="thead-dark">
             <tr>
-                <th></th>
+                <th>
+                    {% if superusr %}
+                        <div class="btn-group m-2 font-weight-light">
+                            <a href="../rate" class="btn btn-light {{ active }}" aria-current="page">Все</a>
+                            <a href="ST10" class="btn btn-light {{ ST10 }}">10 класс</a>
+                            <a href="ST11" class="btn btn-light {{ ST11 }}">11 класс</a>
+                        </div>
+                    {% endif %}
+                </th>
                 <th class="text-left py-3" data-sort="string">Фамилия</th>
                 <th class="text-left py-3" data-sort="string">Имя</th>
                 <th class="py-3" data-sort="int">Баллы</th>

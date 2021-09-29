@@ -119,8 +119,12 @@ class PuplesView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         recount_all_peoples_rating()
-
         context = super().get_context_data(**kwargs)
+        context['active'] = 'active'
+        if self.kwargs:
+            context['puples_list'] = Puples.objects.filter(status=f"{self.kwargs['class']}").order_by("-rate")
+            context[self.kwargs['class']] = 'active'
+            context['active'] = ''
         context['superusr'] = self.request.user.is_superuser
         context['pupil_pk'] = self.request.user.puples.pk
         return context

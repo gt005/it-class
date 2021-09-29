@@ -29,7 +29,7 @@ class ApplicantActionAdmin(admin.ModelAdmin):
 class PuplesAdmin(admin.ModelAdmin):
     list_display = ("surname", "name", "status")
     list_filter = ("surname", "status")
-    actions = ["change_class_10", "change_class_11"]
+    actions = ["change_class_10", "change_class_11", "change_end"]
 
     def change_class_10(self, request, queryset):
         row_update = queryset.update(status="ST10")
@@ -47,11 +47,23 @@ class PuplesAdmin(admin.ModelAdmin):
             message_bit = f"{row_update} записей были обновлены"
         self.message_user(request, f"{message_bit}")
 
+    def change_end(self, request, queryset):
+        row_update = queryset.update(status="END")
+        if row_update == 1:
+            message_bit = "1 запись обновлена"
+        else:
+            message_bit = f"{row_update} записей были обновлены"
+        self.message_user(request, f"{message_bit}")
+
     change_class_11.short_description = "Перевести ученика в 11 класс"
     change_class_11.allowed_permissions = ("change",)
 
     change_class_10.short_description = "Перевести ученика в 10 класс"
     change_class_10.allowed_permissions = ("change",)
+
+    change_end.short_description = "Выпустить ученика"
+    change_end.allowed_permissions = ("change",)
+
 
 
 admin.site.register(Puples, PuplesAdmin)
