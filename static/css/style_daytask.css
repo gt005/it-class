@@ -16,3 +16,7 @@
     opacity: 1;
     visibility: visible;
 }
+
+.form-row .mce-tinymce{
+    margin-left: 0px !important;
+}

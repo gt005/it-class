@@ -1,7 +1,6 @@
 from django.db import models
 from tinymce.models import HTMLField
 
-
 class Tasks(models.Model):
     STATUS_CHOICES = (
         ('ST10', '10 класс'),
@@ -22,6 +21,7 @@ class Tasks(models.Model):
     id_puple_correct_answers = models.CharField(default="", verbose_name="ID учеников, кто дал правильный ответ",
                                                 max_length=200,
                                                 blank=True)
+    author = models.CharField("Автор задачи", null=True, max_length=150, blank=True)
 
     def __str__(self):
         return f"Задача: \"{self.name}\""

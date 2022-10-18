@@ -2,6 +2,7 @@ import datetime
 import datetime as dt
 import os
 import re
+import json
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -15,17 +16,14 @@ from docxtpl import DocxTemplate
 from .addons_python.stepic_ege import get_stepic_info, get_csv_file_stepic, get_info_for_all_class
 from .addons_python.checker_class_11 import checker
 from .addons_python.list_v2 import checker_list_v1
+from django.shortcuts import render
 
 from .addons_python.views_addons_classes import HeaderNotificationsCounter
-from .addons_python.notifications import send_mail_to_applicant, send_telegram
+from .addons_python.notifications import send_mail_to_applicant, send_telegram, send_mail_to_admin
 from .addons_python.views_addons_functions import recount_all_peoples_rating
 from .forms import EventsForm, AddEventForm, ImgChangeForm, CollectData
 from .models import Puples, Events, Works, DaysTask, ApplicantAction, SummerPractice, EventActive
-from django.views.generic.base import TemplateView, View
-from django.shortcuts import render
 
-def test(request):
-    return render(request, 'test/index.html', {})
 
 class MainView(HeaderNotificationsCounter, ListView):
     puple = Puples
@@ -198,6 +196,9 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
         if "update_file_csv" in request.POST and request.POST['update_file_csv']:
             link_stepic = request.POST['update_file_csv']
             get_csv_file_stepic(link_stepic)
+            f = open(settings.MEDIA_ROOT + "/other/last_update.txt", "w")
+            print(datetime.datetime.now().strftime("%d.%m.%Y г. %H:%M"), file=f)
+            f.close()
             return redirect("/statistic/pupil/" + str(pk))
         else:
             if form.is_valid():
@@ -257,7 +258,22 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
         context['active_task'] = list(filter(lambda x: x.date >= datetime.datetime.now().date(), EventActive.objects.all().order_by('date')))[:5]
-        print(context['active_task'])
+        active_events = Events.objects.filter(events__status=Puples.objects.get(id=self.kwargs['pk']).status,
+                                              check=True).order_by('date').reverse()[:5]
+        context['active_events'] = list(filter(lambda x: datetime.datetime.now().date() - datetime.timedelta(
+            days=7) <= x.date <= datetime.datetime.now().date(), active_events))
+        try:
+            d = dict()
+            for i in context['active_events']:
+                if i.events in d:
+                    d[i.events] += 1
+                else:
+                    d[i.events] = 1
+            context['most_active_puple'] = sorted(d.items(), key=lambda x:x[1], reverse=True)[:3]
+            context['most_active_puple_labels'] = [i[1] for i in context['most_active_puple']]
+            context['most_active_puple_labels_names'] = json.dumps([i[0].name for i in context['most_active_puple']])
+        except:
+            context['most_active_puple'] = []
         context['events_count'] = Events.objects.filter(events__pk=self.kwargs['pk'], check=True).count()
         context['allevents'] = filter(lambda x: not x.name.startswith("Задача дня"), Events.objects.filter(events__pk=self.kwargs['pk']).order_by('-date'))
         context['alldaytasks'] = filter(lambda x: x.name.startswith("Задача дня"),
@@ -272,12 +288,19 @@ class PostDetailView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView)
         puple_info_stepic = get_stepic_info(Puples.objects.get(id=context['pk']).user.id)
         context["info_all_class"] = get_info_for_all_class()
         try:
+            score = Puples.objects.get(pk=self.kwargs["pk"])
+            score.score_stepic = puple_info_stepic[-29]
+            score.save()
             context["data_stepic"] = puple_info_stepic[-27:]
             context["procent_success"] = puple_info_stepic[-29]
             context["tasks_success"] = puple_info_stepic[-30]
             context["unsolved_tasks"] = puple_info_stepic[-28] - puple_info_stepic[-30]
         except:
             print("empty_list")
+        try:
+            context["last_update"] = open(settings.MEDIA_ROOT + "/other/last_update.txt").readline()
+        except:
+            pass
         return context
 
 
@@ -307,7 +330,13 @@ class AddEventView(HeaderNotificationsCounter, LoginRequiredMixin, DetailView):
 
     def post(self, request, pk):
         form = EventsForm(request.POST, request.FILES)
-        print(request.POST['date'],)
+        try:
+            send_mail_to_admin(f"{request.user.puples.surname} {request.user.puples.name} добавил новое мероприятие",
+                               "Добавлено новое мероприятие",
+                               f"{request.user.puples.surname} {request.user.puples.name} {request.POST['date']} посетил(а) {request.POST['name']}, организатор мероприятия {request.POST['organization']}",
+                               ["ibkov@yandex.ru",])
+        except:
+            pass
         if form.is_valid():
             form = form.save(commit=False)
             form.events_id = pk
@@ -448,13 +477,19 @@ class NotificationsView(HeaderNotificationsCounter, LoginRequiredMixin, ListView
         all_info = dict(request.POST)
         id_puples_send = [int(i) for i in all_info["checkbox_puple"]]
         email_list = [Puples.objects.get(user_id=i).email for i in id_puples_send]
-        send_mail_to_applicant(*all_info["theme_letter"], *all_info["header_letter"], *all_info["text_letter"],
+        error_emails = send_mail_to_applicant(*all_info["theme_letter"], *all_info["header_letter"], *all_info["text_letter"],
                                email_list)
+
         if "checkbox_telegram" in all_info:
             theme, text = str(*all_info["theme_letter"]), str(*all_info["text_letter"])
             all_mes = str(theme + "\n\n" + text)
-            send_telegram(all_mes)
-        return redirect("/notifications/")
+            try:
+                send_telegram(all_mes)
+            except:
+                print("Error")
+        return render(request, "notifications.html", {'error_emails': error_emails})
+        # return redirect(reverse_lazy("notifications", kwargs={'error_emails': error_emails}))
+        # return redirect("/notifications/")
 
 class CheckClassv1(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     template_name = "check_class_v1.html"
@@ -490,3 +525,21 @@ class CheckListv1(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
 class ItWeek2021(ListView):
     template_name = "it_week2021/index.html"
     queryset = SummerPractice.objects.all()
+
+class GiftView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
+    template_name = "gift.html"
+    queryset = SummerPractice.objects.all()
+    login_url = '/login/'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            context["name"] = Puples.objects.get(user_id=self.request.user.id).name
+            context["surname"] = Puples.objects.get(user_id=self.request.user.id).surname
+            send_mail_to_admin(f"{self.request.user.puples.surname} {self.request.user.puples.name} заявка на подарок",
+                               "Подарок",
+                               f"{self.request.user.puples.surname} {self.request.user.puples.name} получил подарок!!!",
+                               ["ibkov@yandex.ru"])
+        except:
+            pass
+        return context

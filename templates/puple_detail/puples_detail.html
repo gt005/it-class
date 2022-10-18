@@ -82,19 +82,65 @@
                                                  src="{% static '/images/telegram.png' %}">Присоедениться к
                     телеграм
                     каналу</a>
-            {% if active_task %}
-             <h5 class="font-weight-light pt-3">Мероприятия:</h5>
-                {% for task in active_task %}
+                {% if active_task %}
+                    <h5 class="font-weight-light pt-3">Мероприятия:</h5>
+                    {% for task in active_task %}
 
-                    <div class="card my-3" style="width: 100%;">
-                        <div class="card-body">
-                            <h5 class="card-title font-weight-light">{{ task.name }}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted font-weight-light">{{ task.date }}</h6>
-                            <p class="card-text" style="font-size: 9px;">{{ task.discription|truncatewords:30 }}</p>
-                            <a href="{{ task.link }}" class="card-link" style="font-size: 10px">Подробней</a>
+                        <div class="card my-3" style="width: 100%;">
+                            <div class="card-body">
+                                <h5 class="card-title font-weight-light">{{ task.name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted font-weight-light">{{ task.date }}</h6>
+                                <p class="card-text" style="font-size: 9px;">{{ task.discription|truncatewords:30 }}</p>
+                                <a href="{{ task.link }}" class="card-link" style="font-size: 10px">Подробней</a>
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                {% endif %}
+                {% if active_events %}
+                    <h5 class="font-weight-light pt-3">Активность класса:</h5>
+                    {% for task in active_events %}
+                        <div class="card my-3" style="width: 100%;">
+                            <div class="card-body">
+                                <p class="card-title font-weight-light" style="font-size: 10px;">{{ task.date }}</p>
+                                <p class="card-text" style="font-size: 12px;">{{ task.events }} участвовал(a) в
+                                    мероприятие: "{{ task.name }}"</p>
+                                <p class="card-subtitle text-muted font-weight-light" style="font-size: 9px;">Количество
+                                    IT-баллов за участие: {{ task.event_rate }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if most_active_puple %}
+                    <h6 class="font-weight-light">Активные ученики недели:</h6>
+                    <hr>
+                    {% for puple in most_active_puple %}
+                        <p class="font-weight-light my-1" style="width: 100%; font-size: 14px;">{{ puple.0 }} {{ puple.1 }}</p>
+                    {% endfor %}
+                    <canvas id="myChart2" class="col-12"></canvas>
+                            <script>
+                                var ctx = document.getElementById('myChart2').getContext('2d');
+                                var myRadarChart = new Chart(ctx, {
+                                    type: 'pie',
+                                    data: {
+                                        labels: ['ЕГЭ 1', 'ЕГЭ 2', 'ЕГЭ 3'],
+                                        datasets: [{
+                                            data: [9,5],
+                                            backgroundColor: 'rgba(23, 162, 184, 0.2)',
+                                            pointBackgroundColor: 'rgba(23, 162, 184, 1)',
+                                            borderColor: ['rgba(23, 162, 184, 1)',],
+                                            borderWidth: 2
+                                        }]
+                                    },
+                                    options: {
+                                        legend: {
+                                            display: false,
+                                            labels: {
+                                                boxWidth: 0,
+                                            }
+                                        },
+                                    }
+                                });
+                            </script>
                 {% endif %}
             </div>
             <div class="col">
@@ -200,6 +246,7 @@
                                 });
                             </script>
                         </div>
+                        <p class="text-muted font-weight-light text-right" style="font-size: 12px;">Информация обновлена: {{ last_update }}</p>
                         <p class="font-weight-light">Успешно решенных задач: {{ tasks_success }}</p>
                         <p class="font-weight-light">Процент успешности: {{ procent_success }} %</p>
                         <p class="font-weight-light">Количество нерешенных задач: {{ unsolved_tasks }} </p>
@@ -428,7 +475,8 @@
                         <p class="font-weight-light">Спасибо что попробовал свои силы на вступительных испытаниях.</p>
                         <p class="font-weight-light">Не останавливайся на достигнутом и попробуй поступить в другие
                             профильные классы.</p>
-                        <p class="font-weight-light">Если тебе понравилась летняя практика ИТ-класса, ты можешь ходить на нее до конца.</p>
+                        <p class="font-weight-light">Если тебе понравилась летняя практика ИТ-класса, ты можешь ходить
+                            на нее до конца.</p>
                         <p class="font-weight-light">Успехов с поступлением.</p>
                         <hr>
                         <p class="font-weight-light">Если у тебя остались какие-то вопросы пиши нам на почту

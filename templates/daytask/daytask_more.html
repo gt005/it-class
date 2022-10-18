@@ -1,0 +1,31 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container pt-3 {% if not button %}text-muted{% endif %}">
+    <h2 class="font-weight-light">Задача: {{ task.name }}</h2>
+    <h4 class="font-weight-light">
+        {% autoescape off %}
+                {{ task.discription_task }}
+        {% endautoescape %}
+    </h4>
+        <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col" class="font-weight-light">Ученик</th>
+                    <th scope="col" class="font-weight-light">Время</th>
+                    <th scope="col" class="font-weight-light">Ответ</th>
+                </tr>
+                </thead>
+                <tbody>
+                {%  for i in list_try %}
+                    <tr class="tasks-active-teacher__row">
+                        <th scope="row" class="font-weight-light align-middle">{{ i.0 }}</th>
+                        <td class="font-weight-light align-middle">{{ i.1 }}</td>
+                        <td class="font-weight-light align-middle">{{ i.2 }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </div>
+{% endblock %}
+{% block detail_active_task %} active{% endblock %}

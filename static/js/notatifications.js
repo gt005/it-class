@@ -20,23 +20,15 @@ $(document).ready(function () {
 
 
     $("#myTable tr").hide();
-    $("#myInput").on("keyup", function ()
-    {
+    $("#myInput").on("keyup", function () {
         var value = $(this).val().toLowerCase();
-         if (value.length == 0) {
-             $.each($("#myTable tr"), function (index, value) {  // Прячет только не выделенные строки
-                if (!(value.querySelector("td .form-check-input").checked)) {
-                    $(value).hide();
-                }
+        if (value.length == 0) {
+            $("#myTable tr").hide();
+        } else {
+            $("#myTable tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
-         } else {
-             $("#myTable tr").filter(function () {
-                 if (!this.querySelector("td .form-check-input").checked)
-                 {
-                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                 }
-             });
-         }
+        }
     });
 
     $(".notifications-filter-btn").on('click', function (event) {
@@ -75,7 +67,7 @@ $(document).ready(function () {
         } else {
             event.preventDefault();
 
-            $.each($("#myTable tr"), function (index, value) {  // Прячет только не выделенные строки
+            $.each($("#myTable tr"), function (index, value) {
                 if (!(value.querySelector("td .form-check-input").checked)) {
                     $(value).hide("slow");
                 }

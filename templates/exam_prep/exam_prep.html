@@ -1,0 +1,126 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container pt-3 {% if not button %}text-muted{% endif %}">
+    <div class="d-flex justify-content-between">
+        <h1 class="font-weight-light">Подготовка к ЕГЭ</h1>
+            <div class="form-group">
+                <button class="btn btn-outline-info btn-sm" id="endVarButton" data-toggle="modal" data-target="#endVariantButton" type="submit" {% if not list_answer %}disabled{% endif %}>Завершить решение варианта</button>
+            </div>
+    </div>
+    <form method="post" id="endVar">
+            {% csrf_token %}
+        <input type="hidden" class="form-control" name="end_var" id="exampleInput" value="1"
+                       required>
+    </form>
+<!-- Modal -->
+<div class="modal fade" id="endVariantButton" tabindex="-1" role="dialog" aria-labelledby="endVariantButton" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title font-weight-light text-dark" id="exampleModalLabel">Завершение решения варианта</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body font-weight-light">
+        Подтверждая согласие вы больше не сможете изменить свои ответы.<br>Вы уверены, что хотите закончить решение данного варианта?
+      </div>
+      <div class="modal-footer">
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Нет, еще проверю</button>
+                <button type="button" class="btn btn-info" type="submit" onclick="form_submit();">Отправить на проверку</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+    <script>
+        function form_submit() {
+        document.getElementById("endVar").submit();
+   }  </script>
+        <hr>
+        <h3 class="font-weight-light text-dark">Задание №{{ active_num }}{% if active_num == 19 %} - 21{% endif %}</h3>
+        <span class="font-weight-light text-dark" style="font-size: 19px;">{% autoescape off %}{{ tasks.discription_task_text }}{% endautoescape %}</span>
+{#        <img style="max-width: 100%;" class="align-center my-3 col-12" src="{{ tasks.discription_task.url }}">#}
+        {% if tasks.url %}
+            <br><br><a href="{{ tasks.url }}" class="font-weight-light" download>Скачать файл к заданию</a>
+        {% endif %}
+
+
+        <div class="modal fade" id="problemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title font-weight-light text-dark" id="exampleModalLabel">Проблема с заданием</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" id="problem_form">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label font-weight-light">В описании проблемы опишите только саму проблему. Номер задания, ФИО ученика можно не указывать. <br>Мы исправим задание в течении 2 часов, вы cможете вернутся к данному заданию позже. </label><br>
+                                <label for="message-text" class="col-form-label font-weight-light">Опишите проблему:</label>
+                                <textarea class="form-control" id="message-text-problem" placeholder="Пример: не отображается часть текста"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button type="button" class="btn btn-info" id="myFormSubmit" >Отправить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var a;
+            $('#myFormSubmit').click(function (e) {
+                e.preventDefault();
+                a = $('#message-text-problem').val();
+                $('#ProblemText').val(a);
+                $('#problemSendToAdmin').submit();
+            });
+        </script>
+
+    <form method="post" id="problemSendToAdmin">
+        {% csrf_token %}
+        <input type="hidden" class="form-control" name="id_task" value="{{ tasks.id_task }}"
+                       required>
+        <input type="hidden" class="form-control" name="task_problem" id="ProblemText" value=""
+                       required>
+    </form>
+    <p data-toggle="modal" data-target="#problemModal" class="font-weight-light text-muted text-right mt-3" style="font-size: 15px;">Сообщить о проблеме</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" class="form-control" name="answer" id="exampleInput" placeholder="Ответ" value="{{ last_answer }}"
+                       required>
+                <button class="btn btn-info text-center my-3" type="submit">Ответить</button>
+            </div>
+        </form>
+        <div class="modal_next">
+            <ul class="pagination modal-1">
+                <li><a href="?number_ege={% if active_num == 22 %}{{ active_num|add:"-3" }}{% else %}{{ active_num|add:"-1" }}{% endif %}" class="prev">&laquo </a></li>
+                {% for i in line_num %}
+                    <li><a href="?number_ege={{ i }}" class="{% if active_num == i %}active{% elif i in list_answer %}choose{% endif %}">{{ i }}{% if i == 19 %} - 21{% endif %}</a></li>
+                {% endfor %}
+                <li><a href="?number_ege={% if active_num == 19 %}{{ active_num|add:"3" }}{% else %}{{ active_num|add:"1" }}{% endif %}" class="next"> &raquo;</a></li>
+
+            </ul>
+            <br>
+        </div>
+    </div>
+
+    <script>
+      var myModal = new bootstrap.Modal(document.getElementById('myModal'), options)
+    </script>
+
+{% endblock %}
+{% block detail_active_ege %} active{% endblock %}

@@ -17,6 +17,9 @@
                 <th class="text-left py-3" data-sort="string">Фамилия</th>
                 <th class="text-left py-3" data-sort="string">Имя</th>
                 <th class="py-3" data-sort="int">Баллы</th>
+            {% if user.puples.status == "ST11" or superusr %}
+                <th class="py-3" data-sort="int">Баллы ЕГЭ</th>
+            {% endif %}
                 {% if superusr %}
                     <th class="py-3" data-sort="int">Телефон</th>
                     <th class="py-3" data-sort="string">Статус</th>
@@ -27,12 +30,16 @@
                 {% if puple.status == user.puples.status or superusr %}
                     <tr{% if superusr or pupil_pk == puple.pk %}
                         onclick="window.location.href='/statistic/pupil/{{ puple.id }}'; return false" {% endif %}
-                            {% if pupil_pk == puple.pk %} class="table-warning" {% endif %}>
+                            {% if pupil_pk == puple.pk %} class="table-warning" {% elif puple.score_stepic < 15 and user.puples.status == "ST11" %} class="table-danger"
+                            {% elif puple.score_stepic > 70 and user.puples.status == "ST11" %} class="table-success" {% endif %}>
                         <td><img src="{{ puple.image.url }}" alt="..." class="rounded-circle"
                                  style="width: 75px; object-fit: cover; height:75px;"></td>
                         <td class="text-left align-middle">{{ puple.surname }}</td>
                         <td class="text-left align-middle">{{ puple.name }}</td>
                         <td class="align-middle">{{ puple.rate }}</td>
+                    {% if user.puples.status == "ST11" or  superusr %}
+                        <td class="align-middle">{{ puple.score_stepic }}</td>
+                    {% endif %}
                         {% if superusr %}
                             <td class="align-middle">{{ puple.phone }}<br>{{ puple.email }}</td>
                             <td class="align-middle">{{ puple.get_status_display }}</td>

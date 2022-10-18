@@ -3,7 +3,7 @@ import datetime as dt
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, DetailView
 from pymorphy2 import MorphAnalyzer
 
 from mainapp.addons_python.views_addons_classes import HeaderNotificationsCounter
@@ -12,10 +12,31 @@ from .forms import TaskForm
 from .models import Tasks
 
 
+class DayTaskMoreView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
+    template_name = "daytask/daytask_more.html"
+    queryset = Tasks
+    login_url = '/login/'
+
+
+    def get_context_data(self, *,  object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["task"] = Tasks.objects.get(id=self.kwargs["id_task"])
+        tmp = [i.split("|") for i in context["task"].tries_list.split()]
+        try:
+            context["list_try"] = [(Puples.objects.get(user=int(i[0])),i[1],i[2]) for i in tmp]
+        except:
+            try:
+                context["list_try"] = [(Puples.objects.get(user=int(i[0])), i[1]) for i in tmp]
+            except:
+                context["list_try"] = []
+        return context
+
+
 class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
     template_name = "daytask/daytask.html"
     queryset = Tasks
     login_url = '/login/'
+
 
     def time_end_task(self, task):
         if task:
@@ -50,7 +71,6 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
                                   events=Puples.objects.get(user=request.user.id),
                                   event_rate=now_task.score // (len(now_task.id_puple_correct_answers.split()) + 1),
                                   check=True, verification_file="123.jpg")
-            print(1111)
             now_task.id_puple_correct_answers += " " + str(Puples.objects.get(user=request.user.id).user.id) + " "
             now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(
                 dt.datetime.now().strftime("%H:%M:%S")) + " "
@@ -59,7 +79,7 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
         if self.made_tries >= now_task.tries:
             return redirect("/daytask")
         now_task.tries_list += " " + str(Puples.objects.get(user=request.user.id).user.id) + "|" + str(
-            dt.datetime.now().strftime("%H:%M:%S")) + " "
+            dt.datetime.now().strftime("%H:%M:%S")) + "|" + request.POST["result"] + " "
         now_task.save()
         return redirect("/daytask")
 
@@ -88,6 +108,9 @@ class DayTaskView(HeaderNotificationsCounter, LoginRequiredMixin, ListView):
             context["task"] = None
         context["end_time"] = self.time_end_task(context["task"])
         try:
+            tmp = Tasks.objects.get(date=dt.datetime.now().date()).tries_list.split()
+            tmp2 = list(map(lambda x:x.split("|"), tmp))
+            context["list_try"] = [Puples.objects.get(user=int(i[0])) for i in tmp2]
             self.made_tries = len(list(filter(lambda x: x == self.request.user.id,
                                          [i[0] for i in self.tries_list_with_time(context['task'].tries_list)])))
             if self.made_tries and self.made_tries != context["task"].tries:
@@ -128,6 +151,8 @@ class DayTaskAddView(HeaderNotificationsCounter, LoginRequiredMixin, CreateView)
                                                                                      for task in Tasks.objects.all()])
 
     def post(self, request):
+        request.POST = request.POST.copy()
+        request.POST["author"] = self.request.user.puples.surname + " " + self.request.user.puples.name
         form = TaskForm(request.POST)
         self.errors = {'form': form}
         if form.is_valid() and self.check_date_class_not_in_tasks(request):
@@ -173,6 +198,8 @@ class DayTaskEditView(DayTaskAddView):
         return context
 
     def post(self, request, id):
+        request.POST = request.POST.copy()
+        request.POST["author"] = self.request.user.puples.surname + " " + self.request.user.puples.name
         form = TaskForm(request.POST)
         self.errors = {'form': form}
         yy, mm, dd = map(str, str(Tasks.objects.get(id=id).date).split("-"))

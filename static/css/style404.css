@@ -30,7 +30,6 @@ Theme URI:
 15. Responsive Start
 
 -------------------------------------------------------------------*/
-
 html{background: #8ab407;}
 /* html{background: #1c2401;} */
 /*------------------------------------------------------------------
@@ -62,7 +61,7 @@ body{margin: 0;}
 -------------------------------------------------------------------*/
 #mt-bluesky{
 	z-index:1;
-	background:#fff url(../images/sky.png) repeat-x top left;
+	background:#fff url(../images/404/sky.png) repeat-x top left;
 }
 /*------------------------------------------------------------------
         4. Sun / #mt-sun
@@ -74,7 +73,7 @@ body{margin: 0;}
 	width:150px;
 	height:152px;
 	position:absolute;
-	background:transparent url(../images/sun.png) no-repeat center center;
+	background:transparent url(../images/404/sun.png) no-repeat center center;
 }
 /*------------------------------------------------------------------
         5. Night Sun / #mt-sun2
@@ -87,14 +86,14 @@ body{margin: 0;}
 	width:150px;
 	height:152px;
 	position:absolute;
-	background:transparent url(../images/sun2.png) no-repeat center center;
+	background:transparent url(../images/404/sun2.png) no-repeat center center;
 }
 /*------------------------------------------------------------------
         6. Clouds / #mt-cloud
 -------------------------------------------------------------------*/
 #mt-cloud{
 	z-index:3;
-	background:transparent url(../images/clouds.png) repeat-x top left;
+	background:transparent url(../images/404/clouds.png) repeat-x top left;
 }
 /*------------------------------------------------------------------
         7. Earth / #mt-base
@@ -106,7 +105,7 @@ body{margin: 0;}
 	bottom:0px;
 	width:100%;
 	height:232px;
-	background:transparent url(../images/ground.png) repeat-x bottom center;
+	background:transparent url(../images/404/ground.png) repeat-x bottom center;
 	z-index:3;
 }
 #base-overlay{
@@ -117,7 +116,7 @@ body{margin: 0;}
 	width:100%;
 	height:232px;
 	opacity: 0;
-	background:transparent url(../images/night-glow.png) repeat-x bottom center;
+	background:transparent url(../images/404/night-glow.png) repeat-x bottom center;
 	z-index:7;
 }
 /*------------------------------------------------------------------
@@ -135,7 +134,7 @@ body{margin: 0;}
 	z-index:5;
 	opacity:0;
 	bottom:200px;
-	background:transparent url(../images/stars.png) repeat-x bottom center;
+	background:transparent url(../images/404/stars.png) repeat-x bottom center;
 }
 #sstar{
 	top:10%;
@@ -145,7 +144,7 @@ body{margin: 0;}
 	width:126px;
 	height:80px;
 	position:absolute;
-	background:transparent url(../images/shootingstar.png) no-repeat 80px -200px;
+	background:transparent url(../images/404/shootingstar.png) no-repeat 80px -200px;
 }
 /*------------------------------------------------------------------
         10. Moon / #moon
@@ -158,7 +157,7 @@ body{margin: 0;}
 	width:292px;
 	height:292px;
 	position:absolute;
-	background:transparent url(../images/moon.png) no-repeat center center;
+	background:transparent url(../images/404/moon.png) no-repeat center center;
 }
 /*------------------------------------------------------------------
         11. Pahe Title / #title
@@ -188,7 +187,7 @@ body{margin: 0;}
 	height: 43px;
 	position: absolute;
 	transform: rotate(19deg);
-	background: url('../images/img01.png') no-repeat;
+	background: url('../images/404/img01.png') no-repeat;
 }
 /*------------------------------------------------------------------
         12. Hock / #hock
@@ -200,7 +199,7 @@ body{margin: 0;}
 	opacity: 0;
 	left: 47.2%;
 	position: absolute;
-	background: url('../images/img03.png') repeat-y;
+	background: url('../images/404/img03.png') repeat-y;
 }
 #hock:after{
 	left: 0;
@@ -209,7 +208,7 @@ body{margin: 0;}
 	bottom: 100%;
 	height: 153px;
 	position: absolute;
-	background: url('../images/img02.png') no-repeat;
+	background: url('../images/404/img02.png') no-repeat;
 }
 /*------------------------------------------------------------------
         13. Oh / #oh
@@ -240,7 +239,7 @@ body{margin: 0;}
 	position: absolute;
 	text-align: center;
 	margin: 0 0 0 -290px;
-	font: 300 16px/20px 'Poppins', sans-serif;
+	font: 300 18px/20px 'Century Gothic', sans-serif;
 }
 .txt p{
 	margin: 0 0 35px;
@@ -256,7 +255,7 @@ body{margin: 0;}
 	display: inline-block;
 	text-decoration: none;
 	text-transform: uppercase;
-	font: 16px/20px 'Poppins', sans-serif;
+	font: 16px/20px 'Century Gothic', sans-serif;
 }
 /*------------------------------------------------------------------
         15. Responsive Start

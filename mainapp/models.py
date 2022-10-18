@@ -3,13 +3,18 @@ from django.db import models
 from tinymce.models import HTMLField
 
 
+class Courses(models.Model):
+    name = models.CharField("Название кружка", max_length=200, default="")
+    organization = models.CharField("Организация в которой проходит кружок", max_length=1000, default="")
+
 class Puples(models.Model):
     STATUS_CHOICES = (
         ('ST10', 'Ученик 10 ИТ-класса'),
         ('ST11', 'Ученик 11 ИТ-класса'),
         ('APP', 'Кандидат в ИТ-класс'),
         ('END', 'Выпускник'),
-        ('TEACH', 'Учитель')
+        ('TEACH', 'Учитель'),
+        ('EXP', 'Отчислен')
     )
 
     PROGRESS_CHOICES = (
@@ -31,9 +36,11 @@ class Puples(models.Model):
     applicant_progress = models.IntegerField(verbose_name="Прогресс", choices=PROGRESS_CHOICES, default=0, blank=True)
     email = models.EmailField(verbose_name="Email", default="")
     phone = models.CharField(max_length=12, verbose_name="Телефон", default="")
+    courses = models.ForeignKey(Courses, on_delete=models.SET_NULL, null=True, verbose_name="Кандидат")
+    score_stepic = models.IntegerField("Рейтинг ученика по егэ", default=0)
 
     def __str__(self):
-        return self.name
+        return str(self.surname) + " " + str(self.name)
 
     class Meta:
         verbose_name = "Пользователи"

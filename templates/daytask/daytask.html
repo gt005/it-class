@@ -13,6 +13,7 @@
                 {{ task.discription_task }}
             {% endautoescape %}
             <hr>
+            <p class="font-weight-light text-right text-muted" style="font-size: 10px">Автор задачи: {{ task.author }}</p>
             <h4 class="font-weight-light">Ответ:</h4>
             <form method="post">{% csrf_token %}
                 <input type="text"
@@ -89,7 +90,7 @@
                 {% for task, list_success in tasks_active_teacher %}
                     <tr class="tasks-active-teacher__row">
                         <th scope="row" class="font-weight-light align-middle">{{ task.date }}</th>
-                        <td class="font-weight-light align-middle">{{ task.name }}</td>
+                        <td class="font-weight-light align-middle"><a href="/daytask/id/{{ task.id }}">{{ task.name }}</a></td>
                         <td class="font-weight-light align-middle">{{ task.get_status_task_display }}</td>
                         <td class="font-weight-light align-middle d-flex justify-content-between">
                             <div class="solved-task__puples">
@@ -206,7 +207,7 @@
                 {% for task, list_success in tasks_last_teacher %}
                     <tr>
                         <th scope="row" class="font-weight-light align-middle">{{ task.date }}</th>
-                        <td class="font-weight-light align-middle">{{ task.name }}</td>
+                        <td class="font-weight-light align-middle"><a href="/daytask/id/{{ task.id }}">{{ task.name }}</a></td>
                         <td class="font-weight-light align-middle">{{ task.get_status_task_display }}</td>
                         <td class="font-weight-light align-middle">
                             {% for i in list_success %}<a href="/statistic/pupil/{{ i.id }}"

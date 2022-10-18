@@ -26,7 +26,7 @@ SECRET_KEY = 'efgj!udo53#9=3dnuy3n%(=)$pdz-5@dv@me=dl1wky#&dhe$*'
 DEBUG = True
 
 # KarimGt005
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.14.103']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.14.103', '192.168.1.71']
 
 # Application definition
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'tinymce',
     'daytask',
     'ckeditor',
+    'exam_prep',
 ]
 
 
@@ -60,10 +61,10 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'itclass.urls'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_HOST = 'mail.hosting.reg.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = "admin@it-class1158.site"
-EMAIL_HOST_PASSWORD = "dfsDSvrdsw52"
+EMAIL_HOST_PASSWORD = "sT7zH7gC1ytL4q"
 EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'admin@it-class1158.site'
