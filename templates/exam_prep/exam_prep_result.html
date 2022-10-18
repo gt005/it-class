@@ -1,0 +1,40 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container pt-3 {% if not button %}text-muted{% endif %}">
+    <h1 class="font-weight-light col-12">Результаты варианта №{{ var_id }}</h1>
+    <hr>
+    <div class="d-flex justify-content-between">
+        <div>
+            <p class="font-weight-light text-dark">Количество верно решенных заданий: {{ count_right }}</p>
+            <p class="font-weight-light text-dark">Количество заданий решенных с первой попытки: {{ one_try_task }}</p>
+        </div>
+        <div>
+            <h5 class="font-weight-light text-right mr-5">Текущий балл ЕГЭ<br>за вариант</h5>
+            <div class="counter" data-cp-percentage="{{ ege_level }}" data-cp-color="#3baabe"></div>
+        </div>
+    </div>
+        <br>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">№ Задания</th>
+                <th scope="col">Текущий ответ</th>
+                <th scope="col">Верный ответ</th>
+                <th scope="col">Кол-во<br>попыток</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for key, value in variant.items %}
+                <tr class="{% if value.2 == "OK" %}table-success{% else %}table-danger{% endif %}">
+                    <th scope="row">{{ key }}</th>
+                    <td>{% if value %}{{ value.1 }}{% else %}-{% endif %}</td>
+                    <td>{{ value.4 }}</td>
+                    <td>{{ tryes|get_value:key|get_value:"try" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block detail_active_ege %} active{% endblock %}

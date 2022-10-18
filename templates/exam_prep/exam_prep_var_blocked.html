@@ -1,0 +1,17 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container pt-3  {% if not button %}{% endif %}" style="min-height: calc(100vh - 134px - 124px);">
+        <div style="margin-top: 20vh">
+            <h1 class="font-weight-light text-center">Подготовка к ЕГЭ</h1>
+            <hr>
+            <p class="font-weight-light text-center text-muted">Данный вариант заблокирован, ты можешь составить новый.</p>
+            <form  method="post">
+                {% csrf_token %}
+                <button class="btn btn-info btn-lg btn-block" type="submit" name='ready' value="ready">Начать решение
+                варианта</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block detail_active_ege %} active{% endblock %}

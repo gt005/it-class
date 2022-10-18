@@ -1,0 +1,41 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="container pt-3  {% if not button %}{% endif %}" style="min-height: calc(100vh - 134px - 124px);">
+        <div style="margin-top: 20vh">
+            <h1 class="font-weight-light text-center">Подготовка к ЕГЭ</h1>
+            <hr>
+            <p class="font-weight-light text-center text-muted">Нажми на кнопку ниже, чтобы составить свой
+                индивидуальный недельный вариант и приступить к его решению</p>
+            <form method="post">
+                {% csrf_token %}
+                <button class="btn btn-info btn-lg btn-block" type="submit" name='ready' value="ready">Начать решение
+                    варианта
+                </button>
+            </form>
+        </div>
+        <br>
+        {% if variants %}
+            <div class="d-flex justify-content-between pt-5">
+                <div>
+                    <h5 class="font-weight-light text-muted">Завершенные варианты:</h5>
+                    {% for i in variants %}
+                        <a href="/exam_prep/{{ user.id }}_{{ i.id_var }}/result" class="font-weight-light text-muted">Вариант
+                            №{{ i.id_var }} Дата начала: {{ i.date }}</a><br>
+                    {% endfor %}
+
+                </div>
+                <div>
+                    <h5 class="font-weight-light">Текущий балл ЕГЭ</h5>
+                    <div class="bg-style">
+                        <div>
+                            <div class="counter" data-cp-percentage="{{ ege_level }}" data-cp-color="#3baabe"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+{% block detail_active_ege %} active{% endblock %}
