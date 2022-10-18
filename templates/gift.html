@@ -1,0 +1,12 @@
+{% extends  'base.html' %}
+{% load static %}
+{% block main %}
+    {% if user.is_authenticated %}
+        <div class="container text-center">
+            <h2 class="text-center">{{ surname }} {{ name }}, мы тебя поздравляем с днем программиста!</h2>
+            <p class="text-center">Мы верим, что ты станешь крутым программистом!<br>Спасибо тебе за твою активную позицию в техническом направлении!<br>А про свой подарок узнай у своего учителя информатики.</p>
+            <img style="width: 50vh" src="{% static "images/11111.jpg" %}">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block detail_active_hach %} active{% endblock %}
